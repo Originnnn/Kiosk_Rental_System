@@ -83,8 +83,8 @@
                 </div>
                 
                 <div class="flex gap-2 flex-wrap" id="filter-buttons">
-                    <button type="button" data-filter-type="zone" data-filter-value="A" class="filter-btn px-4 py-1.5 rounded-full text-xs font-semibold transition bg-gray-100 text-gray-600 hover:bg-gray-200">Khu A</button>
-                    <button type="button" data-filter-type="zone" data-filter-value="B" class="filter-btn px-4 py-1.5 rounded-full text-xs font-semibold transition bg-gray-100 text-gray-600 hover:bg-gray-200">Khu B</button>
+                    <button type="button" data-filter-type="zone" data-filter-value="Khu A" class="filter-btn px-4 py-1.5 rounded-full text-xs font-semibold transition bg-gray-100 text-gray-600 hover:bg-gray-200">Khu A</button>
+                    <button type="button" data-filter-type="zone" data-filter-value="Khu B" class="filter-btn px-4 py-1.5 rounded-full text-xs font-semibold transition bg-gray-100 text-gray-600 hover:bg-gray-200">Khu B</button>
                     <button type="button" data-filter-type="status" data-filter-value="available" class="filter-btn px-4 py-1.5 rounded-full text-xs font-semibold transition bg-gray-100 text-gray-600 hover:bg-gray-200">Trống</button>
                     <button type="button" data-filter-type="status" data-filter-value="rented" class="filter-btn px-4 py-1.5 rounded-full text-xs font-semibold transition bg-gray-100 text-gray-600 hover:bg-gray-200">Đang thuê</button>
                 </div>
@@ -132,7 +132,7 @@
                     <div class="flex items-center gap-4 text-xs text-gray-500 font-medium">
                         <div class="flex items-center gap-1.5">
                             <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path></svg>
-                            Khu {{ $kiosk->position->zone ?? 'N/A' }}
+                            {{ $kiosk->position->zone ?? 'N/A' }}
                         </div>
                         <div class="flex items-center gap-1.5">
                             <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4"></path></svg>
@@ -316,7 +316,7 @@ function handleKioskClick(event, element) {
     }
 
     document.getElementById('detail-type').innerText = kiosk.status === 'available' ? 'Chưa cho thuê' : kiosk.name;
-    document.getElementById('detail-zone').innerText = 'Khu ' + kiosk.zone + ' - Tầng 1';
+    document.getElementById('detail-zone').innerText = kiosk.zone + ' - Tầng 1';
     document.getElementById('detail-area').innerText = kiosk.area + 'm²';
 
 
