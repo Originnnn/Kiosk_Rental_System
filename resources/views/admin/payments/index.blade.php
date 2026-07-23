@@ -32,7 +32,7 @@
                     </div>
                     <div>
                         <p class="text-xs text-gray-500 font-bold uppercase">KHOẢN NỢ QUÁ HẠN</p>
-                        <p class="text-lg font-bold text-gray-900">{{ $overdueCount }}</p>
+                        <p class="text-lg font-bold text-gray-900">{{ number_format($overdueAmount, 0, ',', '.') }}đ</p>
                     </div>
                 </div>
             </div>
@@ -112,7 +112,7 @@
                         $customerName = $payment->contract->customer->name ?? 'Unknown';
                         $kioskName = $payment->contract->kiosk->code ?? 'Unknown';
                         
-                        $isOverdue = $payment->status == 'unpaid' && \Carbon\Carbon::parse($payment->due_date)->isPast();
+                        $isOverdue = $payment->status == 'unpaid' && \Carbon\Carbon::parse($payment->due_date)->endOfDay()->isPast();
                         
                         if ($payment->status == 'paid') {
                             $statusText = 'Đã thanh toán';

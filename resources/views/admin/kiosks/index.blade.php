@@ -271,8 +271,10 @@
 
                 <template x-if="!loading && activeKiosk">
                     <div>
-                        <!-- Info Grid -->
-                        <div class="flex space-x-4 mb-6">
+                        <!-- VIEW MODE -->
+                        <div x-show="!isEditing">
+                            <!-- Info Grid -->
+                            <div class="flex space-x-4 mb-6">
                             <!-- Placeholder Image -->
                             <div class="w-1/2 rounded-lg overflow-hidden relative bg-gray-100 border border-gray-200 flex items-center justify-center">
                                 <img src="https://images.unsplash.com/photo-1555529733-0e67056058e1?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80" alt="Kiosk" class="w-full h-full object-cover">
@@ -381,23 +383,82 @@
                             </div>
                         </div>
 
+                        </div>
+                        
+                        <!-- EDIT MODE -->
+                        <div x-show="isEditing" style="display: none;" class="bg-gray-50 p-5 rounded-lg border border-gray-200 shadow-sm mb-6">
+                            <h3 class="text-sm font-bold text-[#006699] mb-4 border-b border-gray-200 pb-2">
+                                <i class="fa-solid fa-pen-to-square mr-2"></i> Chỉnh sửa thông tin Kiosk
+                            </h3>
+                            
+                            <div class="grid grid-cols-2 gap-4 mb-4">
+                                <div>
+                                    <label class="block text-xs font-semibold text-gray-700 mb-1">Mã quầy <span class="text-red-500">*</span></label>
+                                    <input type="text" x-model="editData.code" class="w-full px-3 py-2 border rounded focus:outline-none focus:border-primary text-sm" :class="editErrors.code ? 'border-red-500' : 'border-gray-300'">
+                                    <template x-if="editErrors.code"><p class="text-red-500 text-xs mt-1" x-text="editErrors.code[0]"></p></template>
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-semibold text-gray-700 mb-1">Vị trí <span class="text-red-500">*</span></label>
+                                    <input type="text" x-model="editData.name" class="w-full px-3 py-2 border rounded focus:outline-none focus:border-primary text-sm" :class="editErrors.name ? 'border-red-500' : 'border-gray-300'">
+                                    <template x-if="editErrors.name"><p class="text-red-500 text-xs mt-1" x-text="editErrors.name[0]"></p></template>
+                                </div>
+                            </div>
+                            
+                            <div class="grid grid-cols-2 gap-4 mb-4">
+                                <div>
+                                    <label class="block text-xs font-semibold text-gray-700 mb-1">Diện tích (m2) <span class="text-red-500">*</span></label>
+                                    <div class="relative">
+                                        <input type="number" step="0.01" x-model="editData.area" class="w-full px-3 py-2 border rounded focus:outline-none focus:border-primary text-sm text-right pr-8" :class="editErrors.area ? 'border-red-500' : 'border-gray-300'">
+                                        <span class="absolute right-3 top-2 text-sm text-gray-500 font-medium">m²</span>
+                                    </div>
+                                    <template x-if="editErrors.area"><p class="text-red-500 text-xs mt-1" x-text="editErrors.area[0]"></p></template>
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-semibold text-gray-700 mb-1">Đơn giá mặc định <span class="text-red-500">*</span></label>
+                                    <div class="relative">
+                                        <input type="number" x-model="editData.price" class="w-full px-3 py-2 border rounded focus:outline-none focus:border-primary text-sm text-right pr-12" :class="editErrors.price ? 'border-red-500' : 'border-gray-300'">
+                                        <span class="absolute right-3 top-2 text-sm text-gray-500 font-medium">VNĐ</span>
+                                    </div>
+                                    <template x-if="editErrors.price"><p class="text-red-500 text-xs mt-1" x-text="editErrors.price[0]"></p></template>
+                                </div>
+                            </div>
+                            
+                            <div>
+                                <label class="block text-xs font-semibold text-gray-700 mb-1">Mô tả thiết bị đi kèm</label>
+                                <textarea x-model="editData.description" rows="3" class="w-full px-3 py-2 border rounded focus:outline-none focus:border-primary text-sm resize-none" :class="editErrors.description ? 'border-red-500' : 'border-gray-300'"></textarea>
+                                <template x-if="editErrors.description"><p class="text-red-500 text-xs mt-1" x-text="editErrors.description[0]"></p></template>
+                            </div>
+                        </div>
+
                     </div>
                 </template>
             </div>
 
             <!-- Drawer Footer -->
             <div class="px-6 py-4 border-t border-gray-200 bg-white flex justify-end space-x-3 flex-shrink-0">
-                <button @click="drawerOpen = false" class="px-4 py-2 border border-gray-300 text-gray-700 rounded font-medium text-sm hover:bg-gray-50">
-                    Đóng
-                </button>
-                <button class="px-4 py-2 border border-gray-300 text-gray-700 rounded font-medium text-sm hover:bg-gray-50 flex items-center">
-                    <i class="fa-solid fa-print mr-2"></i> In hồ sơ
-                </button>
-                @can('is-employee')
-                <button class="px-4 py-2 bg-[#006699] text-white rounded font-bold text-sm hover:bg-[#005580]">
-                    Cập nhật thông tin
-                </button>
-                @endcan
+                <div x-show="!isEditing" class="flex space-x-3 w-full justify-end">
+                    <button @click="drawerOpen = false" class="px-4 py-2 border border-gray-300 text-gray-700 rounded font-medium text-sm hover:bg-gray-50">
+                        Đóng
+                    </button>
+                    <button class="px-4 py-2 border border-gray-300 text-gray-700 rounded font-medium text-sm hover:bg-gray-50 flex items-center">
+                        <i class="fa-solid fa-print mr-2"></i> In hồ sơ
+                    </button>
+                    @can('is-employee')
+                    <button @click="startEdit()" class="px-4 py-2 bg-[#006699] text-white rounded font-bold text-sm hover:bg-[#005580]">
+                        Cập nhật thông tin
+                    </button>
+                    @endcan
+                </div>
+                
+                <div x-show="isEditing" style="display: none;" class="flex space-x-3 w-full justify-end">
+                    <button @click="isEditing = false" class="px-4 py-2 border border-gray-300 text-gray-700 rounded font-medium text-sm hover:bg-gray-50">
+                        Hủy
+                    </button>
+                    <button @click="saveEdit()" class="px-4 py-2 bg-[#006699] text-white rounded font-bold text-sm hover:bg-[#005580] flex items-center disabled:opacity-70" :disabled="saving">
+                        <i class="fa-solid fa-circle-notch fa-spin mr-2" x-show="saving" style="display: none;"></i>
+                        Lưu thay đổi
+                    </button>
+                </div>
             </div>
          </div>
     </div>
@@ -414,10 +475,16 @@
             openDrawer(id) {
                 this.drawerOpen = true;
                 this.loading = true;
+                this.isEditing = false;
                 this.activeKiosk = null;
 
-                fetch(`/admin/kiosks/${id}`)
-                    .then(response => response.json())
+                fetch(`/kiosks/${id}`)
+                    .then(response => {
+                        if (!response.ok) {
+                            throw new Error('Network response was not ok');
+                        }
+                        return response.json();
+                    })
                     .then(data => {
                         this.activeKiosk = data;
                         this.loading = false;
@@ -426,6 +493,59 @@
                         console.error('Error fetching kiosk details:', error);
                         this.loading = false;
                     });
+            },
+
+            isEditing: false,
+            saving: false,
+            editData: { code: '', name: '', area: '', price: '', description: '' },
+            editErrors: {},
+
+            startEdit() {
+                this.isEditing = true;
+                this.editErrors = {};
+                this.editData = {
+                    code: this.activeKiosk.code,
+                    name: this.activeKiosk.name,
+                    area: this.activeKiosk.area,
+                    price: this.activeKiosk.price,
+                    description: this.activeKiosk.description || ''
+                };
+            },
+
+            saveEdit() {
+                this.saving = true;
+                this.editErrors = {};
+                fetch(`/kiosks/${this.activeKiosk.id}`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json',
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                    },
+                    body: JSON.stringify(this.editData)
+                })
+                .then(async response => {
+                    if (!response.ok) {
+                        if (response.status === 422) {
+                            const data = await response.json();
+                            this.editErrors = data.errors;
+                            throw new Error('Validation failed');
+                        }
+                        throw new Error('Network response was not ok');
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    this.activeKiosk = data.kiosk;
+                    this.isEditing = false;
+                    this.saving = false;
+                    // Reload trang để danh sách Kiosk tự cập nhật thông tin mới nhất
+                    window.location.reload(); 
+                })
+                .catch(error => {
+                    console.error('Error updating kiosk:', error);
+                    this.saving = false;
+                });
             },
 
             currentTenant() {

@@ -38,20 +38,33 @@ class PortalController extends Controller
     {
         $validated = $request->validate([
             'kiosk_id' => 'required|exists:kiosks,id',
-            'customer_name' => 'required|string|max:255',
-            'phone' => 'required|string|max:20',
-            'email' => 'nullable|email|max:255',
+            'contact_name' => 'required|string|max:255',
+            'contact_phone' => 'required|string|max:20',
+            'contact_email' => 'nullable|email|max:255',
             'business_type' => 'nullable|string|max:1000',
-            'duration_months' => 'required|integer|min:1',
-            'notes' => 'nullable|string',
+            'note' => 'nullable|string',
+            'desired_start' => 'nullable|date',
+            'desired_end' => 'nullable|date|after_or_equal:desired_start',
         ]);
 
-        $booking = BookingRequest::create($validated);
+        $duration_months = 12; // default
+        if (!empty($validated['desired_start']) && !empty($validated['desired_end'])) {
+            $start = \Carbon\Carbon::parse($validated['desired_start']);
+            $end = \Carbon\Carbon::parse($validated['desired_end']);
+            $duration_months = max(1, $start->diffInMonths($end));
+        }
 
-        return response()->json([
-            'success' => true,
-            'message' => 'Gửi yêu cầu thành công, nhân viên sẽ sớm liên hệ',
-            'data' => $booking
-        ], 201);
+        $booking = BookingRequest::create([
+            'kiosk_id' => $validated['kiosk_id'],
+            'customer_name' => $validated['contact_name'],
+            'phone' => $validated['contact_phone'],
+            'email' => $validated['contact_email'] ?? null,
+            'business_type' => $validated['business_type'] ?? 'Chưa xác định',
+            'duration_months' => $duration_months,
+            'notes' => $validated['note'] ?? null,
+            'status' => 'pending',
+        ]);
+
+        return redirect()->back()->with('success', 'Gửi yêu cầu thành công, nhân viên bến xe sẽ sớm liên hệ lại với bạn.');
     }
 }

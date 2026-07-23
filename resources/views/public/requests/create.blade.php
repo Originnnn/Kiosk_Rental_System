@@ -37,7 +37,7 @@
             </div>
             @endif
 
-            <form action="/requests" method="POST" enctype="multipart/form-data" class="space-y-6">
+            <form action="{{ route('portal.store') }}" method="POST" enctype="multipart/form-data" class="space-y-6">
                 @csrf
                 @if($kiosk)
                     <input type="hidden" name="kiosk_id" value="{{ $kiosk->id }}">

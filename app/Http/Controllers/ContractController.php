@@ -97,7 +97,8 @@ class ContractController extends Controller
             ]);
 
             // 2. Cập nhật Kiosk status
-            $kiosk->update(['status' => 'rented']);
+            $kiosk->status = 'rented';
+            $kiosk->save();
 
             // 3. Sinh các kỳ thanh toán (Payment Schedules)
             $startDate = Carbon::parse($validated['start_date']);

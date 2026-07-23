@@ -48,13 +48,13 @@ class PaymentController extends Controller
                                 ->whereYear('paid_at', now()->year)
                                 ->sum(DB::raw('COALESCE(actual_amount, amount)'));
                                 
-        $overdueCount = ContractPaymentSchedule::where('status', 'unpaid')
+        $overdueAmount = ContractPaymentSchedule::where('status', 'unpaid')
                             ->where('due_date', '<', now()->startOfDay())
-                            ->count();
+                            ->sum('amount');
 
         $payments = $query->orderBy('due_date', 'desc')->paginate(10);
 
-        return view('admin.payments.index', compact('payments', 'currentMonthRevenue', 'overdueCount'));
+        return view('admin.payments.index', compact('payments', 'currentMonthRevenue', 'overdueAmount'));
     }
 
     public function showPaymentForm($id)

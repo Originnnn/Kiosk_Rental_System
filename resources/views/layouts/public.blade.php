@@ -40,5 +40,35 @@
     <main class="flex-1 overflow-y-auto flex flex-col relative">
         @yield('content')
     </main>
+
+    @if(session('success'))
+    <div id="flash-message" class="fixed top-20 right-6 z-50 bg-green-600 text-white px-6 py-4 rounded shadow-2xl flex items-center gap-3 animate-fade-in-down border border-green-700">
+        <svg class="w-6 h-6 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+        <span class="font-medium text-sm">{{ session('success') }}</span>
+        <button type="button" onclick="document.getElementById('flash-message').remove()" class="ml-4 text-green-100 hover:text-white transition">
+            <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+        </button>
+    </div>
+    <script>
+        setTimeout(() => {
+            const flash = document.getElementById('flash-message');
+            if (flash) {
+                flash.style.opacity = '0';
+                flash.style.transform = 'translateY(-20px)';
+                flash.style.transition = 'all 0.3s ease-out';
+                setTimeout(() => flash.remove(), 300);
+            }
+        }, 5000);
+    </script>
+    <style>
+        @keyframes fadeInDown {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .animate-fade-in-down {
+            animation: fadeInDown 0.3s ease-out;
+        }
+    </style>
+    @endif
 </body>
 </html>
