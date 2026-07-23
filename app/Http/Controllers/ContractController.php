@@ -38,7 +38,9 @@ class ContractController extends Controller
     public function store(Request $request)
     {
         $validated = $request->validate([
-            'customer_id' => 'required|exists:customers,id',
+            'customer_id' => 'nullable|exists:customers,id',
+            'customer_name' => 'required_without:customer_id|string|max:255',
+            'customer_phone' => 'required_without:customer_id|string|max:20',
             'kiosk_id' => 'required|exists:kiosks,id',
             'start_date' => 'required|date',
             'end_date' => 'required|date|after:start_date',
@@ -46,13 +48,34 @@ class ContractController extends Controller
             'deposit_amount' => 'nullable|numeric|min:0',
             'total_amount' => 'required|numeric|min:0',
             'manager_name' => 'nullable|string|max:255',
-            'contact_name' => 'nullable|string|max:255',
-            'contact_phone' => 'nullable|string|max:20',
             'notes' => 'nullable|string',
         ]);
 
         try {
             DB::beginTransaction();
+
+            $customerId = $request->input('customer_id');
+            $contactName = $request->input('customer_name');
+            $contactPhone = $request->input('customer_phone');
+            
+            if (!$customerId) {
+                // Tự động tạo khách hàng mới
+                $newCustomer = Customer::create([
+                    'name' => $contactName,
+                    'phone' => $contactPhone,
+                    'email' => $contactPhone . '@noemail.local', // default dummy email since it's required in DB
+                ]);
+                $customerId = $newCustomer->id;
+            } else {
+                // Lấy thông tin từ khách hàng có sẵn nếu không nhập tay
+                if (!$contactName || !$contactPhone) {
+                    $existingCustomer = Customer::find($customerId);
+                    if ($existingCustomer) {
+                        $contactName = $contactName ?: $existingCustomer->name;
+                        $contactPhone = $contactPhone ?: $existingCustomer->phone;
+                    }
+                }
+            }
 
             $kiosk = Kiosk::findOrFail($validated['kiosk_id']);
 
@@ -60,17 +83,17 @@ class ContractController extends Controller
             $contract = Contract::create([
                 'reference_code' => 'HD-' . date('Y') . '-' . str_pad(rand(1, 999), 3, '0', STR_PAD_LEFT),
                 'kiosk_id' => $validated['kiosk_id'],
-                'customer_id' => $validated['customer_id'],
+                'customer_id' => $customerId,
                 'start_date' => $validated['start_date'],
                 'end_date' => $validated['end_date'],
                 'status' => 'active',
                 'total_amount' => $validated['total_amount'],
                 'payment_cycle' => $validated['payment_cycle'] . ' tháng / lần',
                 'deposit_amount' => $validated['deposit_amount'],
-                'manager_name' => $validated['manager_name'],
-                'contact_name' => $validated['contact_name'],
-                'contact_phone' => $validated['contact_phone'],
-                'notes' => $validated['notes'],
+                'manager_name' => $validated['manager_name'] ?? null,
+                'contact_name' => $contactName,
+                'contact_phone' => $contactPhone,
+                'notes' => $validated['notes'] ?? null,
             ]);
 
             // 2. Cập nhật Kiosk status
@@ -94,6 +117,14 @@ class ContractController extends Controller
                 ]);
 
                 $currentDate->addMonths($cycleMonths);
+            }
+
+            // 4. Cập nhật trạng thái Yêu cầu thuê nếu có
+            if ($request->filled('booking_request_id')) {
+                $bookingRequest = \App\Models\BookingRequest::find($request->input('booking_request_id'));
+                if ($bookingRequest) {
+                    $bookingRequest->update(['status' => 'resolved']);
+                }
             }
 
             DB::commit();

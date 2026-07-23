@@ -10,8 +10,10 @@ class BookingRequest extends Model
         'kiosk_id',
         'customer_name',
         'phone',
+        'email',
         'business_type',
         'duration_months',
+        'notes',
         'status',
         'handled_by'
     ];

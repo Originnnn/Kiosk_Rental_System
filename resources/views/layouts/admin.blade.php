@@ -80,6 +80,12 @@
 
                 @can('view-operations')
                 <li>
+                    <a href="{{ route('admin.rental_requests.index') }}" class="flex items-center px-4 py-2.5 {{ request()->is('admin/rental-requests*') ? 'bg-sidebarActive text-white' : 'text-gray-300 hover:bg-gray-800 hover:text-white transition' }}">
+                        <i class="fa-solid fa-inbox w-6 text-center"></i>
+                        <span class="ml-2">Yêu cầu thuê</span>
+                    </a>
+                </li>
+                <li>
                     <a href="{{ route('admin.customers.index') }}" class="flex items-center px-4 py-2.5 {{ request()->is('admin/customers*') ? 'bg-sidebarActive text-white' : 'text-gray-300 hover:bg-gray-800 hover:text-white transition' }}">
                         <i class="fa-solid fa-user-tie w-6 text-center"></i>
                         <span class="ml-2">Khách thuê</span>

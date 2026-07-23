@@ -43,18 +43,27 @@ class AdminRentalRequestController extends Controller
 
             DB::commit();
 
-            return response()->json([
-                'success' => true,
-                'message' => 'Cập nhật trạng thái thành công!',
-                'data' => $bookingRequest
-            ]);
+            if ($request->wantsJson()) {
+                return response()->json([
+                    'success' => true,
+                    'message' => 'Cập nhật trạng thái thành công!',
+                    'data' => $bookingRequest
+                ]);
+            }
+
+            return back()->with('success', 'Cập nhật trạng thái thành công!');
 
         } catch (\Exception $e) {
             DB::rollBack();
-            return response()->json([
-                'success' => false,
-                'message' => 'Lỗi hệ thống: ' . $e->getMessage()
-            ], 500);
+            
+            if ($request->wantsJson()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Lỗi hệ thống: ' . $e->getMessage()
+                ], 500);
+            }
+            
+            return back()->with('error', 'Lỗi hệ thống: ' . $e->getMessage());
         }
     }
 }

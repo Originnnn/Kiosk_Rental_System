@@ -36,6 +36,7 @@
 
     <form action="{{ route('admin.contracts.store') }}" method="POST" id="contractForm" class="flex items-start space-x-6">
         @csrf
+        <input type="hidden" name="booking_request_id" value="{{ request('booking_request_id') }}">
         
         <!-- Cột Trái (Form Nhập Liệu) -->
         <div class="w-2/3 space-y-6">
@@ -46,16 +47,28 @@
                     <i class="fa-solid fa-user-group mr-2"></i> 1. Thông tin khách thuê
                 </h2>
                 
-                <div class="mb-2">
+                <div class="mb-4">
                     <label class="block text-xs font-semibold text-gray-700 mb-2 uppercase">CHỌN KHÁCH THUÊ</label>
-                    <select name="customer_id" id="customer_id" class="w-full px-3 py-2 border border-gray-300 rounded focus:ring-1 focus:ring-primary focus:border-primary text-sm bg-white" required>
-                        <option value="">-- Vui lòng chọn khách hàng --</option>
+                    <select name="customer_id" id="customer_id" class="w-full px-3 py-2 border border-gray-300 rounded focus:ring-1 focus:ring-primary focus:border-primary text-sm bg-white">
+                        <option value="">-- Tạo khách hàng mới (Tự động) --</option>
                         @foreach($customers as $customer)
                             <option value="{{ $customer->id }}" {{ old('customer_id') == $customer->id ? 'selected' : '' }}>
                                 {{ $customer->name }} (SĐT: {{ $customer->phone }})
                             </option>
                         @endforeach
                     </select>
+                    <p class="text-xs text-orange-600 mt-2 font-medium"><i class="fa-solid fa-circle-info mr-1"></i> Nếu không chọn Khách thuê có sẵn, hệ thống sẽ tự động tạo hồ sơ Khách hàng mới dựa trên Tên và Số điện thoại bên dưới.</p>
+                </div>
+
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-xs font-semibold text-gray-700 mb-2 uppercase">Người liên hệ <span class="text-red-500">*</span></label>
+                        <input type="text" name="customer_name" id="customer_name" value="{{ old('customer_name', request('contact_name')) }}" class="w-full px-3 py-2 border border-gray-300 rounded focus:ring-1 focus:ring-primary focus:border-primary text-sm placeholder-gray-400" placeholder="Họ tên người liên hệ...">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-gray-700 mb-2 uppercase">Số điện thoại liên hệ <span class="text-red-500">*</span></label>
+                        <input type="text" name="customer_phone" id="customer_phone" value="{{ old('customer_phone', request('contact_phone')) }}" class="w-full px-3 py-2 border border-gray-300 rounded focus:ring-1 focus:ring-primary focus:border-primary text-sm placeholder-gray-400" placeholder="Số điện thoại...">
+                    </div>
                 </div>
             </div>
 
@@ -74,7 +87,7 @@
                                 data-code="{{ $kiosk->code }}" 
                                 data-area="{{ $kiosk->area }}" 
                                 data-price="{{ $kiosk->price }}"
-                                {{ old('kiosk_id') == $kiosk->id ? 'selected' : '' }}>
+                                {{ (old('kiosk_id') == $kiosk->id || request('kiosk_id') == $kiosk->id) ? 'selected' : '' }}>
                                 {{ $kiosk->name }} ({{ $kiosk->code }}) - {{ $kiosk->area }}m²
                             </option>
                         @endforeach
@@ -104,13 +117,19 @@
                 </h2>
                 
                 <div class="grid grid-cols-2 gap-6 mb-4">
+                    @php
+                        $defaultEnd = strtotime('+1 year');
+                        if (request('duration_months') && request('duration_months') != 999) {
+                            $defaultEnd = strtotime('+' . request('duration_months') . ' months');
+                        }
+                    @endphp
                     <div>
                         <label class="block text-xs font-semibold text-gray-700 mb-2 uppercase">Ngày bắt đầu</label>
                         <input type="date" name="start_date" id="start_date" value="{{ old('start_date', date('Y-m-d')) }}" class="w-full px-3 py-2 border border-gray-300 rounded focus:ring-1 focus:ring-primary focus:border-primary text-sm" required>
                     </div>
                     <div>
                         <label class="block text-xs font-semibold text-gray-700 mb-2 uppercase">Ngày kết thúc</label>
-                        <input type="date" name="end_date" id="end_date" value="{{ old('end_date', date('Y-m-d', strtotime('+1 year'))) }}" class="w-full px-3 py-2 border border-gray-300 rounded focus:ring-1 focus:ring-primary focus:border-primary text-sm" required>
+                        <input type="date" name="end_date" id="end_date" value="{{ old('end_date', date('Y-m-d', $defaultEnd)) }}" class="w-full px-3 py-2 border border-gray-300 rounded focus:ring-1 focus:ring-primary focus:border-primary text-sm" required>
                     </div>
                 </div>
 

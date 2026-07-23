@@ -8,9 +8,19 @@ use Illuminate\Support\Facades\Hash;
 
 class UserController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $users = User::orderBy('created_at', 'desc')->paginate(15);
+        $query = User::orderBy('created_at', 'desc');
+
+        if ($request->filled('q')) {
+            $search = $request->q;
+            $query->where(function($q) use ($search) {
+                $q->where('name', 'like', "%{$search}%")
+                  ->orWhere('email', 'like', "%{$search}%");
+            });
+        }
+
+        $users = $query->paginate(15);
         return view('admin.users.index', compact('users'));
     }
 
@@ -32,6 +42,30 @@ class UserController extends Controller
         ]);
 
         return redirect()->route('admin.users.index')->with('success', 'Tạo tài khoản thành công!');
+    }
+
+    public function edit(User $user)
+    {
+        return view('admin.users.edit', compact('user'));
+    }
+
+    public function update(Request $request, User $user)
+    {
+        $request->validate([
+            'name' => 'required|string|max:255',
+            'phone' => 'nullable|string|max:20',
+            'role' => 'required|in:admin,manager,employee',
+            'status' => 'required|boolean',
+        ]);
+
+        $user->update([
+            'name' => $request->name,
+            'phone' => $request->phone,
+            'role' => $request->role,
+            'status' => $request->status,
+        ]);
+
+        return redirect()->route('admin.users.index')->with('success', 'Cập nhật tài khoản thành công!');
     }
 
     public function toggleStatus($id)

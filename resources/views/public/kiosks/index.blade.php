@@ -175,7 +175,7 @@
             
             <div id="detail-actions" class="flex flex-col gap-2 mt-4">
                 @if($fstStatus === 'available')
-                    <button onclick="openBookingModal({{ $firstKiosk->id }})" class="w-full py-2.5 bg-blue-600 hover:bg-blue-700 rounded-md text-sm font-semibold text-white flex items-center justify-center gap-2 transition shadow-sm">
+                    <button onclick="openBookingModal({{ $firstKiosk->id }}, '{{ $firstKiosk->code }}', {{ $firstKiosk->area }})" class="w-full py-2.5 bg-blue-600 hover:bg-blue-700 rounded-md text-sm font-semibold text-white flex items-center justify-center gap-2 transition shadow-sm">
                         <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg> 
                         Đăng ký thuê
                     </button>
@@ -210,11 +210,16 @@
     
     <!-- Modal Content -->
     <div class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-full max-w-md bg-white rounded-xl shadow-2xl p-6 transition-all">
-        <div class="flex justify-between items-center mb-5">
+        <div class="flex justify-between items-center mb-4">
             <h3 class="text-xl font-bold text-gray-900">Đăng ký thuê Kiosk</h3>
             <button onclick="closeBookingModal()" class="text-gray-400 hover:text-gray-600 transition">
                 <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
             </button>
+        </div>
+        
+        <div class="bg-gray-50 border border-gray-200 rounded-lg p-3 mb-5 flex justify-between items-center">
+            <span class="text-sm font-medium text-gray-600">Mã Kiosk: <span id="booking-kiosk-code" class="font-bold text-gray-900">{{ $firstKiosk->code ?? '' }}</span></span>
+            <span class="text-sm font-medium text-gray-600">Diện tích: <span id="booking-kiosk-area" class="font-bold text-gray-900">{{ $firstKiosk->area ?? '' }}</span>m²</span>
         </div>
         
         <form id="booking-form" onsubmit="submitBooking(event)">
@@ -223,20 +228,38 @@
             
             <div class="space-y-4">
                 <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-1">Tên khách hàng / Doanh nghiệp <span class="text-red-500">*</span></label>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Họ tên / Doanh nghiệp <span class="text-red-500">*</span></label>
                     <input type="text" id="booking-name" name="customer_name" required class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-blue-500 focus:border-blue-500">
                 </div>
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-1">Số điện thoại liên hệ <span class="text-red-500">*</span></label>
-                    <input type="tel" id="booking-phone" name="phone" required class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-blue-500 focus:border-blue-500">
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">SĐT liên hệ <span class="text-red-500">*</span></label>
+                        <input type="tel" id="booking-phone" name="phone" required class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-blue-500 focus:border-blue-500">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Email (Tùy chọn)</label>
+                        <input type="email" id="booking-email" name="email" class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-blue-500 focus:border-blue-500">
+                    </div>
+                </div>
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">Lĩnh vực kinh doanh</label>
+                        <input type="text" id="booking-business" name="business_type" placeholder="VD: Bán đồ ăn..." class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-blue-500 focus:border-blue-500">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">T.Gian dự kiến <span class="text-red-500">*</span></label>
+                        <select id="booking-duration" name="duration_months" required class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-blue-500 focus:border-blue-500 bg-white">
+                            <option value="6">6 tháng</option>
+                            <option value="12">1 năm</option>
+                            <option value="24">2 năm</option>
+                            <option value="36">3 năm</option>
+                            <option value="999">Khác</option>
+                        </select>
+                    </div>
                 </div>
                 <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-1">Loại hình kinh doanh dự kiến</label>
-                    <input type="text" id="booking-business" name="business_type" placeholder="VD: Bán đồ ăn nhanh, Thời trang..." class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-blue-500 focus:border-blue-500">
-                </div>
-                <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-1">Thời gian thuê (Tháng) <span class="text-red-500">*</span></label>
-                    <input type="number" id="booking-duration" name="duration_months" min="1" value="6" required class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-blue-500 focus:border-blue-500">
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Ghi chú hoặc Yêu cầu (Tùy chọn)</label>
+                    <textarea id="booking-notes" name="notes" rows="2" class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-blue-500 focus:border-blue-500"></textarea>
                 </div>
             </div>
             
@@ -290,7 +313,7 @@ function handleKioskClick(event, element) {
         statusBadge.className = 'px-2 py-0.5 rounded text-[10px] font-bold tracking-widest bg-gray-100 text-gray-500';
         lesseeContainer.style.display = 'none';
         actionsContainer.innerHTML = `
-            <button onclick="openBookingModal(${kiosk.id})" class="w-full py-2.5 bg-blue-600 hover:bg-blue-700 rounded-md text-sm font-semibold text-white flex items-center justify-center gap-2 transition shadow-sm">
+            <button onclick="openBookingModal(${kiosk.id}, '${kiosk.code}', ${kiosk.area})" class="w-full py-2.5 bg-blue-600 hover:bg-blue-700 rounded-md text-sm font-semibold text-white flex items-center justify-center gap-2 transition shadow-sm">
                 <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg> 
                 Đăng ký thuê
             </button>
@@ -418,11 +441,14 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 
 // Booking Modal Logic
-function openBookingModal(kioskId) {
+function openBookingModal(kioskId, code, area) {
     document.getElementById('booking-kiosk-id').value = kioskId;
+    if(code) document.getElementById('booking-kiosk-code').innerText = code;
+    if(area) document.getElementById('booking-kiosk-area').innerText = area;
+    
     document.getElementById('booking-error').classList.add('hidden');
     document.getElementById('booking-form').reset();
-    document.getElementById('booking-duration').value = 6;
+    document.getElementById('booking-duration').value = "6";
     
     const modal = document.getElementById('booking-modal');
     modal.classList.remove('hidden');
@@ -458,8 +484,10 @@ async function submitBooking(event) {
         kiosk_id: form.kiosk_id.value,
         customer_name: form.customer_name.value,
         phone: form.phone.value,
+        email: form.email.value,
         business_type: form.business_type.value,
-        duration_months: form.duration_months.value
+        duration_months: form.duration_months.value,
+        notes: form.notes.value
     };
     
     btn.disabled = true;
