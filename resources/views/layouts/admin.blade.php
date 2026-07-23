@@ -142,16 +142,28 @@
             </div>
             
             <!-- User menu -->
-            <div class="flex items-center space-x-6">
-                <span class="font-medium text-gray-700">Quản lý Kiosk</span>
-                <button class="relative text-gray-500 hover:text-gray-700">
+            <div class="flex items-center space-x-5">
+                <button class="text-gray-500 hover:text-gray-700">
                     <i class="fa-regular fa-bell text-lg"></i>
-                    <span class="absolute -top-1 -right-1 bg-red-500 w-2 h-2 rounded-full"></span>
                 </button>
-                <img src="https://i.pravatar.cc/100?img=1" alt="Avatar" class="w-8 h-8 rounded-full border border-gray-200">
-                <form method="POST" action="{{ route('logout') }}">
+                <button class="text-gray-500 hover:text-gray-700">
+                    <i class="fa-regular fa-circle-question text-lg"></i>
+                </button>
+                <div class="h-6 w-px bg-gray-300 mx-2"></div>
+                
+                @if(auth()->check())
+                <a href="{{ route('admin.profile.index') }}" class="flex items-center group cursor-pointer">
+                    <div class="text-right mr-3">
+                        <div class="text-sm font-bold text-gray-800 group-hover:text-[#006699] transition">{{ auth()->user()->name }}</div>
+                        <div class="text-[10px] text-gray-500 uppercase">{{ auth()->user()->role == 'admin' ? 'Administrator' : (auth()->user()->role == 'manager' ? 'Manager' : 'Employee') }}</div>
+                    </div>
+                    <img src="{{ auth()->user()->avatar_url }}" alt="Avatar" class="w-9 h-9 rounded-full border border-gray-200 object-cover group-hover:border-[#006699] transition">
+                </a>
+                @endif
+                
+                <form method="POST" action="{{ route('logout') }}" class="ml-2">
                     @csrf
-                    <button type="submit" class="text-gray-500 hover:text-red-600 ml-2" title="Đăng xuất">
+                    <button type="submit" class="text-gray-400 hover:text-red-600" title="Đăng xuất">
                         <i class="fa-solid fa-arrow-right-from-bracket"></i>
                     </button>
                 </form>

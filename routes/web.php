@@ -13,6 +13,7 @@ use App\Http\Controllers\KioskController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\ReportController;
 use App\Http\Controllers\PortalController;
+use App\Http\Controllers\ProfileController;
 
 // --------------------------------------------------------------------------
 // Nhóm 1: Cổng Khách hàng (kiosk.localhost)
@@ -85,6 +86,13 @@ Route::domain('admin.' . env('APP_URL_BASE', 'kiosk.localhost'))->group(function
         // Route / của middleware auth trỏ về DashboardController@index
         Route::get('/', [DashboardController::class, 'index'])->name('admin.home');
         
+        // Hồ sơ cá nhân
+        Route::get('/profile', [ProfileController::class, 'index'])->name('admin.profile.index');
+        Route::get('/profile/edit', [ProfileController::class, 'edit'])->name('admin.profile.edit');
+        Route::put('/profile', [ProfileController::class, 'update'])->name('admin.profile.update');
+        Route::get('/profile/password', [ProfileController::class, 'password'])->name('admin.profile.password');
+        Route::put('/profile/password', [ProfileController::class, 'updatePassword'])->name('admin.profile.password.update');
+
         // Middleware cho Admin & Manager (Dashboard)
         Route::middleware('can:view-dashboard')->group(function () {
             Route::get('/dashboard', [DashboardController::class, 'index'])->name('admin.dashboard');
