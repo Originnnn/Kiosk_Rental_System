@@ -5,7 +5,7 @@
 @section('content')
 <div class="bg-gray-50 min-h-screen p-6 font-sans">
     
-    <form action="{{ route('admin.contracts.update', $contract->id) }}" method="POST">
+    <form action="{{ route('admin.contracts.update', $contract->id) }}" method="POST" enctype="multipart/form-data">
         @csrf
         @method('PUT')
         
@@ -143,23 +143,72 @@
                 </div>
 
                 <!-- Tài liệu đính kèm -->
-                <div class="bg-white rounded border border-gray-200 p-6 shadow-sm">
+                <div class="bg-white rounded border border-gray-200 p-6 shadow-sm" x-data="{ 
+                    existingFiles: {{ json_encode($contract->attachments ?? []) }}.map(f => typeof f === 'string' ? {path: f, name: f.split('/').pop()} : f),
+                    removedFiles: [],
+                    newFiles: [],
+                    removeExisting(fileObj) {
+                        this.removedFiles.push(fileObj.path);
+                        this.existingFiles = this.existingFiles.filter(f => f.path !== fileObj.path);
+                    },
+                    removeNew() {
+                        this.$refs.fileInput.value = '';
+                        this.newFiles = [];
+                    },
+                    handleFileChange(event) {
+                        this.newFiles = Array.from(event.target.files).map(f => ({ name: f.name }));
+                    }
+                }">
                     <div class="flex justify-between items-center mb-4 border-b border-gray-100 pb-2">
                         <h2 class="text-base font-bold text-gray-900 flex items-center">
                             <i class="fa-solid fa-paperclip mr-2 text-gray-400"></i> Tài liệu đính kèm
                         </h2>
-                        <button type="button" class="text-[#006699] text-sm hover:underline font-medium">+ Thêm</button>
+                        <input type="file" name="new_attachments[]" multiple class="hidden" x-ref="fileInput" @change="handleFileChange" accept=".pdf,.doc,.docx,.jpg,.jpeg,.png">
+                        <button type="button" @click="$refs.fileInput.click()" class="text-[#006699] text-sm hover:underline font-medium">
+                            + Thêm <span x-show="newFiles.length > 0" x-text="`(${newFiles.length})`"></span>
+                        </button>
                     </div>
                     
                     <div class="space-y-3">
-                        <div class="flex items-center p-3 border border-gray-100 rounded bg-gray-50">
-                            <i class="fa-solid fa-file-pdf text-gray-400 text-lg mr-3"></i>
-                            <span class="text-sm font-medium text-gray-700 flex-1">Ban_sao_HD_da_ky.pdf</span>
-                        </div>
-                        <div class="flex items-center p-3 border border-gray-100 rounded bg-gray-50">
-                            <i class="fa-solid fa-image text-gray-400 text-lg mr-3"></i>
-                            <span class="text-sm font-medium text-gray-700 flex-1">Bien_ban_ban_giao_kiosk.jpg</span>
-                        </div>
+                        <!-- Existing files list -->
+                        <template x-for="file in existingFiles" :key="file.path">
+                            <div class="flex items-center justify-between p-3 border border-gray-100 rounded bg-gray-50 group">
+                                <div class="flex items-center flex-1 overflow-hidden">
+                                    <i class="fa-solid fa-file-lines text-gray-400 text-lg mr-3"></i>
+                                    <span class="text-sm font-medium text-gray-700 truncate" x-text="file.name"></span>
+                                </div>
+                                <button type="button" @click="removeExisting(file)" class="text-red-400 hover:text-red-600 opacity-0 group-hover:opacity-100 transition-opacity ml-3" title="Xóa tài liệu này">
+                                    <i class="fa-solid fa-xmark text-lg"></i>
+                                </button>
+                            </div>
+                        </template>
+
+                        <!-- New files list -->
+                        <template x-if="newFiles.length > 0">
+                            <div class="flex items-center justify-between p-3 border border-blue-200 rounded bg-blue-50 group">
+                                <div class="flex items-center flex-1 overflow-hidden">
+                                    <i class="fa-solid fa-file-circle-plus text-blue-500 text-lg mr-3"></i>
+                                    <span class="text-sm font-medium text-blue-800 truncate">
+                                        <span x-text="newFiles.length"></span> tệp mới được chọn...
+                                    </span>
+                                </div>
+                                <button type="button" @click="removeNew()" class="text-red-400 hover:text-red-600 ml-3" title="Hủy bỏ">
+                                    <i class="fa-solid fa-xmark text-lg"></i>
+                                </button>
+                            </div>
+                        </template>
+
+                        <!-- Empty state -->
+                        <template x-if="existingFiles.length === 0 && newFiles.length === 0">
+                            <div class="text-sm text-gray-400 italic text-center py-4">
+                                Chưa có tài liệu đính kèm
+                            </div>
+                        </template>
+                        
+                        <!-- Hidden inputs for removed files -->
+                        <template x-for="file in removedFiles">
+                            <input type="hidden" name="remove_attachments[]" :value="file">
+                        </template>
                     </div>
                 </div>
 

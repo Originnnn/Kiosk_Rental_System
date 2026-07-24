@@ -82,7 +82,14 @@
                         'role_raw' => $user->role,
                         'status' => $user->status,
                         'created_at' => $user->created_at->format('d/m/Y'),
-                        'edit_url' => route('admin.users.edit', $user->id)
+                        'edit_url' => route('admin.users.edit', $user->id),
+                        'recent_activities' => $user->auditLogs->map(function($log) {
+                            return [
+                                'description' => $log->description,
+                                'time' => $log->created_at->diffForHumans(),
+                                'is_login' => $log->action === 'login',
+                            ];
+                        })->toArray()
                     ]) }})">
                         <td class="px-6 py-4 flex items-center">
                             <div class="h-10 w-10 rounded-full bg-[#006699] text-white flex items-center justify-center font-bold text-sm">
@@ -213,26 +220,21 @@
                                     </div>
                                 </div>
 
-                                <!-- Activity History (Mock) -->
+                                <!-- Activity History -->
                                 <h4 class="text-xs font-bold text-gray-500 uppercase tracking-wider mb-4">Lịch sử hoạt động gần đây</h4>
                                 <ul class="relative border-l border-gray-200 ml-2 space-y-6">
-                                    <li class="pl-4 relative">
-                                        <div class="absolute w-2 h-2 bg-[#006699] rounded-full -left-[4.5px] top-1.5"></div>
-                                        <p class="text-sm font-medium text-gray-900">Cập nhật hợp đồng HD-2023-045</p>
-                                        <p class="text-xs text-gray-500 mt-0.5">10:15, Hôm nay</p>
-                                    </li>
-                                    <li class="pl-4 relative">
-                                        <div class="absolute w-2 h-2 bg-gray-300 rounded-full -left-[4.5px] top-1.5"></div>
-                                        <p class="text-sm font-medium text-gray-700">Đăng nhập hệ thống</p>
-                                        <p class="text-xs text-gray-500 mt-0.5">08:00, Hôm nay</p>
-                                    </li>
-                                    <li class="pl-4 relative">
-                                        <div class="absolute w-2 h-2 bg-gray-300 rounded-full -left-[4.5px] top-1.5"></div>
-                                        <p class="text-sm font-medium text-gray-700">Khóa Kiosk K-003</p>
-                                        <p class="text-xs text-gray-500 mt-0.5">16:45, Hôm qua</p>
-                                    </li>
+                                    <template x-for="activity in selectedUser.recent_activities" :key="activity.time">
+                                        <li class="pl-4 relative">
+                                            <div class="absolute w-2 h-2 rounded-full -left-[4.5px] top-1.5" :class="activity.is_login ? 'bg-gray-300' : 'bg-[#006699]'"></div>
+                                            <p class="text-sm font-medium" :class="activity.is_login ? 'text-gray-700' : 'text-gray-900'" x-text="activity.description"></p>
+                                            <p class="text-xs text-gray-500 mt-0.5" x-text="activity.time"></p>
+                                        </li>
+                                    </template>
+                                    <template x-if="selectedUser.recent_activities.length === 0">
+                                        <li class="pl-4 text-sm text-gray-500 italic">Chưa có hoạt động nào.</li>
+                                    </template>
                                 </ul>
-                                <a href="#" class="inline-block mt-4 text-sm font-medium text-[#006699] hover:underline">Xem toàn bộ lịch sử</a>
+                                <a href="#" class="inline-block mt-4 text-sm font-medium text-[#006699] hover:underline" x-show="selectedUser.recent_activities.length > 0">Xem toàn bộ lịch sử</a>
                             </div>
                         </template>
                     </div>

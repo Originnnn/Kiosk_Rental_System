@@ -88,26 +88,25 @@
                     </h2>
                     <a href="#" class="text-sm text-[#006699] hover:underline">Xem tất cả</a>
                 </div>
-                
                 <div class="space-y-4">
+                    @forelse($recentActivities as $activity)
                     <div class="flex items-start">
-                        <div class="w-8 h-8 rounded bg-blue-50 text-blue-600 flex items-center justify-center flex-shrink-0 mt-0.5">
-                            <i class="fa-solid fa-right-to-bracket text-sm"></i>
+                        <div class="w-8 h-8 rounded {{ $activity->color }} flex items-center justify-center flex-shrink-0 mt-0.5">
+                            <i class="fa-solid {{ $activity->icon }} text-sm"></i>
                         </div>
                         <div class="ml-4">
-                            <div class="text-sm text-gray-900">Đăng nhập từ trình duyệt Chrome (macOS)</div>
-                            <div class="text-xs text-gray-500 mt-0.5">10:45 AM, Hôm nay • IP: 113.161.x.x</div>
+                            <div class="text-sm text-gray-900">{{ $activity->description }}</div>
+                            <div class="text-xs text-gray-500 mt-0.5">
+                                {{ $activity->created_at->diffForHumans() }} 
+                                @if($activity->action === 'login' && isset($activity->metadata['ip']))
+                                    • IP: {{ $activity->metadata['ip'] }}
+                                @endif
+                            </div>
                         </div>
                     </div>
-                    <div class="flex items-start">
-                        <div class="w-8 h-8 rounded bg-orange-50 text-orange-500 flex items-center justify-center flex-shrink-0 mt-0.5">
-                            <i class="fa-solid fa-file-contract text-sm"></i>
-                        </div>
-                        <div class="ml-4">
-                            <div class="text-sm text-gray-900">Cập nhật thông tin hợp đồng Kiosk #K-102</div>
-                            <div class="text-xs text-gray-500 mt-0.5">08:20 AM, Hôm qua</div>
-                        </div>
-                    </div>
+                    @empty
+                    <div class="text-sm text-gray-500 italic">Chưa có hoạt động nào.</div>
+                    @endforelse
                 </div>
             </div>
 

@@ -60,7 +60,7 @@
                            title="{{ $kiosk->code }}">
                             
                             <div class="kiosk-pin-inner w-full h-full border-[1.5px] border-white {{ $colorClass }} bg-opacity-80 hover:bg-opacity-100 rounded-[2px] shadow-sm flex items-center justify-center transition-all duration-200">
-                                <span class="text-white text-[8px] font-bold drop-shadow-md opacity-0 group-hover:opacity-100 transition-opacity">{{ $kiosk->code }}</span>
+                                <span class="text-white text-[8px] font-bold drop-shadow-md">{{ $kiosk->code }}</span>
                             </div>
                         </div>
                     @endif
@@ -380,27 +380,70 @@ function handleKioskClick(event, element) {
 
     // Reset hiệu ứng scale của pin trên bản đồ
     document.querySelectorAll('.kiosk-pin').forEach(pin => {
-        pin.classList.remove('z-30', 'scale-110', 'shadow-lg');
-        pin.classList.add('z-20');
+        pin.classList.remove('z-40', 'scale-125', 'opacity-100');
+        pin.classList.add('z-20', 'opacity-50'); // Làm mờ các kiosk khác
         const inner = pin.querySelector('.kiosk-pin-inner');
         if (inner) {
-            inner.classList.remove('border-4', 'border-white');
+            inner.classList.remove('border-4', 'border-yellow-400', 'shadow-[0_0_20px_rgba(250,204,21,0.8)]');
             inner.classList.add('border-[1.5px]', 'border-white');
         }
+        const pulse = pin.querySelector('.pulse-ring');
+        if (pulse) pulse.remove();
     });
     
     // Thêm hiệu ứng cho map pin nếu có
     const mapPin = document.querySelector('.kiosk-pin[data-id="' + kiosk.id + '"]');
     if (mapPin) {
-        mapPin.classList.remove('z-20');
-        mapPin.classList.add('z-30', 'scale-110', 'shadow-lg');
+        mapPin.classList.remove('z-20', 'opacity-50');
+        mapPin.classList.add('z-40', 'scale-125', 'opacity-100');
+        
+        let pulse = mapPin.querySelector('.pulse-ring');
+        if (!pulse) {
+            pulse = document.createElement('div');
+            pulse.className = 'pulse-ring absolute inset-0 rounded-[2px] bg-yellow-400 animate-ping opacity-75';
+            pulse.style.zIndex = '-1';
+            mapPin.appendChild(pulse);
+        }
+
         const inner = mapPin.querySelector('.kiosk-pin-inner');
         if (inner) {
-            inner.classList.remove('border-[1.5px]');
-            inner.classList.add('border-4', 'border-white');
+            inner.classList.remove('border-[1.5px]', 'border-white');
+            inner.classList.add('border-4', 'border-yellow-400', 'shadow-[0_0_20px_rgba(250,204,21,0.8)]');
+        }
+        
+        // Thêm hiệu ứng zoom nhẹ vào kiosk
+        if (window.panzoomInstance) {
+            const targetScale = Math.max(window.initialScale * 2, 1.5);
+            window.panzoomInstance.zoom(targetScale, { animate: true });
+            
+            const mapWidth = 1829;
+            const mapHeight = 1272;
+            
+            const leftPct = parseFloat(mapPin.style.left);
+            const topPct = parseFloat(mapPin.style.top);
+            const widthPct = parseFloat(mapPin.style.width);
+            const heightPct = parseFloat(mapPin.style.height);
+
+            const pinCenterX = (leftPct + widthPct / 2) * mapWidth / 100;
+            const pinCenterY = (topPct + heightPct / 2) * mapHeight / 100;
+            
+            const mapCenterX = mapWidth / 2;
+            const mapCenterY = mapHeight / 2;
+            
+            const dx = mapCenterX - pinCenterX;
+            const dy = mapCenterY - pinCenterY;
+            
+            // Timeout nhỏ để đảm bảo zoom bắt đầu trước hoặc cùng lúc với pan
+            setTimeout(() => {
+                window.panzoomInstance.pan(dx, dy, { animate: true });
+            }, 50);
         }
     }
 }
+
+// Biến global để lưu trữ panzoom instance
+window.panzoomInstance = null;
+window.initialScale = 1;
 
 // Khởi tạo Panzoom sau khi DOM load
 document.addEventListener('DOMContentLoaded', function() {
@@ -410,32 +453,32 @@ document.addEventListener('DOMContentLoaded', function() {
     if(mapContainer && mapWrapper && typeof Panzoom !== 'undefined') {
         // Ảnh gốc là 1829x1272. Tính toán tỷ lệ scale ban đầu sao cho ảnh vừa khít với wrapper (95% để có chút lề)
         const wrapperRect = mapWrapper.getBoundingClientRect();
-        const initialScale = Math.min(
+        window.initialScale = Math.min(
             (wrapperRect.width - 40) / 1829,
             (wrapperRect.height - 40) / 1272
         );
 
-        const panzoom = Panzoom(mapContainer, {
+        window.panzoomInstance = Panzoom(mapContainer, {
             maxScale: 5,
-            minScale: initialScale * 0.5,
-            startScale: initialScale,
+            minScale: window.initialScale * 0.5,
+            startScale: window.initialScale,
             startX: 0,
             startY: 0,
             step: 0.3
         });
         
         // Hỗ trợ Zoom bằng con lăn chuột (Wheel)
-        mapWrapper.addEventListener('wheel', panzoom.zoomWithWheel);
+        mapWrapper.addEventListener('wheel', window.panzoomInstance.zoomWithWheel);
 
         // Gắn sự kiện cho các nút điều khiển
-        document.getElementById('zoom-in').addEventListener('click', panzoom.zoomIn);
-        document.getElementById('zoom-out').addEventListener('click', panzoom.zoomOut);
+        document.getElementById('zoom-in').addEventListener('click', window.panzoomInstance.zoomIn);
+        document.getElementById('zoom-out').addEventListener('click', window.panzoomInstance.zoomOut);
         
         // Reset về vị trí ban đầu (căn giữa + scale mặc định)
         document.getElementById('zoom-reset').addEventListener('click', function(e) {
             e.preventDefault();
-            panzoom.pan(0, 0);
-            panzoom.zoom(initialScale, { animate: true });
+            window.panzoomInstance.pan(0, 0, { animate: true });
+            window.panzoomInstance.zoom(window.initialScale, { animate: true });
         });
     }
 });
@@ -615,6 +658,14 @@ function applyFilters() {
 // Khởi chạy khi DOM load xong
 document.addEventListener('DOMContentLoaded', () => {
     initFilters();
+    
+    // Tự động kích hoạt hiệu ứng cho kiosk được chọn đầu tiên (nếu có)
+    setTimeout(() => {
+        const firstSelected = document.querySelector('.kiosk-list-item.border-2.border-blue-400');
+        if (firstSelected) {
+            handleKioskClick({ preventDefault: () => {} }, firstSelected);
+        }
+    }, 100);
 });
 </script>
 

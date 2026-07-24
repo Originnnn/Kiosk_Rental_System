@@ -231,46 +231,63 @@
                 </div>
             </div>
 
-            <form action="{{ route('portal.store') }}" method="POST" class="space-y-4">
+            <form id="booking-form" onsubmit="submitBooking(event)">
                 @csrf
                 <input type="hidden" name="kiosk_id" value="{{ $kiosk->id }}">
                 
-                <div>
-                    <label class="block text-xs font-bold text-gray-700 mb-1">Họ và tên <span class="text-red-500">*</span></label>
-                    <input type="text" name="contact_name" required placeholder="Nhập họ và tên" class="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 text-sm">
+                <div class="space-y-4">
+                    <div>
+                        <label class="block text-xs font-bold text-gray-700 mb-1">Họ tên / Doanh nghiệp <span class="text-red-500">*</span></label>
+                        <input type="text" id="booking-name" name="customer_name" required placeholder="Nhập họ và tên" class="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 text-sm">
+                    </div>
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-xs font-bold text-gray-700 mb-1">SĐT liên hệ <span class="text-red-500">*</span></label>
+                            <input type="tel" id="booking-phone" name="phone" required placeholder="Nhập số điện thoại" class="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 text-sm">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold text-gray-700 mb-1">Email (Tùy chọn)</label>
+                            <input type="email" id="booking-email" name="email" placeholder="example@email.com" class="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 text-sm">
+                        </div>
+                    </div>
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-xs font-bold text-gray-700 mb-1">Lĩnh vực kinh doanh</label>
+                            <input type="text" id="booking-business" name="business_type" placeholder="VD: Bán đồ ăn..." class="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 text-sm">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold text-gray-700 mb-1">T.Gian dự kiến <span class="text-red-500">*</span></label>
+                            <select id="booking-duration" name="duration_months" required class="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 text-sm bg-white">
+                                <option value="6">6 tháng</option>
+                                <option value="12">1 năm</option>
+                                <option value="24">2 năm</option>
+                                <option value="36">3 năm</option>
+                                <option value="999">Khác</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-gray-700 mb-1">Ghi chú hoặc Yêu cầu (Tùy chọn)</label>
+                        <textarea id="booking-notes" name="notes" rows="2" placeholder="Thông tin bổ sung..." class="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 text-sm"></textarea>
+                    </div>
                 </div>
                 
-                <div>
-                    <label class="block text-xs font-bold text-gray-700 mb-1">Số điện thoại <span class="text-red-500">*</span></label>
-                    <input type="text" name="contact_phone" required placeholder="Nhập số điện thoại" class="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 text-sm">
-                </div>
+                <div id="booking-error" class="hidden mt-4 p-3 bg-red-50 text-red-600 text-sm rounded border border-red-200"></div>
                 
-                <div>
-                    <label class="block text-xs font-bold text-gray-700 mb-1">Email (Tùy chọn)</label>
-                    <input type="email" name="contact_email" placeholder="example@email.com" class="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 text-sm">
-                </div>
-                
-                <div>
-                    <label class="block text-xs font-bold text-gray-700 mb-1">Mục đích kinh doanh</label>
-                    <select name="business_type" class="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 text-sm bg-white">
-                        <option value="F&B">F&B</option>
-                        <option value="Retail">Bán lẻ</option>
-                        <option value="Service">Dịch vụ</option>
-                        <option value="Other">Khác</option>
-                    </select>
-                </div>
-                
-                <div>
-                    <label class="block text-xs font-bold text-gray-700 mb-1">Ghi chú thêm</label>
-                    <textarea name="note" rows="3" placeholder="Thông tin bổ sung..." class="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 text-sm"></textarea>
-                </div>
-                
-                <div class="pt-2 flex gap-3 justify-end">
+                <div class="pt-4 flex gap-3 justify-end mt-2">
                     <button type="button" onclick="closeRentModal()" class="px-6 py-2 border border-gray-300 rounded bg-white text-gray-700 font-medium text-sm hover:bg-gray-50 transition">Hủy bỏ</button>
-                    <button type="submit" class="px-6 py-2 bg-[#0078d4] rounded text-white font-medium text-sm hover:bg-blue-700 transition">Gửi yêu cầu</button>
+                    <button type="submit" id="booking-submit-btn" class="px-6 py-2 bg-[#0078d4] rounded text-white font-medium text-sm hover:bg-blue-700 transition flex items-center justify-center min-w-[120px]">Gửi yêu cầu</button>
                 </div>
             </form>
         </div>
+    </div>
+</div>
+
+<!-- Toast Notification -->
+<div id="toast-container" class="fixed bottom-5 right-5 z-50 hidden transition-all duration-300 transform translate-y-10 opacity-0">
+    <div class="bg-green-600 text-white px-6 py-3 rounded-lg shadow-lg flex items-center gap-3">
+        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+        <span id="toast-message" class="font-medium"></span>
     </div>
 </div>
 
@@ -287,13 +304,16 @@ function updateMainImage(thumbEl, current, total) {
     });
     thumbEl.classList.remove('border-transparent', 'opacity-60');
     thumbEl.classList.add('border-blue-500', 'opacity-100');
-    
-    // Note: updating the "1 / 5" counter text would require a span id, omitted for brevity as the counter logic needs JS state.
 }
 
 function openRentModal() {
     const modal = document.getElementById('rentModal');
     const content = document.getElementById('rentModalContent');
+    
+    document.getElementById('booking-error').classList.add('hidden');
+    document.getElementById('booking-form').reset();
+    document.getElementById('booking-duration').value = "6";
+    
     modal.classList.remove('opacity-0', 'pointer-events-none');
     content.classList.remove('scale-95');
     content.classList.add('scale-100');
@@ -305,6 +325,70 @@ function closeRentModal() {
     modal.classList.add('opacity-0', 'pointer-events-none');
     content.classList.remove('scale-100');
     content.classList.add('scale-95');
+}
+
+function showToast(message) {
+    const toast = document.getElementById('toast-container');
+    document.getElementById('toast-message').innerText = message;
+    
+    toast.classList.remove('hidden');
+    setTimeout(() => {
+        toast.classList.remove('translate-y-10', 'opacity-0');
+    }, 10);
+    
+    setTimeout(() => {
+        toast.classList.add('translate-y-10', 'opacity-0');
+        setTimeout(() => toast.classList.add('hidden'), 300);
+    }, 4000);
+}
+
+async function submitBooking(event) {
+    event.preventDefault();
+    
+    const form = event.target;
+    const btn = document.getElementById('booking-submit-btn');
+    const errorBox = document.getElementById('booking-error');
+    
+    const formData = {
+        kiosk_id: form.kiosk_id.value,
+        customer_name: form.customer_name.value,
+        phone: form.phone.value,
+        email: form.email.value,
+        business_type: form.business_type.value,
+        duration_months: form.duration_months.value,
+        notes: form.notes.value
+    };
+    
+    btn.disabled = true;
+    btn.innerHTML = '<svg class="animate-spin -ml-1 mr-2 h-4 w-4 text-white" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg> Đang xử lý...';
+    
+    try {
+        const response = await fetch('/api/rental-requests', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Accept': 'application/json',
+                'X-CSRF-TOKEN': '{{ csrf_token() }}'
+            },
+            body: JSON.stringify(formData)
+        });
+        
+        const data = await response.json();
+        
+        if (!response.ok) {
+            throw new Error(data.message || 'Lỗi dữ liệu, vui lòng kiểm tra lại');
+        }
+        
+        closeRentModal();
+        showToast(data.message);
+        
+    } catch (error) {
+        errorBox.innerText = error.message;
+        errorBox.classList.remove('hidden');
+    } finally {
+        btn.disabled = false;
+        btn.innerText = 'Gửi yêu cầu';
+    }
 }
 </script>
 @endsection

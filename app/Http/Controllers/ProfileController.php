@@ -12,7 +12,12 @@ class ProfileController extends Controller
     public function index()
     {
         $user = auth()->user();
-        return view('admin.profile.index', compact('user'));
+        $recentActivities = \App\Models\AuditLog::where('user_id', $user->id)
+            ->latest()
+            ->take(10)
+            ->get();
+            
+        return view('admin.profile.index', compact('user', 'recentActivities'));
     }
 
     public function edit()

@@ -26,5 +26,19 @@ class AppServiceProvider extends ServiceProvider
         \Illuminate\Support\Facades\Gate::define('view-dashboard', fn($user) => in_array($user->role, ['admin', 'manager']));
         \Illuminate\Support\Facades\Gate::define('view-operations', fn($user) => in_array($user->role, ['admin', 'manager', 'employee']));
         \Illuminate\Support\Facades\Gate::define('edit-operations', fn($user) => in_array($user->role, ['admin', 'employee']));
+
+        \Illuminate\Support\Facades\Event::listen(\Illuminate\Auth\Events\Login::class, function ($event) {
+            \App\Models\AuditLog::create([
+                'user_id' => $event->user->id,
+                'action' => 'login',
+                'target_type' => get_class($event->user),
+                'target_id' => $event->user->id,
+                'metadata' => [
+                    'target_name' => $event->user->name,
+                    'ip' => request()->ip(),
+                    'user_agent' => request()->userAgent(),
+                ],
+            ]);
+        });
     }
 }

@@ -10,7 +10,9 @@ class UserController extends Controller
 {
     public function index(Request $request)
     {
-        $query = User::orderBy('created_at', 'desc');
+        $query = User::with(['auditLogs' => function($q) {
+            $q->latest()->take(5);
+        }])->orderBy('created_at', 'desc');
 
         if ($request->filled('q')) {
             $search = $request->q;

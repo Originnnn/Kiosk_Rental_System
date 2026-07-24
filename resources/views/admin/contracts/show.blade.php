@@ -169,19 +169,21 @@
                 
                 <div class="flex items-center mb-4">
                     @php $initials = mb_substr($contract->customer->name ?? 'A', 0, 2); @endphp
-                    <div class="w-12 h-12 rounded-full bg-blue-100 text-blue-700 flex items-center justify-center font-bold text-lg mr-4">
+                    <div class="w-12 h-12 rounded-full bg-blue-100 text-blue-700 flex items-center justify-center font-bold text-lg mr-4 shrink-0">
                         {{ $initials }}
                     </div>
-                    <div>
-                        <p class="font-bold text-gray-900">{{ $contract->customer->name ?? 'Không xác định' }}</p>
-                        <p class="text-sm text-gray-500 flex items-center mt-1"><i class="fa-solid fa-phone w-4"></i> {{ $contract->customer->phone ?? 'N/A' }}</p>
-                        <p class="text-sm text-gray-500 flex items-center"><i class="fa-regular fa-id-card w-4"></i> {{ $contract->customer->email ?? 'N/A' }}</p>
+                    <div class="overflow-hidden flex-1">
+                        <p class="font-bold text-gray-900 truncate">{{ $contract->customer->name ?? 'Không xác định' }}</p>
+                        <p class="text-sm text-gray-500 flex items-center mt-1"><i class="fa-solid fa-phone w-4"></i> <span class="truncate">{{ $contract->customer->phone ?? 'N/A' }}</span></p>
+                        @if($contract->customer && $contract->customer->email && !str_ends_with($contract->customer->email, '@noemail.local'))
+                            <p class="text-sm text-gray-500 flex items-center mt-0.5"><i class="fa-regular fa-envelope w-4"></i> <span class="truncate">{{ $contract->customer->email }}</span></p>
+                        @endif
                     </div>
                 </div>
                 
-                <button class="w-full bg-white border border-gray-300 text-[#006699] font-medium py-2 rounded text-sm hover:bg-gray-50 transition-colors">
+                <a href="{{ route('admin.customers.show', $contract->customer_id) }}" class="block text-center w-full bg-white border border-gray-300 text-[#006699] font-medium py-2 rounded text-sm hover:bg-gray-50 transition-colors">
                     Xem hồ sơ khách thuê
-                </button>
+                </a>
             </div>
 
             <!-- 2. Tài sản cho thuê -->
@@ -213,37 +215,40 @@
                 </div>
                 
                 <div class="space-y-3 mb-4">
-                    <!-- Fake data as per design -->
-                    <div class="flex items-center justify-between p-3 border border-gray-200 rounded hover:bg-gray-50">
-                        <div class="flex items-center">
-                            <div class="w-8 h-8 rounded bg-red-100 text-red-500 flex items-center justify-center mr-3">
-                                <i class="fa-solid fa-file-pdf"></i>
+                    @if(isset($contract->attachments) && count($contract->attachments) > 0)
+                        @foreach($contract->attachments as $attachment)
+                            @php
+                                $filePath = is_string($attachment) ? $attachment : ($attachment['path'] ?? '');
+                                $fileName = is_string($attachment) ? basename($attachment) : ($attachment['name'] ?? basename($filePath));
+                                $extension = pathinfo($filePath, PATHINFO_EXTENSION);
+                                $isImage = in_array(strtolower($extension), ['jpg', 'jpeg', 'png', 'gif']);
+                                $iconClass = $isImage ? 'fa-image' : 'fa-file-pdf';
+                                $iconBg = $isImage ? 'bg-blue-100 text-blue-500' : 'bg-red-100 text-red-500';
+                            @endphp
+                            <div class="flex items-center justify-between p-3 border border-gray-200 rounded hover:bg-gray-50">
+                                <div class="flex items-center flex-1 overflow-hidden">
+                                    <div class="w-8 h-8 rounded {{ $iconBg }} flex items-center justify-center mr-3 shrink-0">
+                                        <i class="fa-solid {{ $iconClass }}"></i>
+                                    </div>
+                                    <div class="flex-1 overflow-hidden">
+                                        <p class="text-sm font-medium text-gray-900 truncate">{{ $fileName }}</p>
+                                    </div>
+                                </div>
+                                <a href="{{ asset('storage/' . $filePath) }}" target="_blank" class="text-gray-400 hover:text-[#006699] ml-3" title="Tải xuống / Xem">
+                                    <i class="fa-solid fa-download"></i>
+                                </a>
                             </div>
-                            <div>
-                                <p class="text-sm font-medium text-gray-900">Ban_sao_hop_dong_ky_ten.pdf</p>
-                                <p class="text-xs text-gray-500">2.4 MB • 01/01/2023</p>
-                            </div>
+                        @endforeach
+                    @else
+                        <div class="text-sm text-gray-400 italic text-center py-2">
+                            Chưa có tài liệu đính kèm
                         </div>
-                        <button class="text-gray-400 hover:text-gray-700"><i class="fa-solid fa-download"></i></button>
-                    </div>
-
-                    <div class="flex items-center justify-between p-3 border border-gray-200 rounded hover:bg-gray-50">
-                        <div class="flex items-center">
-                            <div class="w-8 h-8 rounded bg-blue-100 text-blue-500 flex items-center justify-center mr-3">
-                                <i class="fa-solid fa-image"></i>
-                            </div>
-                            <div>
-                                <p class="text-sm font-medium text-gray-900">CCCD_Mat_Truoc.jpg</p>
-                                <p class="text-xs text-gray-500">1.1 MB • 01/01/2023</p>
-                            </div>
-                        </div>
-                        <button class="text-gray-400 hover:text-gray-700"><i class="fa-solid fa-download"></i></button>
-                    </div>
+                    @endif
                 </div>
                 
-                <button class="w-full border border-dashed border-gray-300 text-gray-600 font-medium py-2 rounded text-sm hover:bg-gray-50 hover:text-[#006699] hover:border-[#006699] transition-colors flex items-center justify-center">
-                    <i class="fa-solid fa-upload mr-2"></i> Tải lên tài liệu
-                </button>
+                <a href="{{ route('admin.contracts.edit', $contract->id) }}" class="block text-center w-full border border-dashed border-gray-300 text-gray-600 font-medium py-2 rounded text-sm hover:bg-gray-50 hover:text-[#006699] hover:border-[#006699] transition-colors">
+                    <i class="fa-solid fa-upload mr-2"></i> Quản lý tài liệu đính kèm
+                </a>
             </div>
 
         </div>

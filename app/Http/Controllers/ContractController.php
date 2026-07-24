@@ -161,10 +161,48 @@ class ContractController extends Controller
             'contact_name' => 'nullable|string|max:255',
             'contact_phone' => 'nullable|string|max:20',
             'notes' => 'nullable|string',
-            // File upload logic có thể thêm sau
+            'new_attachments.*' => 'nullable|file|mimes:pdf,doc,docx,jpg,jpeg,png|max:10240',
+            'remove_attachments' => 'nullable|array',
         ]);
 
-        $contract->update($validated);
+        $attachments = $contract->attachments ?? [];
+
+        // Support legacy flat array
+        foreach ($attachments as $key => $item) {
+            if (is_string($item)) {
+                $attachments[$key] = ['path' => $item, 'name' => basename($item)];
+            }
+        }
+
+        if ($request->has('remove_attachments')) {
+            foreach ($request->remove_attachments as $removePath) {
+                foreach ($attachments as $key => $attachment) {
+                    if (isset($attachment['path']) && $attachment['path'] === $removePath) {
+                        unset($attachments[$key]);
+                        \Illuminate\Support\Facades\Storage::disk('public')->delete($removePath);
+                    }
+                }
+            }
+            $attachments = array_values($attachments);
+        }
+
+        if ($request->hasFile('new_attachments')) {
+            foreach ($request->file('new_attachments') as $file) {
+                $path = $file->store('contracts', 'public');
+                $attachments[] = [
+                    'path' => $path,
+                    'name' => $file->getClientOriginalName()
+                ];
+            }
+        }
+
+        $contract->update([
+            'manager_name' => $validated['manager_name'],
+            'contact_name' => $validated['contact_name'],
+            'contact_phone' => $validated['contact_phone'],
+            'notes' => $validated['notes'],
+            'attachments' => $attachments,
+        ]);
 
         return redirect()->route('admin.contracts.show', $id)->with('success', 'Cập nhật hợp đồng thành công!');
     }
