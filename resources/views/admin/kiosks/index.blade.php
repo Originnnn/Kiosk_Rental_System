@@ -309,19 +309,19 @@
                             <div class="p-4 grid grid-cols-2 gap-y-3 gap-x-6 text-sm">
                                 <div class="flex justify-between border-b border-gray-100 pb-1 border-dashed">
                                     <span class="text-gray-500">Nguồn điện:</span>
-                                    <span class="font-semibold text-gray-900">220V - 30A</span>
+                                    <span class="font-semibold text-gray-900" x-text="activeKiosk ? (activeKiosk.power_supply || 'Không có') : 'Không có'"></span>
                                 </div>
                                 <div class="flex justify-between border-b border-gray-100 pb-1 border-dashed">
                                     <span class="text-gray-500">Cấp nước:</span>
-                                    <span class="font-semibold text-gray-900">Có (D21)</span>
+                                    <span class="font-semibold text-gray-900" x-text="activeKiosk ? (activeKiosk.water_supply || 'Không có') : 'Không có'"></span>
                                 </div>
                                 <div class="flex justify-between border-b border-gray-100 pb-1 border-dashed">
                                     <span class="text-gray-500">Internet:</span>
-                                    <span class="font-semibold text-gray-900">Cáp quang VNPT</span>
+                                    <span class="font-semibold text-gray-900" x-text="activeKiosk ? (activeKiosk.internet_connection || 'Không có') : 'Không có'"></span>
                                 </div>
                                 <div class="flex justify-between border-b border-gray-100 pb-1 border-dashed">
                                     <span class="text-gray-500">Điều hòa:</span>
-                                    <span class="font-semibold text-gray-900">Âm trần 18000 BTU</span>
+                                    <span class="font-semibold text-gray-900" x-text="activeKiosk ? (activeKiosk.air_conditioning || 'Không có') : 'Không có'"></span>
                                 </div>
                             </div>
                         </div>
@@ -423,6 +423,46 @@
                                 </div>
                             </div>
                             
+                            <div class="mb-4">
+                                <label class="block text-xs font-bold text-gray-800 mb-2 border-b pb-1"><i class="fa-solid fa-wrench mr-1 text-gray-400"></i> Thông số kỹ thuật</label>
+                                <div class="grid grid-cols-2 gap-4">
+                                    <div>
+                                        <label class="block text-[11px] font-semibold text-gray-700 mb-1">Nguồn điện</label>
+                                        <select x-model="editData.power_supply" class="w-full px-3 py-2 border rounded focus:outline-none focus:border-primary text-sm" :class="editErrors.power_supply ? 'border-red-500' : 'border-gray-300'">
+                                            <option value="">Không có</option>
+                                            <option value="220V - 15A">220V - 15A</option>
+                                            <option value="220V - 30A">220V - 30A</option>
+                                            <option value="380V">380V</option>
+                                        </select>
+                                    </div>
+                                    <div>
+                                        <label class="block text-[11px] font-semibold text-gray-700 mb-1">Cấp nước</label>
+                                        <select x-model="editData.water_supply" class="w-full px-3 py-2 border rounded focus:outline-none focus:border-primary text-sm" :class="editErrors.water_supply ? 'border-red-500' : 'border-gray-300'">
+                                            <option value="">Không có</option>
+                                            <option value="Có (D21)">Có (D21)</option>
+                                            <option value="Có (D27)">Có (D27)</option>
+                                        </select>
+                                    </div>
+                                    <div>
+                                        <label class="block text-[11px] font-semibold text-gray-700 mb-1">Internet</label>
+                                        <select x-model="editData.internet_connection" class="w-full px-3 py-2 border rounded focus:outline-none focus:border-primary text-sm" :class="editErrors.internet_connection ? 'border-red-500' : 'border-gray-300'">
+                                            <option value="">Không có</option>
+                                            <option value="Cáp quang VNPT">Cáp quang VNPT</option>
+                                            <option value="Cáp quang Viettel">Cáp quang Viettel</option>
+                                            <option value="Cáp quang FPT">Cáp quang FPT</option>
+                                        </select>
+                                    </div>
+                                    <div>
+                                        <label class="block text-[11px] font-semibold text-gray-700 mb-1">Điều hòa</label>
+                                        <select x-model="editData.air_conditioning" class="w-full px-3 py-2 border rounded focus:outline-none focus:border-primary text-sm" :class="editErrors.air_conditioning ? 'border-red-500' : 'border-gray-300'">
+                                            <option value="">Không có</option>
+                                            <option value="Âm trần 18000 BTU">Âm trần 18000 BTU</option>
+                                            <option value="Treo tường 9000 BTU">Treo tường 9000 BTU</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                            
                             <div>
                                 <label class="block text-xs font-semibold text-gray-700 mb-1">Mô tả thiết bị đi kèm</label>
                                 <textarea x-model="editData.description" rows="3" class="w-full px-3 py-2 border rounded focus:outline-none focus:border-primary text-sm resize-none" :class="editErrors.description ? 'border-red-500' : 'border-gray-300'"></textarea>
@@ -497,7 +537,7 @@
 
             isEditing: false,
             saving: false,
-            editData: { code: '', name: '', area: '', price: '', description: '' },
+            editData: { code: '', name: '', area: '', price: '', description: '', power_supply: '', water_supply: '', internet_connection: '', air_conditioning: '' },
             editErrors: {},
 
             startEdit() {
@@ -508,7 +548,11 @@
                     name: this.activeKiosk.name,
                     area: this.activeKiosk.area,
                     price: this.activeKiosk.price,
-                    description: this.activeKiosk.description || ''
+                    description: this.activeKiosk.description || '',
+                    power_supply: this.activeKiosk.power_supply || '',
+                    water_supply: this.activeKiosk.water_supply || '',
+                    internet_connection: this.activeKiosk.internet_connection || '',
+                    air_conditioning: this.activeKiosk.air_conditioning || ''
                 };
             },
 

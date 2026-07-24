@@ -112,17 +112,26 @@
                         $customerName = $payment->contract->customer->name ?? 'Unknown';
                         $kioskName = $payment->contract->kiosk->code ?? 'Unknown';
                         
-                        $isOverdue = $payment->status == 'unpaid' && \Carbon\Carbon::parse($payment->due_date)->endOfDay()->isPast();
+                        $isOverdue = in_array($payment->status, ['unpaid', 'pending']) && \Carbon\Carbon::parse($payment->due_date)->endOfDay()->isPast();
                         
                         if ($payment->status == 'paid') {
-                            $statusText = 'Đã thanh toán';
-                            $statusClass = 'bg-green-100 text-green-700';
+                            $statusText = 'Đã hoàn tất';
+                            $statusClass = 'bg-emerald-100 text-emerald-700';
+                        } elseif ($payment->status == 'partial') {
+                            $statusText = 'Thanh toán một phần';
+                            $statusClass = 'bg-blue-100 text-blue-700';
                         } elseif ($isOverdue) {
                             $statusText = 'Quá hạn';
-                            $statusClass = 'bg-red-100 text-red-700';
+                            $statusClass = 'bg-rose-100 text-rose-700';
                         } else {
                             $statusText = 'Chờ thanh toán';
-                            $statusClass = 'bg-yellow-100 text-yellow-700';
+                            $statusClass = 'bg-amber-100 text-amber-700';
+                        }
+
+                        $actualVal = $payment->actual_amount ?? 0;
+                        $debtVal = 0;
+                        if ($payment->status == 'partial' || $isOverdue) {
+                            $debtVal = max(0, $payment->amount - $actualVal);
                         }
 
                         $initials = mb_substr($customerName, 0, 2);
@@ -169,10 +178,25 @@
                                 data-status-text="{{ $statusText }}"
                                 data-status-class="{{ $statusClass }}"
                                 data-due-date="{{ \Carbon\Carbon::parse($payment->due_date)->format('d/m/Y') }}"
-                                data-actual-amount="{{ $payment->actual_amount ? number_format($payment->actual_amount, 0, ',', '.') . 'đ' : 'N/A' }}"
-                                data-paid-at="{{ $payment->paid_at ? \Carbon\Carbon::parse($payment->paid_at)->format('d/m/Y H:i') : 'N/A' }}"
-                                data-method="{{ $payment->payment_method ?? 'N/A' }}"
-                                data-notes="{{ $payment->notes ?? 'Không có ghi chú' }}">
+                                data-actual-amount="{{ number_format($actualVal, 0, ',', '.') }}đ"
+                                data-paid-at="{{ $payment->paid_at ? \Carbon\Carbon::parse($payment->paid_at)->format('d/m/Y H:i') : 'Chưa có' }}"
+                                data-method="{{ $payment->payment_method ?? 'Chưa có' }}"
+                                data-notes="{{ $payment->notes ?? 'Không có ghi chú' }}"
+                                data-status="{{ $payment->status }}"
+                                data-remaining-debt="{{ number_format($debtVal, 0, ',', '.') }}đ"
+                                @php
+                                    $attachmentsJson = '';
+                                    if ($payment->receipt_file) {
+                                        $decoded = json_decode($payment->receipt_file, true);
+                                        if (is_array($decoded)) {
+                                            $urls = array_map(fn($path) => asset('storage/' . $path), $decoded);
+                                            $attachmentsJson = json_encode($urls);
+                                        } else {
+                                            $attachmentsJson = json_encode([asset('storage/' . $payment->receipt_file)]);
+                                        }
+                                    }
+                                @endphp
+                                data-attachment="{{ $attachmentsJson }}">
                                 <i class="fa-regular fa-eye text-lg"></i>
                             </button>
                             
@@ -259,17 +283,21 @@
                             </div>
                         </div>
 
-                        <div class="border-t border-gray-100 pt-4 grid grid-cols-2 gap-4 bg-green-50 p-3 rounded mt-2">
+                        <div class="border-t border-gray-100 pt-4 grid grid-cols-2 gap-4 bg-gray-50 p-3 rounded mt-2">
                             <div>
-                                <p class="text-xs text-green-700 uppercase font-bold mb-1">Thực thu</p>
-                                <p id="modal-actual-amount" class="text-sm font-bold text-green-600"></p>
+                                <p class="text-xs text-emerald-700 uppercase font-bold mb-1">Thực thu (Tổng)</p>
+                                <p id="modal-actual-amount" class="text-sm font-bold text-emerald-600"></p>
                             </div>
                             <div>
-                                <p class="text-xs text-green-700 uppercase font-bold mb-1">Ngày đóng</p>
+                                <p class="text-xs text-rose-600 uppercase font-bold mb-1">CÒN NỢ</p>
+                                <p id="modal-remaining-debt" class="text-sm font-bold text-rose-600"></p>
+                            </div>
+                            <div>
+                                <p class="text-xs text-emerald-700 uppercase font-bold mb-1">Ngày đóng</p>
                                 <p id="modal-paid-at" class="text-sm font-semibold text-gray-900"></p>
                             </div>
-                            <div class="col-span-2">
-                                <p class="text-xs text-green-700 uppercase font-bold mb-1">Hình thức</p>
+                            <div>
+                                <p class="text-xs text-emerald-700 uppercase font-bold mb-1">Hình thức</p>
                                 <p id="modal-method" class="text-sm font-semibold text-gray-900"></p>
                             </div>
                         </div>
@@ -277,6 +305,11 @@
                         <div class="border-t border-gray-100 pt-3">
                             <p class="text-xs text-gray-500 uppercase font-bold mb-1">Ghi chú</p>
                             <p id="modal-notes" class="text-sm text-gray-700 italic"></p>
+                        </div>
+                        
+                        <div class="border-t border-gray-100 pt-3 mt-3">
+                            <p class="text-xs text-gray-500 uppercase font-bold mb-1">Chứng từ</p>
+                            <div id="modal-attachment-container"></div>
                         </div>
                     </div>
                 </div>
@@ -307,9 +340,45 @@
             document.getElementById('modal-amount').textContent = data.amount;
             document.getElementById('modal-due-date').textContent = data.dueDate;
             document.getElementById('modal-actual-amount').textContent = data.actualAmount;
+            document.getElementById('modal-remaining-debt').textContent = data.remainingDebt;
             document.getElementById('modal-paid-at').textContent = data.paidAt;
             document.getElementById('modal-method').textContent = data.method;
             document.getElementById('modal-notes').textContent = data.notes;
+
+            const modalStatus = document.getElementById('modal-status');
+            modalStatus.textContent = data.statusText;
+            
+            // Xử lý status Class động
+            let modalStatusClass = 'bg-gray-100 text-gray-800';
+            if (data.status === 'pending') {
+                modalStatusClass = 'bg-amber-100 text-amber-800';
+            } else if (data.status === 'partial') {
+                modalStatusClass = 'bg-blue-100 text-blue-800';
+            } else if (data.status === 'paid') {
+                modalStatusClass = 'bg-emerald-100 text-emerald-800';
+            }
+            modalStatus.className = `inline-flex flex-col items-center justify-center text-[11px] font-bold px-2 py-1 rounded w-28 leading-tight ${modalStatusClass}`;
+
+            const attachmentContainer = document.getElementById('modal-attachment-container');
+            if (data.attachment && data.attachment !== '[]') {
+                try {
+                    const attachments = JSON.parse(data.attachment);
+                    let linksHtml = '';
+                    attachments.forEach((url, idx) => {
+                        linksHtml += `
+                            <a href="${url}" target="_blank" class="flex items-center text-blue-600 hover:text-blue-800 hover:underline font-medium mb-1">
+                                <svg class="w-4 h-4 mr-1 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13"></path></svg>
+                                Xem chứng từ đính kèm ${attachments.length > 1 ? (idx + 1) : ''}
+                            </a>
+                        `;
+                    });
+                    attachmentContainer.innerHTML = `<div class="flex flex-col gap-1">${linksHtml}</div>`;
+                } catch (e) {
+                    attachmentContainer.innerHTML = '<span class="text-sm text-gray-400 italic">Lỗi định dạng chứng từ</span>';
+                }
+            } else {
+                attachmentContainer.innerHTML = '<span class="text-sm text-gray-400 italic">Không có chứng từ</span>';
+            }
 
             const statusEl = document.getElementById('modal-status');
             statusEl.textContent = data.statusText;

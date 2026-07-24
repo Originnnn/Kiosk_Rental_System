@@ -23,4 +23,9 @@ class ContractPaymentSchedule extends Model
     {
         return $this->belongsTo(Contract::class);
     }
+
+    public function transactions()
+    {
+        return $this->hasMany(PaymentTransaction::class);
+    }
 }

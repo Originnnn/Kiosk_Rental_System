@@ -75,7 +75,7 @@
                             <div>
                                 <label class="block text-sm font-semibold text-gray-700 mb-2">Số tiền thực đóng (VNĐ) <span class="text-red-500">*</span></label>
                                 <div class="relative">
-                                    <input type="number" name="actual_amount" id="actual_amount" required min="0" value="{{ $payment->amount }}"
+                                    <input type="number" name="actual_amount" id="actual_amount" required min="0" value="{{ $payment->remaining_debt ?? $payment->amount }}"
                                         class="w-full pl-3 pr-8 py-2 border border-gray-300 rounded focus:ring-1 focus:ring-primary focus:border-primary text-sm">
                                     <span class="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-500 text-sm pointer-events-none">đ</span>
                                 </div>
@@ -96,9 +96,11 @@
                             <!-- Chứng từ đính kèm -->
                             <div>
                                 <label class="block text-sm font-semibold text-gray-700 mb-2">Chứng từ đính kèm (Ảnh/PDF)</label>
-                                <div class="border-2 border-dashed border-gray-300 rounded bg-gray-50 text-center py-2 relative hover:bg-gray-100 transition cursor-pointer">
-                                    <input type="file" name="receipt_file" class="absolute inset-0 w-full h-full opacity-0 cursor-pointer" accept=".jpg,.jpeg,.png,.pdf">
-                                    <span class="text-xs text-gray-500"><i class="fa-solid fa-cloud-arrow-up mr-1 text-primary"></i> <span class="text-primary font-medium">Nhấn để tải lên</span> hoặc kéo thả file</span>
+                                <div class="border-2 border-dashed border-gray-300 rounded bg-gray-50 text-center py-2 relative hover:bg-gray-100 transition cursor-pointer" id="file-upload-container">
+                                    <input type="file" name="receipt_file[]" id="receipt_file" multiple class="absolute inset-0 w-full h-full opacity-0 cursor-pointer" accept=".jpg,.jpeg,.png,.pdf">
+                                    <span class="text-xs text-gray-500" id="file-upload-text"><i class="fa-solid fa-cloud-arrow-up mr-1 text-primary"></i> <span class="text-primary font-medium">Nhấn để tải lên</span> hoặc kéo thả file</span>
+                                </div>
+                                <div id="file-preview" class="hidden mt-2 flex flex-col gap-2">
                                 </div>
                             </div>
                         </div>
@@ -138,17 +140,27 @@
                 <div class="p-5">
                     <!-- Dòng tiền -->
                     <div class="flex justify-between items-center mb-3">
-                        <span class="text-sm text-gray-600">Số tiền cần đóng:</span>
-                        <span class="text-sm font-bold text-gray-900" id="display_required">{{ number_format($payment->amount, 0, ',', '.') }} đ</span>
+                        <span class="text-sm text-gray-600">Tổng kỳ:</span>
+                        <span class="text-sm font-bold text-gray-900">{{ number_format($payment->amount, 0, ',', '.') }} đ</span>
+                    </div>
+                    
+                    <div class="flex justify-between items-center mb-3 text-green-600 border-b border-gray-200 pb-3">
+                        <span class="text-sm">Đã thu:</span>
+                        <span class="text-sm font-bold">{{ number_format($payment->actual_amount ?? 0, 0, ',', '.') }} đ</span>
+                    </div>
+                    
+                    <div class="flex justify-between items-center mb-6 pt-3">
+                        <span class="text-sm font-bold text-gray-800">Cần đóng:</span>
+                        <span class="text-xl font-bold text-[#006699]" id="display_required">{{ number_format($payment->remaining_debt ?? $payment->amount, 0, ',', '.') }} đ</span>
                     </div>
                     
                     <div class="flex justify-between items-center mb-6 pb-4 border-b border-gray-200">
-                        <span class="text-sm text-green-600 flex items-center"><i class="fa-solid fa-plus-circle mr-1 text-xs"></i> Số tiền đã nhập:</span>
-                        <span class="text-sm font-bold text-green-600" id="display_entered">{{ number_format($payment->amount, 0, ',', '.') }} đ</span>
+                        <span class="text-sm text-green-600 flex items-center"><i class="fa-solid fa-plus-circle mr-1 text-xs"></i> Số tiền đang nhập:</span>
+                        <span class="text-sm font-bold text-green-600" id="display_entered">{{ number_format($payment->remaining_debt ?? $payment->amount, 0, ',', '.') }} đ</span>
                     </div>
                     
                     <div class="flex justify-between items-center mb-6">
-                        <span class="text-sm font-bold text-gray-800">Số dư (Còn lại):</span>
+                        <span class="text-sm font-bold text-gray-800">Nợ còn lại (sau thanh toán):</span>
                         <span class="text-xl font-bold text-[#006699]" id="display_balance">0 đ</span>
                     </div>
                     
@@ -204,7 +216,7 @@
 <script>
     // Logic tính toán Số dư (Còn lại) bên khung Tóm tắt
     document.addEventListener("DOMContentLoaded", function() {
-        const requiredAmount = {{ $payment->amount }};
+        const requiredAmount = {{ $payment->remaining_debt ?? $payment->amount }};
         const inputAmount = document.getElementById('actual_amount');
         const displayEntered = document.getElementById('display_entered');
         const displayBalance = document.getElementById('display_balance');
@@ -226,6 +238,70 @@
         }
 
         inputAmount.addEventListener('input', updateSummary);
+
+        // Logic hiển thị file đính kèm (hỗ trợ chọn thêm lần lượt)
+        const fileInput = document.getElementById('receipt_file');
+        const filePreview = document.getElementById('file-preview');
+        const uploadText = document.getElementById('file-upload-text');
+        
+        const dataTransfer = new DataTransfer();
+
+        function renderPreviews() {
+            filePreview.innerHTML = '';
+            
+            if (dataTransfer.files.length > 0) {
+                filePreview.classList.remove('hidden');
+                uploadText.innerHTML = `<span class="text-primary font-medium">Đã chọn ${dataTransfer.files.length} file đính kèm</span>`;
+                
+                Array.from(dataTransfer.files).forEach((file, index) => {
+                    const fileItem = document.createElement('div');
+                    fileItem.className = 'flex items-center justify-between bg-blue-50 border border-blue-100 px-3 py-2 rounded mb-2';
+                    fileItem.innerHTML = `
+                        <div class="flex items-center overflow-hidden">
+                            <i class="fa-solid fa-file-invoice text-blue-500 mr-2 text-lg"></i>
+                            <span class="text-sm font-medium text-blue-800 truncate" title="${file.name}">${file.name}</span>
+                        </div>
+                        <button type="button" class="ml-2 text-gray-400 hover:text-red-500 flex-shrink-0" onclick="removeFile(${index})">
+                            <i class="fa-solid fa-xmark"></i>
+                        </button>
+                    `;
+                    filePreview.appendChild(fileItem);
+                });
+                
+                // Nút xóa tất cả
+                const removeBtn = document.createElement('button');
+                removeBtn.type = 'button';
+                removeBtn.className = 'text-xs text-red-500 hover:text-red-700 mt-1 self-start font-medium flex items-center';
+                removeBtn.innerHTML = '<i class="fa-solid fa-trash-can mr-1"></i> Xóa tất cả';
+                removeBtn.onclick = () => {
+                    dataTransfer.items.clear();
+                    fileInput.files = dataTransfer.files;
+                    renderPreviews();
+                };
+                filePreview.appendChild(removeBtn);
+            } else {
+                filePreview.classList.add('hidden');
+                uploadText.innerHTML = '<i class="fa-solid fa-cloud-arrow-up mr-1 text-primary"></i> <span class="text-primary font-medium">Nhấn để tải lên</span> hoặc kéo thả file';
+            }
+        }
+
+        // Expose removeFile to global scope for the onclick handler
+        window.removeFile = function(index) {
+            dataTransfer.items.remove(index);
+            fileInput.files = dataTransfer.files;
+            renderPreviews();
+        };
+
+        fileInput.addEventListener('change', function() {
+            if (this.files && this.files.length > 0) {
+                Array.from(this.files).forEach(file => {
+                    dataTransfer.items.add(file);
+                });
+                // Cập nhật lại input files từ dataTransfer
+                this.files = dataTransfer.files;
+            }
+            renderPreviews();
+        });
     });
 </script>
 @endsection

@@ -52,7 +52,10 @@ class PaymentController extends Controller
                             ->where('due_date', '<', now()->startOfDay())
                             ->sum('amount');
 
-        $payments = $query->orderBy('due_date', 'desc')->paginate(10);
+        // Sort: Chưa thanh toán (bao gồm quá hạn) lên đầu, Đã thanh toán xuống cuối. Trong cùng nhóm thì ưu tiên ngày gần nhất.
+        $payments = $query->orderByRaw("CASE WHEN status = 'paid' THEN 2 ELSE 1 END")
+                          ->orderBy('due_date', 'asc')
+                          ->paginate(10);
 
         return view('admin.payments.index', compact('payments', 'currentMonthRevenue', 'overdueAmount'));
     }
@@ -76,26 +79,42 @@ class PaymentController extends Controller
             'payment_date' => 'required|date',
             'actual_amount' => 'required|numeric',
             'payment_method' => 'required|string',
-            'receipt_file' => 'nullable|file|mimes:jpg,jpeg,png,pdf|max:2048',
+            'receipt_file' => 'nullable|array',
+            'receipt_file.*' => 'file|mimes:jpg,jpeg,png,pdf|max:2048',
             'notes' => 'nullable|string'
         ]);
 
-        $payment = ContractPaymentSchedule::findOrFail($id);
+        $schedule = ContractPaymentSchedule::findOrFail($id);
         
-        $data = [
-            'status' => 'paid',
-            'paid_at' => $request->payment_date,
-            'actual_amount' => $request->actual_amount,
-            'payment_method' => $request->payment_method,
-            'notes' => $request->notes,
-        ];
-
+        $paths = [];
         if ($request->hasFile('receipt_file')) {
-            $path = $request->file('receipt_file')->store('receipts', 'public');
-            $data['receipt_file'] = $path;
+            foreach ($request->file('receipt_file') as $file) {
+                $paths[] = $file->store('receipts', 'public');
+            }
         }
 
-        $payment->update($data);
+        $schedule->transactions()->create([
+            'amount' => $request->actual_amount,
+            'payment_method' => $request->payment_method,
+            'receipt_file' => !empty($paths) ? json_encode($paths) : null,
+            'notes' => $request->notes,
+            'paid_at' => $request->payment_date,
+        ]);
+
+        $totalPaid = $schedule->transactions()->sum('amount');
+        $remainingDebt = max(0, $schedule->amount - $totalPaid);
+        
+        $status = 'pending';
+        if ($totalPaid > 0) {
+            $status = $remainingDebt > 0 ? 'partial' : 'paid';
+        }
+
+        $schedule->update([
+            'actual_amount' => $totalPaid,
+            'remaining_debt' => $remainingDebt,
+            'status' => $status,
+            'paid_at' => $status == 'paid' ? $request->payment_date : $schedule->paid_at,
+        ]);
 
         return redirect()->route('admin.payments.index')->with('success', 'Ghi nhận thanh toán thành công!');
     }

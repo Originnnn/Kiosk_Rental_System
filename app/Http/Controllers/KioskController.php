@@ -47,6 +47,10 @@ class KioskController extends Controller
             'area' => 'required|numeric|min:0',
             'price' => 'required|numeric|min:0',
             'description' => 'nullable|string',
+            'power_supply' => 'nullable|string',
+            'water_supply' => 'nullable|string',
+            'internet_connection' => 'nullable|string',
+            'air_conditioning' => 'nullable|string',
         ]);
 
         $validated['status'] = 'available';
@@ -76,6 +80,10 @@ class KioskController extends Controller
             'area' => 'required|numeric|min:0',
             'price' => 'required|numeric|min:0',
             'description' => 'nullable|string',
+            'power_supply' => 'nullable|string',
+            'water_supply' => 'nullable|string',
+            'internet_connection' => 'nullable|string',
+            'air_conditioning' => 'nullable|string',
         ]);
 
         $kiosk->update($validated);

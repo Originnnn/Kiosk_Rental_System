@@ -53,7 +53,7 @@
                             ];
                         @endphp
                         <div onclick="handleKioskClick(event, this)"
-                           class="kiosk-pin absolute flex items-center justify-center cursor-pointer group z-20"
+                           class="kiosk-pin absolute flex items-center justify-center cursor-pointer group z-20 transition-all duration-300"
                            data-id="{{ $kiosk->id }}"
                            data-kiosk="{{ json_encode($kioskData) }}"
                            style="left: {{ $leftPct }}%; top: {{ $topPct }}%; width: {{ $widthPct }}%; height: {{ $heightPct }}%;"
@@ -79,7 +79,7 @@
                     <span class="absolute inset-y-0 left-0 flex items-center pl-3 text-gray-400">
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
                     </span>
-                    <input type="text" id="search-input" placeholder="Tìm tên, mã kiosk..." class="w-full border border-gray-200 rounded-md py-2.5 pl-9 pr-3 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 text-sm bg-gray-50/50">
+                    <input type="text" id="search-input" placeholder="Tìm tên, mã kiosk..." class="w-full border border-gray-200 rounded-md py-2 pl-9 pr-3 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 text-xs bg-gray-50/50">
                 </div>
                 
                 <div class="flex gap-2 flex-wrap" id="filter-buttons">
@@ -92,7 +92,7 @@
         </div>
         
         <!-- Kiosk List Container -->
-        <div class="flex-1 overflow-y-auto bg-gray-50 p-4 space-y-3 custom-scrollbar">
+        <div class="flex-1 overflow-y-auto bg-gray-50 p-3 space-y-2 custom-scrollbar">
             @forelse($kiosks as $kiosk)
                 @php
                     $isAvailable = $kiosk->status === 'available';
@@ -115,21 +115,21 @@
                 @endphp
                 <a href="/kiosks/{{ $kiosk->id }}" 
                    onclick="handleKioskClick(event, this)"
-                   class="kiosk-list-item block bg-white rounded-lg p-4 transition shadow-sm {{ $isSelected ? 'border-2 border-blue-400 relative' : 'border border-gray-200 hover:border-gray-300' }}"
+                   class="kiosk-list-item block bg-white rounded-lg p-2.5 transition shadow-sm {{ $isSelected ? 'border-2 border-blue-400 relative' : 'border border-gray-200 hover:border-gray-300' }}"
                    data-id="{{ $kiosk->id }}"
                    data-kiosk="{{ json_encode($kioskData) }}">
-                    <div class="flex justify-between items-center mb-1.5">
-                        <h3 class="font-bold text-gray-900 text-base">{{ $kiosk->code }}</h3>
-                        <span class="badge px-2 py-0.5 rounded text-[10px] font-bold tracking-widest {{ $badgeClass }}">{{ $badgeText }}</span>
+                    <div class="flex justify-between items-center mb-1">
+                        <h3 class="font-bold text-gray-900 text-sm">{{ $kiosk->code }}</h3>
+                        <span class="badge px-1.5 py-0.5 rounded text-[9px] font-bold tracking-wider {{ $badgeClass }}">{{ $badgeText }}</span>
                     </div>
                     
                     @if($isAvailable)
-                        <p class="text-sm text-gray-400 italic mb-3">Chưa cho thuê</p>
+                        <p class="text-xs text-gray-400 italic mb-1">Chưa cho thuê</p>
                     @else
-                        <p class="text-sm text-gray-600 mb-3">{{ $kiosk->name ?: 'Tạp hoá & Đồ uống' }}</p>
+                        <p class="text-xs text-gray-600 mb-1 truncate">{{ $kiosk->name ?: 'Tạp hoá & Đồ uống' }}</p>
                     @endif
                     
-                    <div class="flex items-center gap-4 text-xs text-gray-500 font-medium">
+                    <div class="flex items-center gap-3 text-xs text-gray-500 font-medium">
                         <div class="flex items-center gap-1.5">
                             <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path></svg>
                             {{ $kiosk->position->zone ?? 'N/A' }}
@@ -141,7 +141,7 @@
                     </div>
                     
                     <!-- Selection Indicator (SVG Check) -->
-                    <div class="selection-indicator {{ $isSelected ? 'block' : 'hidden' }} absolute top-4 right-4 text-blue-500 bg-white rounded-full">
+                    <div class="selection-indicator {{ $isSelected ? 'block' : 'hidden' }} absolute top-3 right-3 text-blue-500 bg-white rounded-full">
                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
                     </div>
                 </a>
@@ -154,48 +154,49 @@
         
         <!-- Bottom Panel for selected Kiosk -->
         @php $firstKiosk = $kiosks->first(); @endphp
-        <div id="details-panel" class="{{ $firstKiosk ? 'block' : 'hidden' }} border-t border-gray-200 bg-white p-5 shadow-[0_-4px_10px_-2px_rgba(0,0,0,0.05)] z-20 shrink-0 transition-opacity">
-            <h3 class="font-bold text-gray-900 mb-4 pb-2 border-b border-gray-100 text-sm tracking-wide">Thông tin chi tiết</h3>
-            <div class="flex justify-between items-center mb-4">
-                <div id="detail-code" class="text-blue-700 font-bold text-xl">{{ $firstKiosk->code ?? '' }}</div>
-                @php
-                    $fstStatus = $firstKiosk->status ?? '';
-                    $fstBadgeText = $fstStatus === 'rented' ? 'ĐANG MỞ' : ($fstStatus === 'available' ? 'TRỐNG' : 'TẠM NGHỈ');
-                    $fstBadgeClass = $fstStatus === 'rented' ? 'bg-green-100 text-green-700' : ($fstStatus === 'available' ? 'bg-gray-100 text-gray-500' : 'bg-orange-100 text-orange-700');
-                @endphp
-                <span id="detail-status" class="px-2 py-0.5 rounded text-[10px] font-bold tracking-widest {{ $fstBadgeClass }}">{{ $fstBadgeText }}</span>
+        <div id="details-panel" class="{{ $firstKiosk ? 'block' : 'hidden' }} border-t border-gray-200 bg-white p-2.5 shadow-[0_-4px_10px_-2px_rgba(0,0,0,0.05)] z-20 shrink-0 transition-opacity">
+            <div class="flex justify-between items-center mb-1.5">
+                <div class="flex items-center gap-2">
+                    <span id="detail-code" class="text-blue-700 font-bold text-base">{{ $firstKiosk->code ?? '' }}</span>
+                    @php
+                        $fstStatus = $firstKiosk->status ?? '';
+                        $fstBadgeText = $fstStatus === 'rented' ? 'ĐANG MỞ' : ($fstStatus === 'available' ? 'TRỐNG' : 'TẠM NGHỈ');
+                        $fstBadgeClass = $fstStatus === 'rented' ? 'bg-green-100 text-green-700' : ($fstStatus === 'available' ? 'bg-gray-100 text-gray-500' : 'bg-orange-100 text-orange-700');
+                    @endphp
+                    <span id="detail-status" class="px-1.5 py-0.5 rounded text-[9px] font-bold tracking-widest {{ $fstBadgeClass }}">{{ $fstBadgeText }}</span>
+                </div>
             </div>
             
-            <div class="space-y-3 text-sm mb-5">
-                <div class="flex justify-between items-center"><span class="text-gray-500">Loại hình:</span><span id="detail-type" class="font-medium text-gray-900">{{ $firstKiosk->name ?? 'Tạp hoá' }}</span></div>
-                <div class="flex justify-between items-center"><span class="text-gray-500">Vị trí:</span><span id="detail-zone" class="font-medium text-gray-900">Khu {{ $firstKiosk->position->zone ?? 'A' }} - Tầng 1</span></div>
-                <div class="flex justify-between items-center"><span class="text-gray-500">Diện tích:</span><span id="detail-area" class="font-medium text-gray-900">{{ $firstKiosk->area ?? 0 }}m&sup2;</span></div>
-                <div class="flex justify-between items-center" id="detail-lessee-container" style="display: {{ $fstStatus === 'available' ? 'none' : 'flex' }}"><span class="text-gray-500">Chủ thuê:</span><span id="detail-lessee" class="font-medium text-gray-900">Đang cập nhật...</span></div>
+            <div class="grid grid-cols-2 gap-x-2 gap-y-1 text-xs mb-2.5">
+                <div class="truncate"><span class="text-gray-500">Loại:</span> <span id="detail-type" class="font-medium text-gray-900">{{ $firstKiosk->name ?? 'Tạp hoá' }}</span></div>
+                <div class="truncate"><span class="text-gray-500">Vị trí:</span> <span id="detail-zone" class="font-medium text-gray-900">Khu {{ $firstKiosk->position->zone ?? 'A' }}</span></div>
+                <div class="truncate"><span class="text-gray-500">Diện tích:</span> <span id="detail-area" class="font-medium text-gray-900">{{ $firstKiosk->area ?? 0 }}m&sup2;</span></div>
+                <div class="truncate" id="detail-lessee-container" style="display: {{ $fstStatus === 'available' ? 'none' : 'block' }}"><span class="text-gray-500">Chủ:</span> <span id="detail-lessee" class="font-medium text-gray-900">Đang cập nhật...</span></div>
             </div>
             
-            <div id="detail-actions" class="flex flex-col gap-2 mt-4">
+            <div id="detail-actions" class="flex gap-2">
                 @if($fstStatus === 'available')
-                    <button onclick="openBookingModal({{ $firstKiosk->id }}, '{{ $firstKiosk->code }}', {{ $firstKiosk->area }})" class="w-full py-2.5 bg-blue-600 hover:bg-blue-700 rounded-md text-sm font-semibold text-white flex items-center justify-center gap-2 transition shadow-sm">
-                        <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg> 
-                        Đăng ký thuê
+                    <button onclick="openBookingModal({{ $firstKiosk->id }}, '{{ $firstKiosk->code }}', {{ $firstKiosk->area }})" class="flex-1 py-1.5 bg-blue-600 hover:bg-blue-700 rounded-md text-xs font-semibold text-white flex items-center justify-center gap-1.5 transition shadow-sm">
+                        <svg class="w-3.5 h-3.5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg> 
+                        Đăng ký
                     </button>
-                    <a href="/kiosks/{{ $firstKiosk->id }}" class="w-full py-2.5 bg-white hover:bg-gray-50 border border-gray-300 rounded-md text-sm font-semibold text-gray-700 flex items-center justify-center gap-2 transition shadow-sm">
-                        <svg class="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-                        Xem chi tiết
+                    <a href="/kiosks/{{ $firstKiosk->id }}" class="flex-1 py-1.5 bg-white hover:bg-gray-50 border border-gray-300 rounded-md text-xs font-semibold text-gray-700 flex items-center justify-center gap-1.5 transition shadow-sm">
+                        <svg class="w-3.5 h-3.5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                        Chi tiết
                     </a>
                 @elseif($fstStatus === 'rented')
-                    <a href="/kiosks/{{ $firstKiosk->id }}" class="w-full py-2.5 bg-gray-50 hover:bg-gray-100 border border-gray-200 rounded-md text-sm font-semibold text-gray-700 flex items-center justify-center gap-2 transition shadow-sm">
-                        <svg class="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-                        Xem hợp đồng
+                    <a href="/kiosks/{{ $firstKiosk->id }}" class="flex-1 py-1.5 bg-gray-50 hover:bg-gray-100 border border-gray-200 rounded-md text-xs font-semibold text-gray-700 flex items-center justify-center gap-1.5 transition shadow-sm">
+                        <svg class="w-3.5 h-3.5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                        Hợp đồng
                     </a>
                 @elseif($fstStatus)
-                    <a href="/kiosks/{{ $firstKiosk->id }}" class="w-full py-2.5 bg-gray-50 hover:bg-gray-100 border border-gray-200 rounded-md text-sm font-semibold text-gray-700 flex items-center justify-center gap-2 transition shadow-sm">
-                        <svg class="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-                        Xem chi tiết
+                    <a href="/kiosks/{{ $firstKiosk->id }}" class="flex-1 py-1.5 bg-gray-50 hover:bg-gray-100 border border-gray-200 rounded-md text-xs font-semibold text-gray-700 flex items-center justify-center gap-1.5 transition shadow-sm">
+                        <svg class="w-3.5 h-3.5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                        Chi tiết
                     </a>
-                    <button disabled class="w-full py-2.5 bg-gray-100 border border-gray-200 rounded-md text-sm font-semibold text-gray-400 cursor-not-allowed flex items-center justify-center gap-2 shadow-sm">
-                        <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path></svg>
-                        Tạm ngưng đăng ký
+                    <button disabled class="flex-1 py-1.5 bg-gray-100 border border-gray-200 rounded-md text-xs font-semibold text-gray-400 cursor-not-allowed flex items-center justify-center gap-1.5 shadow-sm">
+                        <svg class="w-3.5 h-3.5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path></svg>
+                        Tạm ngưng
                     </button>
                 @endif
             </div>
@@ -300,40 +301,40 @@ function handleKioskClick(event, element) {
 
     if (kiosk.status === 'rented') {
         statusBadge.innerText = 'ĐANG MỞ';
-        statusBadge.className = 'px-2 py-0.5 rounded text-[10px] font-bold tracking-widest bg-green-100 text-green-700';
-        lesseeContainer.style.display = 'flex';
+        statusBadge.className = 'px-1.5 py-0.5 rounded text-[9px] font-bold tracking-widest bg-green-100 text-green-700';
+        lesseeContainer.style.display = 'block';
         actionsContainer.innerHTML = `
-            <a href="/kiosks/${kiosk.id}" class="w-full py-2.5 bg-gray-50 hover:bg-gray-100 border border-gray-200 rounded-md text-sm font-semibold text-gray-700 flex items-center justify-center gap-2 transition shadow-sm">
-                <svg class="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-                Xem hợp đồng
+            <a href="/kiosks/${kiosk.id}" class="flex-1 py-1.5 bg-gray-50 hover:bg-gray-100 border border-gray-200 rounded-md text-xs font-semibold text-gray-700 flex items-center justify-center gap-1.5 transition shadow-sm">
+                <svg class="w-3.5 h-3.5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                Hợp đồng
             </a>
         `;
     } else if (kiosk.status === 'available') {
         statusBadge.innerText = 'TRỐNG';
-        statusBadge.className = 'px-2 py-0.5 rounded text-[10px] font-bold tracking-widest bg-gray-100 text-gray-500';
+        statusBadge.className = 'px-1.5 py-0.5 rounded text-[9px] font-bold tracking-widest bg-gray-100 text-gray-500';
         lesseeContainer.style.display = 'none';
         actionsContainer.innerHTML = `
-            <button onclick="openBookingModal(${kiosk.id}, '${kiosk.code}', ${kiosk.area})" class="w-full py-2.5 bg-blue-600 hover:bg-blue-700 rounded-md text-sm font-semibold text-white flex items-center justify-center gap-2 transition shadow-sm">
-                <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg> 
-                Đăng ký thuê
+            <button onclick="openBookingModal(${kiosk.id}, '${kiosk.code}', ${kiosk.area})" class="flex-1 py-1.5 bg-blue-600 hover:bg-blue-700 rounded-md text-xs font-semibold text-white flex items-center justify-center gap-1.5 transition shadow-sm">
+                <svg class="w-3.5 h-3.5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg> 
+                Đăng ký
             </button>
-            <a href="/kiosks/${kiosk.id}" class="w-full py-2.5 bg-white hover:bg-gray-50 border border-gray-300 rounded-md text-sm font-semibold text-gray-700 flex items-center justify-center gap-2 transition shadow-sm">
-                <svg class="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-                Xem chi tiết
+            <a href="/kiosks/${kiosk.id}" class="flex-1 py-1.5 bg-white hover:bg-gray-50 border border-gray-300 rounded-md text-xs font-semibold text-gray-700 flex items-center justify-center gap-1.5 transition shadow-sm">
+                <svg class="w-3.5 h-3.5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                Chi tiết
             </a>
         `;
     } else {
         statusBadge.innerText = 'TẠM NGHỈ';
-        statusBadge.className = 'px-2 py-0.5 rounded text-[10px] font-bold tracking-widest bg-orange-100 text-orange-700';
-        lesseeContainer.style.display = 'flex';
+        statusBadge.className = 'px-1.5 py-0.5 rounded text-[9px] font-bold tracking-widest bg-orange-100 text-orange-700';
+        lesseeContainer.style.display = 'block';
         actionsContainer.innerHTML = `
-            <a href="/kiosks/${kiosk.id}" class="w-full py-2.5 bg-gray-50 hover:bg-gray-100 border border-gray-200 rounded-md text-sm font-semibold text-gray-700 flex items-center justify-center gap-2 transition shadow-sm">
-                <svg class="w-4 h-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-                Xem chi tiết
+            <a href="/kiosks/${kiosk.id}" class="flex-1 py-1.5 bg-gray-50 hover:bg-gray-100 border border-gray-200 rounded-md text-xs font-semibold text-gray-700 flex items-center justify-center gap-1.5 transition shadow-sm">
+                <svg class="w-3.5 h-3.5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                Chi tiết
             </a>
-            <button disabled class="w-full py-2.5 bg-gray-100 border border-gray-200 rounded-md text-sm font-semibold text-gray-400 cursor-not-allowed flex items-center justify-center gap-2 shadow-sm">
-                <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path></svg>
-                Tạm ngưng đăng ký
+            <button disabled class="flex-1 py-1.5 bg-gray-100 border border-gray-200 rounded-md text-xs font-semibold text-gray-400 cursor-not-allowed flex items-center justify-center gap-1.5 shadow-sm">
+                <svg class="w-3.5 h-3.5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path></svg>
+                Tạm ngưng
             </button>
         `;
     }
@@ -380,35 +381,23 @@ function handleKioskClick(event, element) {
 
     // Reset hiệu ứng scale của pin trên bản đồ
     document.querySelectorAll('.kiosk-pin').forEach(pin => {
-        pin.classList.remove('z-40', 'scale-125', 'opacity-100');
-        pin.classList.add('z-20', 'opacity-50'); // Làm mờ các kiosk khác
+        pin.classList.remove('is-active');
         const inner = pin.querySelector('.kiosk-pin-inner');
         if (inner) {
-            inner.classList.remove('border-4', 'border-yellow-400', 'shadow-[0_0_20px_rgba(250,204,21,0.8)]');
-            inner.classList.add('border-[1.5px]', 'border-white');
+            inner.classList.remove('border-[3px]');
+            inner.classList.add('border-[1.5px]');
         }
-        const pulse = pin.querySelector('.pulse-ring');
-        if (pulse) pulse.remove();
     });
     
     // Thêm hiệu ứng cho map pin nếu có
     const mapPin = document.querySelector('.kiosk-pin[data-id="' + kiosk.id + '"]');
     if (mapPin) {
-        mapPin.classList.remove('z-20', 'opacity-50');
-        mapPin.classList.add('z-40', 'scale-125', 'opacity-100');
-        
-        let pulse = mapPin.querySelector('.pulse-ring');
-        if (!pulse) {
-            pulse = document.createElement('div');
-            pulse.className = 'pulse-ring absolute inset-0 rounded-[2px] bg-yellow-400 animate-ping opacity-75';
-            pulse.style.zIndex = '-1';
-            mapPin.appendChild(pulse);
-        }
+        mapPin.classList.add('is-active');
 
         const inner = mapPin.querySelector('.kiosk-pin-inner');
         if (inner) {
-            inner.classList.remove('border-[1.5px]', 'border-white');
-            inner.classList.add('border-4', 'border-yellow-400', 'shadow-[0_0_20px_rgba(250,204,21,0.8)]');
+            inner.classList.remove('border-[1.5px]');
+            inner.classList.add('border-[3px]');
         }
         
         // Thêm hiệu ứng zoom nhẹ vào kiosk
@@ -460,7 +449,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
         window.panzoomInstance = Panzoom(mapContainer, {
             maxScale: 5,
-            minScale: window.initialScale * 0.5,
+            minScale: window.initialScale,
             startScale: window.initialScale,
             startX: 0,
             startY: 0,
@@ -606,6 +595,10 @@ function initFilters() {
 function applyFilters() {
     // Collect all kiosks DOM elements
     const kioskListItems = document.querySelectorAll('.kiosk-list-item');
+    const hasActiveFilter = filterState.searchQuery !== '' || filterState.zones.size > 0 || filterState.statuses.size > 0;
+    
+    let minX = 100, maxX = 0, minY = 100, maxY = 0;
+    let matchCount = 0;
     
     kioskListItems.forEach(listItem => {
         const kioskData = JSON.parse(listItem.getAttribute('data-kiosk'));
@@ -645,14 +638,73 @@ function applyFilters() {
         const mapPin = document.querySelector(`.kiosk-pin[data-id="${id}"]`);
         if (mapPin) {
             if (isMatch) {
-                mapPin.classList.remove('opacity-30', 'pointer-events-none');
-                mapPin.classList.add('opacity-100');
+                mapPin.style.display = 'flex';
+                if (hasActiveFilter) {
+                    mapPin.classList.add('is-filtered');
+                    // Calculate bounds
+                    const left = parseFloat(mapPin.style.left);
+                    const top = parseFloat(mapPin.style.top);
+                    const width = parseFloat(mapPin.style.width);
+                    const height = parseFloat(mapPin.style.height);
+                    
+                    if (left < minX) minX = left;
+                    if (left + width > maxX) maxX = left + width;
+                    if (top < minY) minY = top;
+                    if (top + height > maxY) maxY = top + height;
+                    matchCount++;
+                } else {
+                    mapPin.classList.remove('is-filtered');
+                }
             } else {
-                mapPin.classList.add('opacity-30', 'pointer-events-none');
-                mapPin.classList.remove('opacity-100');
+                mapPin.style.display = 'none';
+                mapPin.classList.remove('is-filtered');
             }
         }
     });
+    
+    // Zoom and pan to encompass all matched kiosks if a filter is active
+    if (window.panzoomInstance) {
+        if (hasActiveFilter && matchCount > 0) {
+            const mapWidth = 1829;
+            const mapHeight = 1272;
+            
+            const boxLeft = (minX / 100) * mapWidth;
+            const boxTop = (minY / 100) * mapHeight;
+            const boxRight = (maxX / 100) * mapWidth;
+            const boxBottom = (maxY / 100) * mapHeight;
+            
+            const boxW = boxRight - boxLeft;
+            const boxH = boxBottom - boxTop;
+            
+            const centerX = boxLeft + boxW / 2;
+            const centerY = boxTop + boxH / 2;
+            
+            const mapCenterX = mapWidth / 2;
+            const mapCenterY = mapHeight / 2;
+            
+            const dx = mapCenterX - centerX;
+            const dy = mapCenterY - centerY;
+            
+            const wrapperRect = document.getElementById('map-wrapper').getBoundingClientRect();
+            const padding = 100;
+            let targetScale = Math.min(
+                (wrapperRect.width - padding) / (boxW || 100),
+                (wrapperRect.height - padding) / (boxH || 100)
+            );
+            
+            targetScale = Math.min(targetScale, window.initialScale * 2.5); // Max auto-zoom limit
+            targetScale = Math.max(targetScale, window.initialScale); // Never smaller than initial
+            
+            window.panzoomInstance.zoom(targetScale, { animate: true });
+            setTimeout(() => {
+                window.panzoomInstance.pan(dx, dy, { animate: true });
+            }, 50);
+        } else if (!hasActiveFilter) {
+            // Reset to default view when filter is cleared
+            window.panzoomInstance.pan(0, 0, { animate: true });
+            window.panzoomInstance.zoom(window.initialScale, { animate: true });
+        }
+    }
 }
 
 // Khởi chạy khi DOM load xong
@@ -672,6 +724,19 @@ document.addEventListener('DOMContentLoaded', () => {
 <script src="https://cdn.jsdelivr.net/npm/@panzoom/panzoom@4.5.1/dist/panzoom.min.js"></script>
 
 <style>
+.kiosk-pin {
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.kiosk-pin.is-active {
+    transform: scale(1.15);
+    z-index: 40 !important;
+    opacity: 1 !important;
+}
+.kiosk-pin.is-filtered:not(.is-active) {
+    transform: scale(1.15);
+    z-index: 30;
+}
+
 .custom-scrollbar::-webkit-scrollbar {
   width: 6px;
 }
