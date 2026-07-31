@@ -21,4 +21,34 @@ class ContractPaymentScheduleFactory extends Factory
             'payment_method' => 'bank_transfer',
         ];
     }
+
+    public function paid(): static
+    {
+        return $this->state(fn (array $attributes) => [
+            'status' => 'paid',
+            'paid_at' => now(),
+            'actual_amount' => $attributes['amount'] ?? 5000000,
+            'payment_method' => 'bank_transfer',
+        ]);
+    }
+
+    public function upcoming(): static
+    {
+        return $this->state(fn (array $attributes) => [
+            'status' => 'unpaid',
+            'paid_at' => null,
+            'actual_amount' => 0,
+            'due_date' => now()->addDays(rand(5, 15)),
+        ]);
+    }
+
+    public function overdue(): static
+    {
+        return $this->state(fn (array $attributes) => [
+            'status' => 'unpaid',
+            'paid_at' => null,
+            'actual_amount' => 0,
+            'due_date' => now()->subDays(rand(5, 15)),
+        ]);
+    }
 }

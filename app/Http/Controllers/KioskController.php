@@ -9,7 +9,7 @@ class KioskController extends Controller
 {
     public function index(Request $request)
     {
-        $query = Kiosk::query();
+        $query = Kiosk::query()->orderByRaw('LENGTH(code) asc, code asc');
 
         if ($request->filled('q')) {
             $searchTerm = '%' . $request->q . '%';
