@@ -81,32 +81,36 @@
                             @endif
                         </td>
                         <td class="px-6 py-4 text-center">
-                            @if($req->status == 'pending' || $req->status == 'processing')
-                                <div class="flex items-center justify-center space-x-2">
-                                    <!-- Nút Tạo hợp đồng -->
-                                    <a href="{{ route('admin.contracts.create', [
-                                        'kiosk_id' => $req->kiosk_id,
-                                        'contact_name' => $req->customer_name,
-                                        'contact_phone' => $req->phone,
-                                        'duration_months' => $req->duration_months,
-                                        'booking_request_id' => $req->id
-                                    ]) }}" class="px-3 py-1.5 bg-[#006699] text-white text-xs font-bold rounded hover:bg-[#005580] transition-colors shadow-sm flex items-center">
-                                        <i class="fa-solid fa-file-signature mr-1.5"></i> Tạo HD
-                                    </a>
-                                    
-                                    <!-- Nút Từ chối -->
-                                    <form action="{{ route('admin.rental_requests.updateStatus', $req->id) }}" method="POST" onsubmit="return confirm('Bạn có chắc chắn muốn từ chối yêu cầu này không?');">
-                                        @csrf
-                                        @method('PATCH')
-                                        <input type="hidden" name="status" value="rejected">
-                                        <button type="submit" class="px-3 py-1.5 bg-white border border-gray-300 text-red-600 text-xs font-bold rounded hover:bg-red-50 transition-colors shadow-sm flex items-center">
-                                            <i class="fa-solid fa-ban mr-1.5"></i> Từ chối
-                                        </button>
-                                    </form>
-                                </div>
+                            @can('update', $req)
+                                @if($req->status == 'pending' || $req->status == 'processing')
+                                    <div class="flex items-center justify-center space-x-2">
+                                        <!-- Nút Tạo hợp đồng -->
+                                        <a href="{{ route('admin.contracts.create', [
+                                            'kiosk_id' => $req->kiosk_id,
+                                            'contact_name' => $req->customer_name,
+                                            'contact_phone' => $req->phone,
+                                            'duration_months' => $req->duration_months,
+                                            'booking_request_id' => $req->id
+                                        ]) }}" class="px-3 py-1.5 bg-[#006699] text-white text-xs font-bold rounded hover:bg-[#005580] transition-colors shadow-sm flex items-center">
+                                            <i class="fa-solid fa-file-signature mr-1.5"></i> Tạo HD
+                                        </a>
+                                        
+                                        <!-- Nút Từ chối -->
+                                        <form action="{{ route('admin.rental_requests.updateStatus', $req->id) }}" method="POST" onsubmit="return confirm('Bạn có chắc chắn muốn từ chối yêu cầu này không?');">
+                                            @csrf
+                                            @method('PATCH')
+                                            <input type="hidden" name="status" value="rejected">
+                                            <button type="submit" class="px-3 py-1.5 bg-white border border-gray-300 text-red-600 text-xs font-bold rounded hover:bg-red-50 transition-colors shadow-sm flex items-center">
+                                                <i class="fa-solid fa-ban mr-1.5"></i> Từ chối
+                                            </button>
+                                        </form>
+                                    </div>
+                                @else
+                                    <span class="text-xs text-gray-400 italic">Không có hành động</span>
+                                @endif
                             @else
-                                <span class="text-xs text-gray-400 italic">Không có hành động</span>
-                            @endif
+                                <span class="text-xs text-gray-400 italic">Chỉ xem</span>
+                            @endcan
                         </td>
                     </tr>
                 @empty

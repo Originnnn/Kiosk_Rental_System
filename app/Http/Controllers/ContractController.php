@@ -14,6 +14,7 @@ class ContractController extends Controller
 {
     public function index(Request $request)
     {
+        $this->authorize('viewAny', Contract::class);
         // ... Eager loading customer, kiosk
         $query = Contract::with(['customer', 'kiosk'])->orderBy('created_at', 'desc');
         
@@ -30,6 +31,7 @@ class ContractController extends Controller
 
     public function create()
     {
+        $this->authorize('create', Contract::class);
         $customers = Customer::orderBy('name')->get();
         $kiosks = Kiosk::where('status', 'available')->orderBy('code')->get();
         return view('admin.contracts.create', compact('customers', 'kiosks'));
@@ -37,6 +39,14 @@ class ContractController extends Controller
 
     public function store(Request $request)
     {
+        $this->authorize('create', Contract::class);
+        
+        // Làm sạch dữ liệu số (loại bỏ dấu chấm phần ngàn) trước khi validate
+        $request->merge([
+            'deposit_amount' => $request->filled('deposit_amount') ? str_replace('.', '', $request->deposit_amount) : null,
+            'total_amount' => $request->filled('total_amount') ? str_replace('.', '', $request->total_amount) : null,
+        ]);
+
         $validated = $request->validate([
             'customer_id' => 'nullable|exists:customers,id',
             'customer_name' => 'required_without:customer_id|string|max:255',
@@ -142,6 +152,8 @@ class ContractController extends Controller
         $contract = Contract::with(['customer', 'kiosk', 'paymentSchedules' => function($q) {
             $q->orderBy('due_date', 'asc');
         }])->findOrFail($id);
+        
+        $this->authorize('view', $contract);
 
         return view('admin.contracts.show', compact('contract'));
     }
@@ -149,12 +161,14 @@ class ContractController extends Controller
     public function edit($id)
     {
         $contract = Contract::with(['customer', 'kiosk'])->findOrFail($id);
+        $this->authorize('update', $contract);
         return view('admin.contracts.edit', compact('contract'));
     }
 
     public function update(Request $request, $id)
     {
         $contract = Contract::findOrFail($id);
+        $this->authorize('update', $contract);
 
         $validated = $request->validate([
             'manager_name' => 'nullable|string|max:255',

@@ -12,7 +12,7 @@
             <p class="text-sm text-gray-500">Quản lý không gian cho thuê và trạng thái hoạt động.</p>
         </div>
         
-        @can('is-employee')
+        @can('create', App\Models\Kiosk::class)
         <div>
             <button @click="openModal = true" class="bg-white border border-gray-300 hover:bg-gray-50 text-gray-700 px-4 py-2 rounded font-medium flex items-center text-sm transition-colors shadow-sm">
                 <i class="fa-solid fa-plus mr-2"></i> Thêm mới
@@ -608,7 +608,7 @@
                     <button class="px-4 py-2 border border-gray-300 text-gray-700 rounded font-medium text-sm hover:bg-gray-50 flex items-center">
                         <i class="fa-solid fa-print mr-2"></i> In hồ sơ
                     </button>
-                    @can('is-employee')
+                    @can('create', App\Models\Kiosk::class)
                     <button @click="startEdit()" class="px-4 py-2 bg-[#006699] text-white rounded font-bold text-sm hover:bg-[#005580]">
                         Cập nhật thông tin
                     </button>

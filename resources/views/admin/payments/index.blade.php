@@ -185,22 +185,13 @@
                                 data-status="{{ $payment->status }}"
                                 data-remaining-debt="{{ number_format($debtVal, 0, ',', '.') }}đ"
                                 @php
-                                    $attachmentsJson = '';
-                                    if ($payment->receipt_file) {
-                                        $decoded = json_decode($payment->receipt_file, true);
-                                        if (is_array($decoded)) {
-                                            $urls = array_map(fn($path) => asset('storage/' . $path), $decoded);
-                                            $attachmentsJson = json_encode($urls);
-                                        } else {
-                                            $attachmentsJson = json_encode([asset('storage/' . $payment->receipt_file)]);
-                                        }
-                                    }
+                                    $docUrl = $payment->receipt_file ? asset('storage/' . $payment->receipt_file) : '';
                                 @endphp
-                                data-attachment="{{ $attachmentsJson }}">
+                                data-document="{{ $docUrl }}">
                                 <i class="fa-regular fa-eye text-lg"></i>
                             </button>
                             
-                            @can('is-employee')
+                            @can('update', $payment)
                             @if($payment->status != 'paid')
                                 <a href="{{ route('admin.payments.form', $payment->id) }}" class="text-green-500 hover:text-green-700" title="Ghi nhận thanh toán">
                                     <i class="fa-regular fa-circle-check text-lg"></i>
@@ -360,22 +351,15 @@
             modalStatus.className = `inline-flex flex-col items-center justify-center text-[11px] font-bold px-2 py-1 rounded w-28 leading-tight ${modalStatusClass}`;
 
             const attachmentContainer = document.getElementById('modal-attachment-container');
-            if (data.attachment && data.attachment !== '[]') {
-                try {
-                    const attachments = JSON.parse(data.attachment);
-                    let linksHtml = '';
-                    attachments.forEach((url, idx) => {
-                        linksHtml += `
-                            <a href="${url}" target="_blank" class="flex items-center text-blue-600 hover:text-blue-800 hover:underline font-medium mb-1">
-                                <svg class="w-4 h-4 mr-1 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13"></path></svg>
-                                Xem chứng từ đính kèm ${attachments.length > 1 ? (idx + 1) : ''}
-                            </a>
-                        `;
-                    });
-                    attachmentContainer.innerHTML = `<div class="flex flex-col gap-1">${linksHtml}</div>`;
-                } catch (e) {
-                    attachmentContainer.innerHTML = '<span class="text-sm text-gray-400 italic">Lỗi định dạng chứng từ</span>';
-                }
+            if (data.document) {
+                attachmentContainer.innerHTML = `
+                    <div class="flex flex-col gap-1">
+                        <a href="${data.document}" target="_blank" class="flex items-center text-blue-600 hover:text-blue-800 hover:underline font-medium mb-1">
+                            <svg class="w-4 h-4 mr-1 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13"></path></svg>
+                            Xem chứng từ
+                        </a>
+                    </div>
+                `;
             } else {
                 attachmentContainer.innerHTML = '<span class="text-sm text-gray-400 italic">Không có chứng từ</span>';
             }

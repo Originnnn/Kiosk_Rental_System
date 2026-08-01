@@ -13,9 +13,12 @@
         </div>
         
         <div class="flex space-x-3">
-            <button class="bg-white border border-gray-300 hover:bg-gray-50 text-gray-700 px-4 py-2 rounded font-medium flex items-center text-sm shadow-sm transition">
-                <i class="fa-regular fa-calendar mr-2"></i> Tháng này
-            </button>
+            <select onchange="window.location.href='?period='+this.value" class="bg-white border border-gray-300 hover:bg-gray-50 text-gray-700 px-4 py-2 rounded font-medium text-sm shadow-sm transition focus:outline-none focus:ring-1 focus:ring-[#006699] focus:border-[#006699] cursor-pointer">
+                <option value="this_month" {{ $period === 'this_month' ? 'selected' : '' }}>Tháng này</option>
+                <option value="last_month" {{ $period === 'last_month' ? 'selected' : '' }}>Tháng trước</option>
+                <option value="this_quarter" {{ $period === 'this_quarter' ? 'selected' : '' }}>Quý này</option>
+                <option value="last_quarter" {{ $period === 'last_quarter' ? 'selected' : '' }}>Quý trước</option>
+            </select>
             <button id="btnExportReport" class="bg-[#006699] hover:bg-[#005580] text-white px-4 py-2 rounded font-bold flex items-center text-sm shadow-sm transition">
                 <i class="fa-solid fa-download mr-2"></i> Xuất báo cáo
             </button>
@@ -30,36 +33,36 @@
             <!-- Top KPIs (Grid 4 columns) -->
             <div class="grid grid-cols-4 gap-4">
                 
-                <!-- KPI 1: Doanh thu tháng -->
+                <!-- KPI 1: Doanh thu -->
                 <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-4 flex flex-col justify-between h-32">
                     <div class="flex justify-between items-start">
-                        <span class="text-sm font-bold text-gray-700">Doanh thu tháng</span>
+                        <span class="text-sm font-bold text-gray-700">Doanh thu</span>
                         <div class="w-8 h-8 rounded bg-[#e6f0f5] text-[#006699] flex items-center justify-center">
                             <i class="fa-solid fa-money-bill-wave"></i>
                         </div>
                     </div>
                     <div>
-                        <div class="text-2xl font-bold text-gray-900">{{ number_format($currentMonthRev / 1000000, 1) }}M đ</div>
-                        <div class="text-xs font-semibold mt-1 {{ $monthGrowth >= 0 ? 'text-green-500' : 'text-red-500' }}">
-                            <i class="fa-solid {{ $monthGrowth >= 0 ? 'fa-arrow-trend-up' : 'fa-arrow-trend-down' }} mr-1"></i>
-                            {{ $monthGrowth > 0 ? '+' : '' }}{{ $monthGrowth }}% so với tháng trước
+                        <div class="text-2xl font-bold text-gray-900">{{ number_format($currentRev / 1000000, 1) }}M đ</div>
+                        <div class="text-xs font-semibold mt-1 {{ $growth >= 0 ? 'text-green-500' : 'text-red-500' }}">
+                            <i class="fa-solid {{ $growth >= 0 ? 'fa-arrow-trend-up' : 'fa-arrow-trend-down' }} mr-1"></i>
+                            {{ $growth > 0 ? '+' : '' }}{{ $growth }}% so với {{ $prevPeriodLabel }}
                         </div>
                     </div>
                 </div>
 
-                <!-- KPI 2: Doanh thu quý -->
+                <!-- KPI 2: Hợp đồng mới -->
                 <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-4 flex flex-col justify-between h-32">
                     <div class="flex justify-between items-start">
-                        <span class="text-sm font-bold text-gray-700">Doanh thu quý</span>
+                        <span class="text-sm font-bold text-gray-700">Hợp đồng mới</span>
                         <div class="w-8 h-8 rounded bg-[#fdf2e9] text-[#d35400] flex items-center justify-center">
-                            <i class="fa-solid fa-building-columns"></i>
+                            <i class="fa-solid fa-file-signature"></i>
                         </div>
                     </div>
                     <div>
-                        <div class="text-2xl font-bold text-gray-900">{{ number_format($currentQuarterRev / 1000000000, 2) }}B đ</div>
-                        <div class="text-xs font-semibold mt-1 {{ $quarterGrowth >= 0 ? 'text-green-500' : 'text-red-500' }}">
-                            <i class="fa-solid {{ $quarterGrowth >= 0 ? 'fa-arrow-trend-up' : 'fa-arrow-trend-down' }} mr-1"></i>
-                            {{ $quarterGrowth > 0 ? '+' : '' }}{{ $quarterGrowth }}% so với quý trước
+                        <div class="text-2xl font-bold text-gray-900">{{ $newContractsCount }}</div>
+                        <div class="text-xs font-semibold mt-1 {{ $contractsGrowth >= 0 ? 'text-green-500' : 'text-red-500' }}">
+                            <i class="fa-solid {{ $contractsGrowth >= 0 ? 'fa-arrow-trend-up' : 'fa-arrow-trend-down' }} mr-1"></i>
+                            {{ $contractsGrowth > 0 ? '+' : '' }}{{ $contractsGrowth }}% so với {{ $prevPeriodLabel }}
                         </div>
                     </div>
                 </div>
@@ -101,7 +104,7 @@
             <!-- Chart Section -->
             <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-6 flex-1 flex flex-col">
                 <div class="flex justify-between items-center mb-6">
-                    <h2 class="text-base font-bold text-gray-900">Biểu đồ doanh thu (6 tháng)</h2>
+                    <h2 class="text-base font-bold text-gray-900">{{ $chartTitle }}</h2>
                     <button class="text-gray-400 hover:text-gray-600">
                         <i class="fa-solid fa-ellipsis"></i>
                     </button>
@@ -174,13 +177,13 @@
                 <div class="border-l-4 border-red-500 bg-white shadow-sm border border-gray-200 rounded p-4">
                     <div class="flex justify-between items-start mb-2">
                         <h3 class="text-sm font-bold text-gray-900 pr-2">{{ $payment->contract->customer->name ?? 'Khách hàng' }}</h3>
-                        <span class="text-[10px] font-bold text-red-600 bg-red-50 px-2 py-1 rounded whitespace-nowrap">Quá hạn {{ now()->diffInDays($payment->due_date) }} ngày</span>
+                        <span class="text-[10px] font-bold text-red-600 bg-red-50 px-2 py-1 rounded whitespace-nowrap">Quá hạn {{ (int) \Carbon\Carbon::parse($payment->due_date)->startOfDay()->diffInDays(now()->startOfDay()) }} ngày</span>
                     </div>
                     <p class="text-xs text-gray-600 mb-3">
                         Chưa thanh toán phí thuê Kiosk tháng {{ \Carbon\Carbon::parse($payment->due_date)->format('m/Y') }} 
                         ({{ number_format($payment->amount, 0, ',', '.') }} VNĐ).
                     </p>
-                    <a href="#" class="text-xs font-bold text-[#006699] hover:underline">Xem chi tiết</a>
+                    <a href="{{ route('admin.contracts.show', $payment->contract_id) }}" class="text-xs font-bold text-[#006699] hover:underline">Xem chi tiết</a>
                 </div>
                 @endforeach
 
@@ -192,9 +195,9 @@
                         <span class="text-[10px] font-bold text-yellow-700 bg-yellow-50 px-2 py-1 rounded whitespace-nowrap">Sắp hết hạn</span>
                     </div>
                     <p class="text-xs text-gray-600 mb-3">
-                        Hợp đồng thuê Kiosk {{ $contract->kiosk->code ?? '' }} sẽ hết hạn trong {{ now()->diffInDays($contract->end_date) }} ngày tới.
+                        Hợp đồng thuê Kiosk {{ $contract->kiosk->code ?? '' }} sẽ hết hạn trong {{ (int) now()->startOfDay()->diffInDays(\Carbon\Carbon::parse($contract->end_date)->startOfDay()) }} ngày tới.
                     </p>
-                    <a href="#" class="text-xs font-bold text-[#006699] hover:underline">Tạo phụ lục gia hạn</a>
+                    <a href="{{ route('admin.contracts.show', $contract->id) }}" class="text-xs font-bold text-[#006699] hover:underline">Tạo phụ lục gia hạn</a>
                 </div>
                 @endforeach
 
@@ -207,7 +210,7 @@
                     <p class="text-xs text-gray-600 mb-3">
                         Bảo vệ báo cáo vi phạm lấn chiếm hành lang lần 2.
                     </p>
-                    <a href="#" class="text-xs font-bold text-[#006699] hover:underline">Gửi thông báo phạt</a>
+                    <a href="{{ route('admin.kiosks.index') }}" class="text-xs font-bold text-[#006699] hover:underline">Gửi thông báo phạt</a>
                 </div>
 
                 <div class="border-l-4 border-[#006699] bg-white shadow-sm border border-gray-200 rounded p-4">
@@ -218,15 +221,15 @@
                     <p class="text-xs text-gray-600 mb-3">
                         Có 2 khách hàng đang chờ duyệt hồ sơ thuê Kiosk B-05.
                     </p>
-                    <a href="#" class="text-xs font-bold text-[#006699] hover:underline">Duyệt hồ sơ</a>
+                    <a href="{{ route('admin.rental_requests.index') }}" class="text-xs font-bold text-[#006699] hover:underline">Duyệt hồ sơ</a>
                 </div>
                 
             </div>
 
             <div class="p-4 border-t border-gray-200 bg-white mt-auto">
-                <button class="w-full py-2 border border-gray-300 text-gray-700 rounded font-bold text-sm hover:bg-gray-50 transition">
+                <a href="{{ route('admin.alerts.index') }}" class="block text-center w-full py-2 border border-gray-300 text-gray-700 rounded font-bold text-sm hover:bg-gray-50 transition">
                     Xem tất cả cảnh báo
-                </button>
+                </a>
             </div>
         </div>
 

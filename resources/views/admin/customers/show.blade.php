@@ -25,7 +25,7 @@
             @endif
         </div>
         <div class="flex space-x-3">
-            @can('is-employee')
+            @can('update', $customer)
             <a href="{{ route('admin.customers.edit', $customer->id) }}" class="bg-[#006699] hover:bg-[#005580] text-white px-4 py-2 rounded font-medium text-sm shadow-sm flex items-center transition">
                 <i class="fa-regular fa-pen-to-square mr-2"></i> Chỉnh sửa hồ sơ
             </a>

@@ -10,6 +10,8 @@ class CustomerController extends Controller
 {
     public function index(Request $request)
     {
+        $this->authorize('viewAny', Customer::class);
+        
         $query = Customer::withCount(['contracts as active_contracts_count' => function ($query) {
             $query->where('status', 'active');
         }])->orderBy('created_at', 'desc');
@@ -44,6 +46,8 @@ class CustomerController extends Controller
 
     public function store(Request $request)
     {
+        $this->authorize('create', Customer::class);
+        
         $validated = $request->validate([
             'name' => 'required|string|max:255',
             'phone' => ['required', 'string', 'regex:/^([0-9\s\-\+\(\)]*)$/', 'min:10', 'unique:customers,phone'],
@@ -87,18 +91,21 @@ class CustomerController extends Controller
     public function show($id)
     {
         $customer = Customer::with(['contracts.kiosk'])->findOrFail($id);
+        $this->authorize('view', $customer);
         return view('admin.customers.show', compact('customer'));
     }
 
     public function edit($id)
     {
         $customer = Customer::findOrFail($id);
+        $this->authorize('update', $customer);
         return view('admin.customers.edit', compact('customer'));
     }
 
     public function update(Request $request, $id)
     {
         $customer = Customer::findOrFail($id);
+        $this->authorize('update', $customer);
 
         $validated = $request->validate([
             'name' => 'required|string|max:255',
@@ -143,6 +150,7 @@ class CustomerController extends Controller
     public function toggleStatus($id)
     {
         $customer = Customer::findOrFail($id);
+        $this->authorize('update', $customer);
         
         $customer->status = $customer->status === 'active' ? 'inactive' : 'active';
         $customer->save();

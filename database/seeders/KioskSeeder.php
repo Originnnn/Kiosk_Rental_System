@@ -228,6 +228,30 @@ class KioskSeeder extends Seeder
                     ]);
                 }
             }
+
+            // Tự động sinh bản ghi hình ảnh mặc định nếu file vật lý tồn tại
+            $allKiosks = Kiosk::all();
+            foreach ($allKiosks as $k) {
+                $folderCode = strtolower($k->code);
+                $filePrefix = str_replace('-', '', $folderCode);
+                
+                $imagesData = [
+                    ['path' => "uploads/kiosks/{$folderCode}/{$filePrefix}_01_mattien.png", 'alt' => 'Mặt tiền', 'sort' => 1],
+                    ['path' => "uploads/kiosks/{$folderCode}/{$filePrefix}_02_gocnghieng.png", 'alt' => 'Góc nghiêng', 'sort' => 2],
+                    ['path' => "uploads/kiosks/{$folderCode}/{$filePrefix}_03_cancanh.png", 'alt' => 'Cận cảnh', 'sort' => 3],
+                    ['path' => "uploads/kiosks/{$folderCode}/{$filePrefix}_04_matsau.png", 'alt' => 'Mặt sau', 'sort' => 4],
+                ];
+
+                foreach ($imagesData as $img) {
+                    if (\Illuminate\Support\Facades\File::exists(public_path($img['path']))) {
+                        $k->images()->create([
+                            'file_path' => $img['path'],
+                            'alt_text'  => $img['alt'],
+                            'sort_order' => $img['sort']
+                        ]);
+                    }
+                }
+            }
         });
     }
 }

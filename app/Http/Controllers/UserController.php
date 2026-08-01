@@ -10,6 +10,8 @@ class UserController extends Controller
 {
     public function index(Request $request)
     {
+        $this->authorize('viewAny', User::class);
+        
         $query = User::with(['auditLogs' => function($q) {
             $q->latest()->take(5);
         }])->orderBy('created_at', 'desc');
@@ -28,6 +30,8 @@ class UserController extends Controller
 
     public function store(Request $request)
     {
+        $this->authorize('create', User::class);
+        
         $request->validate([
             'name' => 'required|string|max:255',
             'email' => 'required|string|email|max:255|unique:users',
@@ -48,11 +52,14 @@ class UserController extends Controller
 
     public function edit(User $user)
     {
+        $this->authorize('update', $user);
         return view('admin.users.edit', compact('user'));
     }
 
     public function update(Request $request, User $user)
     {
+        $this->authorize('update', $user);
+        
         $request->validate([
             'name' => 'required|string|max:255',
             'phone' => 'nullable|string|max:20',
@@ -73,6 +80,7 @@ class UserController extends Controller
     public function toggleStatus($id)
     {
         $user = User::findOrFail($id);
+        $this->authorize('update', $user);
         
         // Không cho phép khóa tài khoản admin chính đang đăng nhập hoặc các admin khác tùy rule, 
         // ở đây tạm thời cho phép nhưng nên cảnh báo nếu tự khóa mình.

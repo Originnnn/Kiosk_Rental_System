@@ -12,7 +12,7 @@
             <p class="text-sm text-gray-500">Quản lý thông tin cá nhân và hợp đồng của khách hàng.</p>
         </div>
         
-        @can('is-employee')
+        @can('create', App\Models\Customer::class)
         <div>
             <button onclick="openModal()" class="bg-[#006699] hover:bg-[#005580] text-white px-4 py-2 rounded font-medium flex items-center text-sm transition-colors shadow-sm">
                 <i class="fa-solid fa-plus mr-2"></i> Thêm khách thuê
@@ -119,7 +119,7 @@
                                 <a href="{{ route('admin.customers.show', $customer->id) }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 hover:text-[#006699]">
                                     <i class="fa-regular fa-eye mr-2 w-4"></i> Xem chi tiết
                                 </a>
-                                @can('is-employee')
+                                @can('update', $customer)
                                 <a href="{{ route('admin.customers.edit', $customer->id) }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 hover:text-[#006699]">
                                     <i class="fa-regular fa-pen-to-square mr-2 w-4"></i> Chỉnh sửa
                                 </a>

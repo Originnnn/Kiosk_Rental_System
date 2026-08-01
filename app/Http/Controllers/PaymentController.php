@@ -10,6 +10,8 @@ class PaymentController extends Controller
 {
     public function index(Request $request)
     {
+        $this->authorize('viewAny', ContractPaymentSchedule::class);
+        
         $query = ContractPaymentSchedule::with(['contract.customer', 'contract.kiosk']);
 
         // Filter by text (Mã hợp đồng / Tên khách)
@@ -63,6 +65,7 @@ class PaymentController extends Controller
     public function showPaymentForm($id)
     {
         $payment = ContractPaymentSchedule::with(['contract.customer', 'contract.kiosk'])->findOrFail($id);
+        $this->authorize('update', $payment);
         
         $recentPayments = ContractPaymentSchedule::where('contract_id', $payment->contract_id)
                             ->where('status', 'paid')
@@ -75,29 +78,27 @@ class PaymentController extends Controller
 
     public function processPayment(Request $request, $id)
     {
+        $schedule = ContractPaymentSchedule::findOrFail($id);
+        $this->authorize('update', $schedule);
+        
         $request->validate([
             'payment_date' => 'required|date',
             'actual_amount' => 'required|numeric',
             'payment_method' => 'required|string',
-            'receipt_file' => 'nullable|array',
-            'receipt_file.*' => 'file|mimes:jpg,jpeg,png,pdf|max:2048',
-            'notes' => 'nullable|string'
+            'document' => 'nullable|file|mimes:jpg,jpeg,png,pdf|max:2048',
+            'note' => 'nullable|string'
         ]);
-
-        $schedule = ContractPaymentSchedule::findOrFail($id);
         
-        $paths = [];
-        if ($request->hasFile('receipt_file')) {
-            foreach ($request->file('receipt_file') as $file) {
-                $paths[] = $file->store('receipts', 'public');
-            }
+        $path = $schedule->receipt_file;
+        if ($request->hasFile('document')) {
+            $path = $request->file('document')->store('uploads/payments', 'public');
         }
 
         $schedule->transactions()->create([
             'amount' => $request->actual_amount,
             'payment_method' => $request->payment_method,
-            'receipt_file' => !empty($paths) ? json_encode($paths) : null,
-            'notes' => $request->notes,
+            'receipt_file' => $path,
+            'notes' => $request->input('note'),
             'paid_at' => $request->payment_date,
         ]);
 
@@ -114,6 +115,8 @@ class PaymentController extends Controller
             'remaining_debt' => $remainingDebt,
             'status' => $status,
             'paid_at' => $status == 'paid' ? $request->payment_date : $schedule->paid_at,
+            'receipt_file' => $path,
+            'notes' => $request->input('note'),
         ]);
 
         return redirect()->route('admin.payments.index')->with('success', 'Ghi nhận thanh toán thành công!');

@@ -64,8 +64,10 @@ Route::domain('admin.' . env('APP_URL_BASE', 'kiosk.localhost'))->group(function
         if (Auth::attempt($credentials)) {
             $request->session()->regenerate();
             
-            // Theo yêu cầu: Login thành công thì redirect về / của domain admin
-            return redirect('/');
+            if (Auth::user()->role === 'employee') {
+                return redirect()->route('admin.alerts.index');
+            }
+            return redirect()->route('admin.dashboard');
         }
 
         return back()->withErrors([
@@ -83,8 +85,13 @@ Route::domain('admin.' . env('APP_URL_BASE', 'kiosk.localhost'))->group(function
     // Middleware Auth bọc toàn bộ các route quản lý
     Route::middleware('auth')->group(function () {
         
-        // Route / của middleware auth trỏ về DashboardController@index
-        Route::get('/', [DashboardController::class, 'index'])->name('admin.home');
+        // Route / của middleware auth trỏ về trang chủ tương ứng với role
+        Route::get('/', function () {
+            if (Auth::user()->role === 'employee') {
+                return redirect()->route('admin.alerts.index');
+            }
+            return redirect()->route('admin.dashboard');
+        })->name('admin.home');
         
         // Hồ sơ cá nhân
         Route::get('/profile', [ProfileController::class, 'index'])->name('admin.profile.index');
@@ -99,47 +106,41 @@ Route::domain('admin.' . env('APP_URL_BASE', 'kiosk.localhost'))->group(function
             Route::get('/reports/export', [ReportController::class, 'export'])->name('admin.reports.export');
         });
 
-        // Middleware cho Admin (Quản lý User)
-        Route::middleware('can:is-admin')->group(function () {
-            Route::resource('/users', UserController::class)->except(['create', 'show'])->names('admin.users');
-            Route::patch('/users/{id}/toggle-status', [UserController::class, 'toggleStatus'])->name('admin.users.toggleStatus');
-        });
+        // Nhóm Quản lý User
+        Route::resource('/users', UserController::class)->except(['create', 'show'])->names('admin.users');
+        Route::patch('/users/{id}/toggle-status', [UserController::class, 'toggleStatus'])->name('admin.users.toggleStatus');
 
-        // Middleware chung cho Manager & Employee (View Operations)
-        Route::middleware('can:view-operations')->group(function () {
-            Route::get('/rental-requests', [AdminRentalRequestController::class, 'index'])->name('admin.rental_requests.index');
-            
-            Route::get('/payments', [PaymentController::class, 'index'])->name('admin.payments.index');
-            
-            Route::get('/contracts', [ContractController::class, 'index'])->name('admin.contracts.index');
-            Route::get('/contracts/{contract}', [ContractController::class, 'show'])->name('admin.contracts.show')->where('contract', '[0-9]+');
-            
-            Route::get('/customers', [CustomerController::class, 'index'])->name('admin.customers.index');
-            Route::get('/customers/{id}', [CustomerController::class, 'show'])->name('admin.customers.show')->where('id', '[0-9]+');
-            
-            Route::get('/kiosks', [KioskController::class, 'index'])->name('admin.kiosks.index');
-            Route::get('/kiosks/{kiosk}', [KioskController::class, 'show'])->name('admin.kiosks.show')->where('kiosk', '[0-9]+');
-        });
+        // Nhóm Dữ liệu Vận hành (Operations)
+        Route::get('/rental-requests', [AdminRentalRequestController::class, 'index'])->name('admin.rental_requests.index');
+        Route::patch('/rental-requests/{id}/status', [AdminRentalRequestController::class, 'updateStatus'])->name('admin.rental_requests.updateStatus');
+        
+        Route::get('/payments', [PaymentController::class, 'index'])->name('admin.payments.index');
+        Route::get('/payments/{id}/pay', [PaymentController::class, 'showPaymentForm'])->name('admin.payments.form');
+        Route::put('/payments/{id}/process', [PaymentController::class, 'processPayment'])->name('admin.payments.process');
 
-        // Middleware riêng cho Employee (Edit Operations)
-        Route::middleware('can:edit-operations')->group(function () {
-            Route::patch('/rental-requests/{id}/status', [AdminRentalRequestController::class, 'updateStatus'])->name('admin.rental_requests.updateStatus');
-            
-            Route::get('/payments/{id}/pay', [PaymentController::class, 'showPaymentForm'])->name('admin.payments.form');
-            Route::put('/payments/{id}/process', [PaymentController::class, 'processPayment'])->name('admin.payments.process');
+        Route::get('/contracts', [ContractController::class, 'index'])->name('admin.contracts.index');
+        Route::get('/contracts/create', [ContractController::class, 'create'])->name('admin.contracts.create');
+        Route::post('/contracts', [ContractController::class, 'store'])->name('admin.contracts.store');
+        Route::get('/contracts/{contract}', [ContractController::class, 'show'])->name('admin.contracts.show')->where('contract', '[0-9]+');
+        Route::get('/contracts/{contract}/edit', [ContractController::class, 'edit'])->name('admin.contracts.edit');
+        Route::put('/contracts/{contract}', [ContractController::class, 'update'])->name('admin.contracts.update');
 
-            Route::get('/contracts/create', [ContractController::class, 'create'])->name('admin.contracts.create');
-            Route::post('/contracts', [ContractController::class, 'store'])->name('admin.contracts.store');
-            Route::get('/contracts/{contract}/edit', [ContractController::class, 'edit'])->name('admin.contracts.edit');
-            Route::put('/contracts/{contract}', [ContractController::class, 'update'])->name('admin.contracts.update');
+        Route::get('/customers', [CustomerController::class, 'index'])->name('admin.customers.index');
+        Route::post('/customers', [CustomerController::class, 'store'])->name('admin.customers.store');
+        Route::get('/customers/{id}', [CustomerController::class, 'show'])->name('admin.customers.show')->where('id', '[0-9]+');
+        Route::get('/customers/{id}/edit', [CustomerController::class, 'edit'])->name('admin.customers.edit');
+        Route::put('/customers/{id}', [CustomerController::class, 'update'])->name('admin.customers.update');
+        Route::patch('/customers/{id}/toggle-status', [CustomerController::class, 'toggleStatus'])->name('admin.customers.toggleStatus');
 
-            Route::post('/customers', [CustomerController::class, 'store'])->name('admin.customers.store');
-            Route::get('/customers/{id}/edit', [CustomerController::class, 'edit'])->name('admin.customers.edit');
-            Route::put('/customers/{id}', [CustomerController::class, 'update'])->name('admin.customers.update');
-            Route::patch('/customers/{id}/toggle-status', [CustomerController::class, 'toggleStatus'])->name('admin.customers.toggleStatus');
+        Route::get('/kiosks', [KioskController::class, 'index'])->name('admin.kiosks.index');
+        Route::post('/kiosks', [KioskController::class, 'store'])->name('admin.kiosks.store');
+        Route::get('/kiosks/{kiosk}', [KioskController::class, 'show'])->name('admin.kiosks.show')->where('kiosk', '[0-9]+');
+        Route::put('/kiosks/{kiosk}', [KioskController::class, 'update'])->name('admin.kiosks.update');
 
-            Route::post('/kiosks', [KioskController::class, 'store'])->name('admin.kiosks.store');
-            Route::put('/kiosks/{kiosk}', [KioskController::class, 'update'])->name('admin.kiosks.update');
+        // Routes riêng cho Employee (Alerts & Reports)
+        Route::middleware(\App\Http\Middleware\CheckEmployeeRole::class)->group(function () {
+            Route::get('/alerts', [\App\Http\Controllers\AlertController::class, 'index'])->name('admin.alerts.index');
+            Route::get('/reports', [\App\Http\Controllers\ReportController::class, 'index'])->name('admin.reports.index');
         });
     });
 });

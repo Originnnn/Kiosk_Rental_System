@@ -40,7 +40,7 @@
             <button class="bg-white border border-gray-300 text-gray-700 px-4 py-2 rounded font-medium text-sm hover:bg-gray-50 shadow-sm flex items-center">
                 <i class="fa-solid fa-print mr-2"></i> In hợp đồng
             </button>
-            @can('is-employee')
+            @can('update', $contract)
             <button class="bg-white border border-red-500 text-red-500 px-4 py-2 rounded font-medium text-sm hover:bg-red-50 shadow-sm flex items-center">
                 <i class="fa-regular fa-circle-xmark mr-2"></i> Kết thúc sớm
             </button>

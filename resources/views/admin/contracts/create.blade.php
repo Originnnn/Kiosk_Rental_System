@@ -148,12 +148,14 @@
                 <div class="grid grid-cols-2 gap-6 mb-4">
                     <div>
                         <label class="block text-xs font-semibold text-gray-700 mb-2 uppercase">Giá thuê thực tế (VNĐ / Tháng)</label>
-                        <input type="number" name="actual_price_per_month" id="actual_price_per_month" value="{{ old('actual_price_per_month') }}" class="w-full px-3 py-2 border border-gray-300 rounded focus:ring-1 focus:ring-primary focus:border-primary text-sm font-semibold" required>
+                        <input type="text" id="display_actual_price" value="{{ old('actual_price_per_month') }}" class="w-full px-3 py-2 border border-gray-300 rounded focus:ring-1 focus:ring-primary focus:border-primary text-sm font-semibold" required>
+                        <input type="hidden" name="actual_price_per_month" id="actual_price_per_month" value="{{ old('actual_price_per_month') }}">
                         <p class="text-xs text-gray-500 mt-1">Có thể điều chỉnh so với giá cơ sở</p>
                     </div>
                     <div>
                         <label class="block text-xs font-semibold text-gray-700 mb-2 uppercase">Tiền cọc (VNĐ)</label>
-                        <input type="number" name="deposit_amount" id="deposit_amount" value="{{ old('deposit_amount') }}" class="w-full px-3 py-2 border border-gray-300 rounded focus:ring-1 focus:ring-primary focus:border-primary text-sm font-semibold" required>
+                        <input type="text" id="display_deposit_amount" value="{{ old('deposit_amount') }}" class="w-full px-3 py-2 border border-gray-300 rounded focus:ring-1 focus:ring-primary focus:border-primary text-sm font-semibold" required>
+                        <input type="hidden" name="deposit_amount" id="deposit_amount" value="{{ old('deposit_amount') }}">
                     </div>
                 </div>
 
@@ -249,7 +251,31 @@
         const sFirstPayment = document.getElementById('summary_first_payment');
         const hTotalAmount = document.getElementById('hidden_total_amount');
 
+        const dActualPriceInput = document.getElementById('display_actual_price');
+        const dDepositInput = document.getElementById('display_deposit_amount');
+
         const formatter = new Intl.NumberFormat('vi-VN');
+
+        function formatNumberInput(input) {
+            let val = input.value.replace(/\D/g, "");
+            if (val !== "") {
+                input.value = val.replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+            }
+            return val;
+        }
+
+        dActualPriceInput.addEventListener('input', function() {
+            actualPriceInput.value = formatNumberInput(this);
+            calculate();
+        });
+        
+        dDepositInput.addEventListener('input', function() {
+            depositInput.value = formatNumberInput(this);
+            calculate();
+        });
+
+        if (dActualPriceInput.value) formatNumberInput(dActualPriceInput);
+        if (dDepositInput.value) formatNumberInput(dDepositInput);
 
         function calculate() {
             // 1. Kiosk Data
@@ -263,11 +289,13 @@
                     dKioskPrice.textContent = formatter.format(basePrice);
                     
                     // Auto fill actual price and deposit if empty
-                    if (!actualPriceInput.value && !document.activeElement.isEqualNode(actualPriceInput)) {
+                    if (!actualPriceInput.value && !document.activeElement.isEqualNode(dActualPriceInput)) {
                         actualPriceInput.value = basePrice;
+                        dActualPriceInput.value = basePrice.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
                     }
-                    if (!depositInput.value && !document.activeElement.isEqualNode(depositInput)) {
+                    if (!depositInput.value && !document.activeElement.isEqualNode(dDepositInput)) {
                         depositInput.value = basePrice * 2; // Default 2 months deposit
+                        dDepositInput.value = (basePrice * 2).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
                     }
                 } else {
                     dKioskCode.textContent = '...';
@@ -318,7 +346,7 @@
         }
 
         // Attach listeners
-        const inputs = [kioskSelect, startDateInput, endDateInput, actualPriceInput, depositInput, cycleSelect];
+        const inputs = [kioskSelect, startDateInput, endDateInput, cycleSelect];
         inputs.forEach(el => {
             el.addEventListener('change', calculate);
             el.addEventListener('input', calculate);

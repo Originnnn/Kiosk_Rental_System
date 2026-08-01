@@ -10,6 +10,8 @@ class KioskController extends Controller
 {
     public function index(Request $request)
     {
+        $this->authorize('viewAny', Kiosk::class);
+        
         $query = Kiosk::query()->orderByRaw('LENGTH(code) asc, code asc');
 
         if ($request->filled('q')) {
@@ -42,6 +44,8 @@ class KioskController extends Controller
 
     public function store(Request $request)
     {
+        $this->authorize('create', Kiosk::class);
+        
         $validated = $request->validate([
             'code' => 'required|string|unique:kiosks,code|max:50',
             'name' => 'required|string|max:255',
@@ -66,6 +70,8 @@ class KioskController extends Controller
         $kiosk = Kiosk::with(['contracts' => function($q) {
             $q->orderBy('created_at', 'desc')->with('customer');
         }, 'images'])->findOrFail($id);
+        
+        $this->authorize('view', $kiosk);
 
         return response()->json($kiosk);
     }
@@ -74,6 +80,7 @@ class KioskController extends Controller
     {
         // Reserved for future use if needed from Drawer
         $kiosk = Kiosk::findOrFail($id);
+        $this->authorize('update', $kiosk);
         
         $validated = $request->validate([
             'code' => 'required|string|max:50|unique:kiosks,code,' . $kiosk->id,

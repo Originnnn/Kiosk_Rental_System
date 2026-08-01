@@ -14,7 +14,7 @@
     </div>
 
     <!-- Main Layout -->
-    <div class="flex gap-6 max-w-6xl">
+    <div class="flex gap-6 max-w-6xl" x-data="paymentForm()">
         
         <!-- CỘT TRÁI (Form & Thông tin) -->
         <div class="flex-1 flex flex-col gap-6">
@@ -75,7 +75,7 @@
                             <div>
                                 <label class="block text-sm font-semibold text-gray-700 mb-2">Số tiền thực đóng (VNĐ) <span class="text-red-500">*</span></label>
                                 <div class="relative">
-                                    <input type="number" name="actual_amount" id="actual_amount" required min="0" value="{{ $payment->remaining_debt ?? $payment->amount }}"
+                                    <input type="number" name="actual_amount" id="actual_amount" required min="0" x-model="enteringAmount"
                                         class="w-full pl-3 pr-8 py-2 border border-gray-300 rounded focus:ring-1 focus:ring-primary focus:border-primary text-sm">
                                     <span class="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-500 text-sm pointer-events-none">đ</span>
                                 </div>
@@ -97,7 +97,7 @@
                             <div>
                                 <label class="block text-sm font-semibold text-gray-700 mb-2">Chứng từ đính kèm (Ảnh/PDF)</label>
                                 <div class="border-2 border-dashed border-gray-300 rounded bg-gray-50 text-center py-2 relative hover:bg-gray-100 transition cursor-pointer" id="file-upload-container">
-                                    <input type="file" name="receipt_file[]" id="receipt_file" multiple class="absolute inset-0 w-full h-full opacity-0 cursor-pointer" accept=".jpg,.jpeg,.png,.pdf">
+                                    <input type="file" name="document" id="receipt_file" class="absolute inset-0 w-full h-full opacity-0 cursor-pointer" accept=".jpg,.jpeg,.png,.pdf">
                                     <span class="text-xs text-gray-500" id="file-upload-text"><i class="fa-solid fa-cloud-arrow-up mr-1 text-primary"></i> <span class="text-primary font-medium">Nhấn để tải lên</span> hoặc kéo thả file</span>
                                 </div>
                                 <div id="file-preview" class="hidden mt-2 flex flex-col gap-2">
@@ -108,7 +108,7 @@
                         <!-- Ghi chú -->
                         <div class="mb-8">
                             <label class="block text-sm font-semibold text-gray-700 mb-2">Ghi chú</label>
-                            <textarea name="notes" rows="3" placeholder="Nhập ghi chú chi tiết về giao dịch này..."
+                            <textarea name="note" rows="3" placeholder="Nhập ghi chú chi tiết về giao dịch này..."
                                 class="w-full px-3 py-2 border border-gray-300 rounded focus:ring-1 focus:ring-primary focus:border-primary text-sm"></textarea>
                         </div>
 
@@ -151,17 +151,17 @@
                     
                     <div class="flex justify-between items-center mb-6 pt-3">
                         <span class="text-sm font-bold text-gray-800">Cần đóng:</span>
-                        <span class="text-xl font-bold text-[#006699]" id="display_required">{{ number_format($payment->remaining_debt ?? $payment->amount, 0, ',', '.') }} đ</span>
+                        <span class="text-xl font-bold text-[#006699]" x-text="formatCurrency(neededAmount)"></span>
                     </div>
                     
                     <div class="flex justify-between items-center mb-6 pb-4 border-b border-gray-200">
                         <span class="text-sm text-green-600 flex items-center"><i class="fa-solid fa-plus-circle mr-1 text-xs"></i> Số tiền đang nhập:</span>
-                        <span class="text-sm font-bold text-green-600" id="display_entered">{{ number_format($payment->remaining_debt ?? $payment->amount, 0, ',', '.') }} đ</span>
+                        <span class="text-sm font-bold text-green-600" x-text="formatCurrency(enteringAmount)"></span>
                     </div>
                     
                     <div class="flex justify-between items-center mb-6">
                         <span class="text-sm font-bold text-gray-800">Nợ còn lại (sau thanh toán):</span>
-                        <span class="text-xl font-bold text-[#006699]" id="display_balance">0 đ</span>
+                        <span class="text-xl font-bold" :class="remainingDebt > 0 ? 'text-red-500' : 'text-[#006699]'" x-text="formatCurrency(remainingDebt)"></span>
                     </div>
                     
                     <!-- Alert Box -->
@@ -214,31 +214,30 @@
 
 @section('scripts')
 <script>
-    // Logic tính toán Số dư (Còn lại) bên khung Tóm tắt
-    document.addEventListener("DOMContentLoaded", function() {
-        const requiredAmount = {{ $payment->remaining_debt ?? $payment->amount }};
-        const inputAmount = document.getElementById('actual_amount');
-        const displayEntered = document.getElementById('display_entered');
-        const displayBalance = document.getElementById('display_balance');
-
-        function updateSummary() {
-            let entered = parseFloat(inputAmount.value) || 0;
-            let balance = requiredAmount - entered;
-
-            displayEntered.textContent = entered.toLocaleString('vi-VN') + ' đ';
-            displayBalance.textContent = balance.toLocaleString('vi-VN') + ' đ';
+    function paymentForm() {
+        return {
+            totalAmount: {{ $payment->amount ?? 0 }},
+            paidAmount: {{ $payment->actual_amount ?? 0 }},
+            neededAmount: 0,
+            enteringAmount: {{ $payment->remaining_debt ?? $payment->amount ?? 0 }},
             
-            if (balance > 0) {
-                displayBalance.classList.remove('text-green-600');
-                displayBalance.classList.add('text-red-500');
-            } else {
-                displayBalance.classList.remove('text-red-500');
-                displayBalance.classList.add('text-[#006699]'); // Màu chuẩn
+            init() {
+                this.neededAmount = this.totalAmount - this.paidAmount;
+            },
+            
+            get remainingDebt() {
+                let entered = parseFloat(this.enteringAmount) || 0;
+                return Math.max(0, this.neededAmount - entered);
+            },
+            
+            formatCurrency(amount) {
+                let val = parseFloat(amount) || 0;
+                return val.toLocaleString('vi-VN') + ' đ';
             }
         }
+    }
 
-        inputAmount.addEventListener('input', updateSummary);
-
+    document.addEventListener("DOMContentLoaded", function() {
         // Logic hiển thị file đính kèm (hỗ trợ chọn thêm lần lượt)
         const fileInput = document.getElementById('receipt_file');
         const filePreview = document.getElementById('file-preview');

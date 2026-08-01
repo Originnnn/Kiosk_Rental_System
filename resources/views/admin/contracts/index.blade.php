@@ -17,7 +17,7 @@
                 <button type="button" class="bg-white border border-gray-300 text-gray-700 px-4 py-2 rounded flex items-center font-medium text-sm hover:bg-gray-50 transition-colors shadow-sm">
                     <i class="fa-solid fa-filter mr-2"></i> Bộ lọc
                 </button>
-                @can('is-employee')
+                @can('create', App\Models\Contract::class)
                 <a href="{{ route('admin.contracts.create') }}" class="bg-[#006699] hover:bg-[#005580] text-white px-4 py-2 rounded font-medium flex items-center text-sm transition-colors shadow-sm">
                     <i class="fa-solid fa-plus mr-2"></i> Tạo hợp đồng
                 </a>

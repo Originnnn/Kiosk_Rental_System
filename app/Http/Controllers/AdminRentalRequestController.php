@@ -12,6 +12,7 @@ class AdminRentalRequestController extends Controller
 {
     public function index()
     {
+        $this->authorize('viewAny', BookingRequest::class);
         // Sử dụng BookingRequest đã tạo ở bước trước (thay vì rental_requests cũ)
         $requests = BookingRequest::with('kiosk')->latest()->get();
         return view('admin.rental_requests.index', compact('requests'));
@@ -19,6 +20,9 @@ class AdminRentalRequestController extends Controller
 
     public function updateStatus(Request $request, $id)
     {
+        $bookingRequest = BookingRequest::findOrFail($id);
+        $this->authorize('update', $bookingRequest);
+        
         $validated = $request->validate([
             'status' => 'required|in:pending,processing,resolved,rejected'
         ]);
@@ -26,7 +30,6 @@ class AdminRentalRequestController extends Controller
         try {
             DB::beginTransaction();
 
-            $bookingRequest = BookingRequest::findOrFail($id);
             $bookingRequest->status = $validated['status'];
             
             // Ghi lại ID nhân viên xử lý, nếu chưa có hệ thống Auth hoàn chỉnh thì giả lập là 1

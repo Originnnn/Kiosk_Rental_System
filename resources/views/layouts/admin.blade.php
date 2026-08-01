@@ -70,7 +70,7 @@
                 </li>
                 @endcan
                 
-                @can('is-admin')
+                @can('viewAny', App\Models\User::class)
                 <li>
                     <a href="{{ route('admin.users.index') }}" class="flex items-center px-4 py-2.5 {{ request()->is('admin/users*') ? 'bg-sidebarActive text-white' : 'text-gray-300 hover:bg-gray-800 hover:text-white transition' }}">
                         <i class="fa-solid fa-users w-6 text-center"></i>
@@ -79,7 +79,7 @@
                 </li>
                 @endcan
 
-                @can('view-operations')
+                @can('viewAny', App\Models\Contract::class)
                 <li>
                     <a href="{{ route('admin.rental_requests.index') }}" class="flex items-center px-4 py-2.5 {{ request()->is('admin/rental-requests*') ? 'bg-sidebarActive text-white' : 'text-gray-300 hover:bg-gray-800 hover:text-white transition' }}">
                         <i class="fa-solid fa-inbox w-6 text-center"></i>
@@ -112,7 +112,7 @@
                 </li>
                 @endcan
                 
-                @can('is-manager')
+                @can('create', App\Models\Kiosk::class)
                 <li>
                     <a href="#" class="flex items-center px-4 py-2.5 text-gray-300 hover:bg-gray-800 hover:text-white transition">
                         <i class="fa-solid fa-chart-line w-6 text-center"></i>
@@ -120,6 +120,21 @@
                     </a>
                 </li>
                 @endcan
+
+                @can('create', App\Models\Contract::class)
+                <li>
+                    <a href="{{ route('admin.alerts.index') }}" class="flex items-center px-4 py-2.5 {{ request()->is('admin/alerts*') ? 'bg-sidebarActive text-white' : 'text-gray-300 hover:bg-gray-800 hover:text-white transition' }}">
+                        <i class="fa-solid fa-triangle-exclamation w-6 text-center text-red-500"></i>
+                        <span class="ml-2">Cảnh báo hệ thống</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="{{ route('admin.reports.index') }}" class="flex items-center px-4 py-2.5 {{ request()->is('admin/reports*') ? 'bg-sidebarActive text-white' : 'text-gray-300 hover:bg-gray-800 hover:text-white transition' }}">
+                        <i class="fa-solid fa-file-export w-6 text-center text-blue-400"></i>
+                        <span class="ml-2">Báo cáo & Thống kê</span>
+                    </a>
+                </li>
+                @endif
             </ul>
         </nav>
         

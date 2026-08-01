@@ -9,6 +9,11 @@ use Barryvdh\DomPDF\Facade\Pdf;
 
 class ReportController extends Controller
 {
+    public function index()
+    {
+        return view('admin.reports.index');
+    }
+
     public function export()
     {
         // Tăng giới hạn bộ nhớ do DOMPDF tốn nhiều RAM để render báo cáo dữ liệu lớn
