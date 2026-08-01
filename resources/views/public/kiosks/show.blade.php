@@ -22,7 +22,7 @@
             <div class="bg-white rounded-lg border border-gray-200 overflow-hidden shadow-sm p-4">
                 <div class="relative w-full aspect-[16/9] mb-4 bg-gray-100 rounded overflow-hidden">
                     @if($kiosk->images->isNotEmpty())
-                        <img id="main-image" src="/storage/{{ $kiosk->images->first()->path }}" class="w-full h-full object-cover" alt="{{ $kiosk->code }}">
+                        <img id="main-image" src="{{ asset($kiosk->images->first()->file_path) }}" class="w-full h-full object-cover" alt="{{ $kiosk->code }}">
                         <div class="absolute bottom-3 right-3 bg-white/90 backdrop-blur-sm px-3 py-1 text-xs font-bold rounded shadow-sm text-gray-700">
                             1 / {{ $kiosk->images->count() }}
                         </div>
@@ -34,7 +34,7 @@
                 @if($kiosk->images->count() > 0)
                 <div class="flex gap-3 overflow-x-auto pb-1">
                     @foreach($kiosk->images as $index => $img)
-                        <img src="/storage/{{ $img->path }}" class="w-24 h-16 object-cover cursor-pointer rounded border-2 {{ $index == 0 ? 'border-blue-500 opacity-100' : 'border-transparent opacity-60 hover:opacity-100' }} transition" onclick="updateMainImage(this, '{{ $index + 1 }}', '{{ $kiosk->images->count() }}')">
+                        <img src="{{ asset($img->file_path) }}" class="w-24 h-16 object-cover cursor-pointer rounded border-2 {{ $index == 0 ? 'border-blue-500 opacity-100' : 'border-transparent opacity-60 hover:opacity-100' }} transition" onclick="updateMainImage(this, '{{ $index + 1 }}', '{{ $kiosk->images->count() }}')">
                     @endforeach
                 </div>
                 @endif
@@ -184,7 +184,7 @@
                 <a href="/kiosks/{{ $sim->id }}" class="block bg-white border border-gray-200 rounded-lg overflow-hidden hover:shadow-md transition group">
                     <div class="relative h-40 bg-gray-100 overflow-hidden">
                         @if($sim->images->isNotEmpty())
-                            <img src="/storage/{{ $sim->images->first()->path }}" class="w-full h-full object-cover group-hover:scale-105 transition duration-500" alt="{{ $sim->code }}">
+                            <img src="{{ asset($sim->images->first()->file_path) }}" class="w-full h-full object-cover group-hover:scale-105 transition duration-500" alt="{{ $sim->code }}">
                         @else
                             <img src="https://via.placeholder.com/400x300?text=Kiosk" class="w-full h-full object-cover" alt="Placeholder">
                         @endif
@@ -221,7 +221,7 @@
         <div class="p-5">
             <div class="bg-gray-50 border border-gray-200 rounded p-3 mb-5 flex items-center gap-3">
                 @if($kiosk->images->isNotEmpty())
-                    <img src="/storage/{{ $kiosk->images->first()->path }}" class="w-16 h-12 object-cover rounded border border-gray-200 bg-white">
+                    <img src="{{ asset($kiosk->images->first()->file_path) }}" class="w-16 h-12 object-cover rounded border border-gray-200 bg-white">
                 @else
                     <div class="w-16 h-12 bg-gray-200 rounded"></div>
                 @endif

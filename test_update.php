@@ -1,14 +1,19 @@
 <?php
-$files = glob('c:/Users/vohun/Kiosk_Rental_System/kiosk_rental/app/Models/*.php');
-$models = ['Contract.php', 'Kiosk.php', 'Customer.php', 'RentalRequest.php', 'BookingRequest.php', 'Payment.php'];
-foreach ($files as $file) {
-    if (in_array(basename($file), $models)) {
-        $content = file_get_contents($file);
-        if (strpos($content, 'use App\Traits\Auditable;') === false) {
-            $content = preg_replace('/(use Illuminate\\\\Database\\\\Eloquent\\\\Model;)/', "$1\nuse App\\Traits\\Auditable;", $content);
-            $content = preg_replace('/(use HasFactory;)/', "$1\n    use Auditable;", $content);
-            file_put_contents($file, $content);
-            echo "Added Auditable to " . basename($file) . "\n";
-        }
-    }
+require 'vendor/autoload.php';
+$app = require_once 'bootstrap/app.php';
+$app->make(Illuminate\Contracts\Console\Kernel::class)->bootstrap();
+
+$request = Illuminate\Http\Request::create('/kiosks/11', 'POST', [
+    '_method' => 'PUT',
+    'code' => 'K-11',
+    'name' => 'Kiosk 11',
+    'area' => '10',
+    'price' => '1000',
+]);
+$controller = new App\Http\Controllers\KioskController();
+try {
+    $response = $controller->update($request, 11);
+    echo $response->getContent();
+} catch (\Exception $e) {
+    echo "ERROR: " . $e->getMessage() . "\n" . $e->getFile() . ":" . $e->getLine();
 }

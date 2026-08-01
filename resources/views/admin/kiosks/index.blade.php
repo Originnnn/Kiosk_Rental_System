@@ -275,9 +275,13 @@
                         <div x-show="!isEditing">
                             <!-- Info Grid -->
                             <div class="flex space-x-4 mb-6">
-                            <!-- Placeholder Image -->
                             <div class="w-1/2 rounded-lg overflow-hidden relative bg-gray-100 border border-gray-200 flex items-center justify-center">
-                                <img src="https://images.unsplash.com/photo-1555529733-0e67056058e1?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80" alt="Kiosk" class="w-full h-full object-cover">
+                                <template x-if="activeKiosk && activeKiosk.images && activeKiosk.images.length > 0">
+                                    <img :src="'{{ asset('') }}' + activeKiosk.images[0].file_path" alt="Kiosk" class="w-full h-full object-cover">
+                                </template>
+                                <template x-if="!activeKiosk || !activeKiosk.images || activeKiosk.images.length === 0">
+                                    <img src="https://images.unsplash.com/photo-1555529733-0e67056058e1?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80" alt="Kiosk Placeholder" class="w-full h-full object-cover opacity-50 grayscale">
+                                </template>
                                 <div class="absolute bottom-2 right-2 bg-white p-1.5 rounded shadow">
                                     <i class="fa-solid fa-camera text-gray-500 text-xs"></i>
                                 </div>
@@ -468,6 +472,127 @@
                                 <textarea x-model="editData.description" rows="3" class="w-full px-3 py-2 border rounded focus:outline-none focus:border-primary text-sm resize-none" :class="editErrors.description ? 'border-red-500' : 'border-gray-300'"></textarea>
                                 <template x-if="editErrors.description"><p class="text-red-500 text-xs mt-1" x-text="editErrors.description[0]"></p></template>
                             </div>
+
+                            <div class="mt-4">
+                                <label class="block text-xs font-bold text-gray-800 mb-2 border-b pb-1"><i class="fa-regular fa-images mr-1 text-gray-400"></i> Hình ảnh Kiosk</label>
+                                <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
+                                    <!-- Slot 1 -->
+                                    <div>
+                                        <label class="block text-[11px] font-semibold text-gray-700 mb-1">Mặt tiền *</label>
+                                        <template x-if="getExistingImage(1) && !editFiles.image_front">
+                                            <div class="relative w-full h-24 rounded border border-gray-200 overflow-hidden group">
+                                                <img :src="'{{ asset('') }}' + getExistingImage(1).file_path" class="w-full h-full object-cover">
+                                                <div class="absolute inset-0 bg-black/40 hidden group-hover:flex items-center justify-center">
+                                                    <button type="button" @click="$refs.image_front.click()" class="bg-white text-gray-700 text-xs px-2 py-1 rounded shadow-sm hover:bg-gray-50">Thay đổi</button>
+                                                </div>
+                                            </div>
+                                        </template>
+                                        <template x-if="editFiles.image_front">
+                                            <div class="relative w-full h-24 rounded border border-[#006699] overflow-hidden group">
+                                                <img :src="getFilePreview('image_front')" class="w-full h-full object-cover">
+                                                <div class="absolute inset-0 bg-black/40 hidden group-hover:flex items-center justify-center">
+                                                    <button type="button" @click="clearFile('image_front')" class="bg-white text-red-500 text-xs px-2 py-1 rounded shadow-sm hover:bg-gray-50"><i class="fa-solid fa-trash"></i></button>
+                                                </div>
+                                            </div>
+                                        </template>
+                                        <template x-if="!getExistingImage(1) && !editFiles.image_front">
+                                            <div class="border border-dashed border-gray-300 rounded h-24 flex flex-col items-center justify-center bg-white cursor-pointer hover:bg-gray-50 transition" @click="$refs.image_front.click()">
+                                                <i class="fa-solid fa-cloud-arrow-up text-gray-400 mb-1 text-lg"></i>
+                                                <span class="text-[10px] text-gray-500 font-medium">Tải lên</span>
+                                            </div>
+                                        </template>
+                                        <input type="file" x-ref="image_front" class="hidden" accept="image/jpeg,image/png,image/jpg,image/webp" @change="handleFileChange('image_front', $event)">
+                                        <template x-if="editErrors.image_front"><p class="text-red-500 text-[10px] mt-1" x-text="editErrors.image_front[0]"></p></template>
+                                    </div>
+                                    
+                                    <!-- Slot 2 -->
+                                    <div>
+                                        <label class="block text-[11px] font-semibold text-gray-700 mb-1">Góc nghiêng</label>
+                                        <template x-if="getExistingImage(2) && !editFiles.image_angle">
+                                            <div class="relative w-full h-24 rounded border border-gray-200 overflow-hidden group">
+                                                <img :src="'{{ asset('') }}' + getExistingImage(2).file_path" class="w-full h-full object-cover">
+                                                <div class="absolute inset-0 bg-black/40 hidden group-hover:flex items-center justify-center">
+                                                    <button type="button" @click="$refs.image_angle.click()" class="bg-white text-gray-700 text-xs px-2 py-1 rounded shadow-sm hover:bg-gray-50">Thay đổi</button>
+                                                </div>
+                                            </div>
+                                        </template>
+                                        <template x-if="editFiles.image_angle">
+                                            <div class="relative w-full h-24 rounded border border-[#006699] overflow-hidden group">
+                                                <img :src="getFilePreview('image_angle')" class="w-full h-full object-cover">
+                                                <div class="absolute inset-0 bg-black/40 hidden group-hover:flex items-center justify-center">
+                                                    <button type="button" @click="clearFile('image_angle')" class="bg-white text-red-500 text-xs px-2 py-1 rounded shadow-sm hover:bg-gray-50"><i class="fa-solid fa-trash"></i></button>
+                                                </div>
+                                            </div>
+                                        </template>
+                                        <template x-if="!getExistingImage(2) && !editFiles.image_angle">
+                                            <div class="border border-dashed border-gray-300 rounded h-24 flex flex-col items-center justify-center bg-white cursor-pointer hover:bg-gray-50 transition" @click="$refs.image_angle.click()">
+                                                <i class="fa-solid fa-cloud-arrow-up text-gray-400 mb-1 text-lg"></i>
+                                                <span class="text-[10px] text-gray-500 font-medium">Tải lên</span>
+                                            </div>
+                                        </template>
+                                        <input type="file" x-ref="image_angle" class="hidden" accept="image/jpeg,image/png,image/jpg,image/webp" @change="handleFileChange('image_angle', $event)">
+                                        <template x-if="editErrors.image_angle"><p class="text-red-500 text-[10px] mt-1" x-text="editErrors.image_angle[0]"></p></template>
+                                    </div>
+
+                                    <!-- Slot 3 -->
+                                    <div>
+                                        <label class="block text-[11px] font-semibold text-gray-700 mb-1">Cận cảnh</label>
+                                        <template x-if="getExistingImage(3) && !editFiles.image_closeup">
+                                            <div class="relative w-full h-24 rounded border border-gray-200 overflow-hidden group">
+                                                <img :src="'{{ asset('') }}' + getExistingImage(3).file_path" class="w-full h-full object-cover">
+                                                <div class="absolute inset-0 bg-black/40 hidden group-hover:flex items-center justify-center">
+                                                    <button type="button" @click="$refs.image_closeup.click()" class="bg-white text-gray-700 text-xs px-2 py-1 rounded shadow-sm hover:bg-gray-50">Thay đổi</button>
+                                                </div>
+                                            </div>
+                                        </template>
+                                        <template x-if="editFiles.image_closeup">
+                                            <div class="relative w-full h-24 rounded border border-[#006699] overflow-hidden group">
+                                                <img :src="getFilePreview('image_closeup')" class="w-full h-full object-cover">
+                                                <div class="absolute inset-0 bg-black/40 hidden group-hover:flex items-center justify-center">
+                                                    <button type="button" @click="clearFile('image_closeup')" class="bg-white text-red-500 text-xs px-2 py-1 rounded shadow-sm hover:bg-gray-50"><i class="fa-solid fa-trash"></i></button>
+                                                </div>
+                                            </div>
+                                        </template>
+                                        <template x-if="!getExistingImage(3) && !editFiles.image_closeup">
+                                            <div class="border border-dashed border-gray-300 rounded h-24 flex flex-col items-center justify-center bg-white cursor-pointer hover:bg-gray-50 transition" @click="$refs.image_closeup.click()">
+                                                <i class="fa-solid fa-cloud-arrow-up text-gray-400 mb-1 text-lg"></i>
+                                                <span class="text-[10px] text-gray-500 font-medium">Tải lên</span>
+                                            </div>
+                                        </template>
+                                        <input type="file" x-ref="image_closeup" class="hidden" accept="image/jpeg,image/png,image/jpg,image/webp" @change="handleFileChange('image_closeup', $event)">
+                                        <template x-if="editErrors.image_closeup"><p class="text-red-500 text-[10px] mt-1" x-text="editErrors.image_closeup[0]"></p></template>
+                                    </div>
+
+                                    <!-- Slot 4 -->
+                                    <div>
+                                        <label class="block text-[11px] font-semibold text-gray-700 mb-1">Mặt sau</label>
+                                        <template x-if="getExistingImage(4) && !editFiles.image_back">
+                                            <div class="relative w-full h-24 rounded border border-gray-200 overflow-hidden group">
+                                                <img :src="'{{ asset('') }}' + getExistingImage(4).file_path" class="w-full h-full object-cover">
+                                                <div class="absolute inset-0 bg-black/40 hidden group-hover:flex items-center justify-center">
+                                                    <button type="button" @click="$refs.image_back.click()" class="bg-white text-gray-700 text-xs px-2 py-1 rounded shadow-sm hover:bg-gray-50">Thay đổi</button>
+                                                </div>
+                                            </div>
+                                        </template>
+                                        <template x-if="editFiles.image_back">
+                                            <div class="relative w-full h-24 rounded border border-[#006699] overflow-hidden group">
+                                                <img :src="getFilePreview('image_back')" class="w-full h-full object-cover">
+                                                <div class="absolute inset-0 bg-black/40 hidden group-hover:flex items-center justify-center">
+                                                    <button type="button" @click="clearFile('image_back')" class="bg-white text-red-500 text-xs px-2 py-1 rounded shadow-sm hover:bg-gray-50"><i class="fa-solid fa-trash"></i></button>
+                                                </div>
+                                            </div>
+                                        </template>
+                                        <template x-if="!getExistingImage(4) && !editFiles.image_back">
+                                            <div class="border border-dashed border-gray-300 rounded h-24 flex flex-col items-center justify-center bg-white cursor-pointer hover:bg-gray-50 transition" @click="$refs.image_back.click()">
+                                                <i class="fa-solid fa-cloud-arrow-up text-gray-400 mb-1 text-lg"></i>
+                                                <span class="text-[10px] text-gray-500 font-medium">Tải lên</span>
+                                            </div>
+                                        </template>
+                                        <input type="file" x-ref="image_back" class="hidden" accept="image/jpeg,image/png,image/jpg,image/webp" @change="handleFileChange('image_back', $event)">
+                                        <template x-if="editErrors.image_back"><p class="text-red-500 text-[10px] mt-1" x-text="editErrors.image_back[0]"></p></template>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
 
                     </div>
@@ -490,7 +615,8 @@
                     @endcan
                 </div>
                 
-                <div x-show="isEditing" style="display: none;" class="flex space-x-3 w-full justify-end">
+                <div x-show="isEditing" style="display: none;" class="flex space-x-3 w-full justify-end items-center">
+                    <span x-show="generalError" class="text-red-500 text-sm font-semibold mr-auto" x-text="generalError" style="display: none;"></span>
                     <button @click="isEditing = false" class="px-4 py-2 border border-gray-300 text-gray-700 rounded font-medium text-sm hover:bg-gray-50">
                         Hủy
                     </button>
@@ -537,12 +663,48 @@
 
             isEditing: false,
             saving: false,
+            generalError: null,
             editData: { code: '', name: '', area: '', price: '', description: '', power_supply: '', water_supply: '', internet_connection: '', air_conditioning: '' },
+            editFiles: { image_front: null, image_angle: null, image_closeup: null, image_back: null },
+            filePreviews: { image_front: null, image_angle: null, image_closeup: null, image_back: null },
             editErrors: {},
+
+            getExistingImage(order) {
+                if (!this.activeKiosk || !this.activeKiosk.images) return null;
+                return this.activeKiosk.images.find(img => img.sort_order == order);
+            },
+            
+            handleFileChange(key, event) {
+                const file = event.target.files[0];
+                if (file) {
+                    this.editFiles[key] = file;
+                    this.filePreviews[key] = URL.createObjectURL(file);
+                } else {
+                    this.clearFile(key);
+                }
+            },
+            
+            clearFile(key) {
+                this.editFiles[key] = null;
+                this.filePreviews[key] = null;
+                if (this.$refs[key]) this.$refs[key].value = '';
+            },
+
+            getFilePreview(key) {
+                return this.filePreviews[key];
+            },
 
             startEdit() {
                 this.isEditing = true;
                 this.editErrors = {};
+                this.editFiles = { image_front: null, image_angle: null, image_closeup: null, image_back: null };
+                this.filePreviews = { image_front: null, image_angle: null, image_closeup: null, image_back: null };
+                
+                // Clear existing file inputs if any
+                ['image_front', 'image_angle', 'image_closeup', 'image_back'].forEach(key => {
+                    if (this.$refs[key]) this.$refs[key].value = '';
+                });
+
                 this.editData = {
                     code: this.activeKiosk.code,
                     name: this.activeKiosk.name,
@@ -559,14 +721,48 @@
             saveEdit() {
                 this.saving = true;
                 this.editErrors = {};
+                this.generalError = null;
+                
+                // Client-side file size validation (max 2MB)
+                let hasLargeFile = false;
+                const checkFileSize = (ref, key) => {
+                    if (ref && ref.files.length > 0) {
+                        if (ref.files[0].size > 5 * 1024 * 1024) {
+                            this.editErrors[key] = ['Kích thước ảnh không được vượt quá 5MB.'];
+                            hasLargeFile = true;
+                        }
+                    }
+                };
+                checkFileSize(this.$refs.image_front, 'image_front');
+                checkFileSize(this.$refs.image_angle, 'image_angle');
+                checkFileSize(this.$refs.image_closeup, 'image_closeup');
+                checkFileSize(this.$refs.image_back, 'image_back');
+
+                if (hasLargeFile) {
+                    this.saving = false;
+                    this.generalError = "Vui lòng chọn ảnh có kích thước nhỏ hơn 5MB.";
+                    return;
+                }
+
+                let formData = new FormData();
+                formData.append('_method', 'PUT');
+                
+                for (let key in this.editData) {
+                    formData.append(key, this.editData[key] !== null ? this.editData[key] : '');
+                }
+                
+                if (this.$refs.image_front && this.$refs.image_front.files.length > 0) formData.append('image_front', this.$refs.image_front.files[0]);
+                if (this.$refs.image_angle && this.$refs.image_angle.files.length > 0) formData.append('image_angle', this.$refs.image_angle.files[0]);
+                if (this.$refs.image_closeup && this.$refs.image_closeup.files.length > 0) formData.append('image_closeup', this.$refs.image_closeup.files[0]);
+                if (this.$refs.image_back && this.$refs.image_back.files.length > 0) formData.append('image_back', this.$refs.image_back.files[0]);
+
                 fetch(`/kiosks/${this.activeKiosk.id}`, {
-                    method: 'PUT',
+                    method: 'POST',
                     headers: {
-                        'Content-Type': 'application/json',
                         'Accept': 'application/json',
                         'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
                     },
-                    body: JSON.stringify(this.editData)
+                    body: formData
                 })
                 .then(async response => {
                     if (!response.ok) {
@@ -575,6 +771,12 @@
                             this.editErrors = data.errors;
                             throw new Error('Validation failed');
                         }
+                        if (response.status === 413) {
+                            this.generalError = "Ảnh tải lên có dung lượng quá lớn (vượt quá giới hạn của máy chủ).";
+                            throw new Error('Payload Too Large');
+                        }
+                        const errText = await response.text();
+                        this.generalError = `Lỗi hệ thống (${response.status}): ${errText.substring(0, 50)}`;
                         throw new Error('Network response was not ok');
                     }
                     return response.json();
@@ -589,6 +791,9 @@
                 .catch(error => {
                     console.error('Error updating kiosk:', error);
                     this.saving = false;
+                    if (error.message !== 'Validation failed' && !this.generalError) {
+                        this.generalError = "Đã xảy ra lỗi khi lưu dữ liệu!";
+                    }
                 });
             },
 

@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Kiosk;
+use Illuminate\Support\Facades\File;
 
 class KioskController extends Controller
 {
@@ -64,7 +65,7 @@ class KioskController extends Controller
     {
         $kiosk = Kiosk::with(['contracts' => function($q) {
             $q->orderBy('created_at', 'desc')->with('customer');
-        }])->findOrFail($id);
+        }, 'images'])->findOrFail($id);
 
         return response()->json($kiosk);
     }
@@ -84,9 +85,64 @@ class KioskController extends Controller
             'water_supply' => 'nullable|string',
             'internet_connection' => 'nullable|string',
             'air_conditioning' => 'nullable|string',
+            'image_front' => 'nullable|image|mimes:jpeg,png,jpg,webp|max:5120',
+            'image_angle' => 'nullable|image|mimes:jpeg,png,jpg,webp|max:5120',
+            'image_closeup' => 'nullable|image|mimes:jpeg,png,jpg,webp|max:5120',
+            'image_back' => 'nullable|image|mimes:jpeg,png,jpg,webp|max:5120',
         ]);
 
-        $kiosk->update($validated);
+        $kioskData = \Illuminate\Support\Arr::except($validated, [
+            'image_front', 'image_angle', 'image_closeup', 'image_back'
+        ]);
+
+        $kiosk->update($kioskData);
+
+        $imageSlots = [
+            'image_front' => ['alt_text' => 'Mặt tiền', 'sort_order' => 1, 'suffix' => 'mattien'],
+            'image_angle' => ['alt_text' => 'Góc nghiêng', 'sort_order' => 2, 'suffix' => 'gocnghieng'],
+            'image_closeup' => ['alt_text' => 'Cận cảnh', 'sort_order' => 3, 'suffix' => 'cancanh'],
+            'image_back' => ['alt_text' => 'Mặt sau', 'sort_order' => 4, 'suffix' => 'matsau'],
+        ];
+
+        foreach ($imageSlots as $inputName => $meta) {
+            if ($request->hasFile($inputName)) {
+                $file = $request->file($inputName);
+                $existingImage = $kiosk->images()->where('sort_order', $meta['sort_order'])->first();
+                
+                if ($existingImage && File::exists(public_path($existingImage->file_path))) {
+                    File::delete(public_path($existingImage->file_path));
+                }
+                
+                $kioskDir = strtolower($kiosk->code);
+                $kioskPrefix = str_replace('-', '', $kioskDir);
+                $destinationPath = public_path('uploads/kiosks/' . $kioskDir);
+                
+                if (!File::isDirectory($destinationPath)) {
+                    File::makeDirectory($destinationPath, 0755, true, true);
+                }
+
+                $orderPad = str_pad($meta['sort_order'], 2, '0', STR_PAD_LEFT);
+                $extension = $file->getClientOriginalExtension();
+                $filename = "{$kioskPrefix}_{$orderPad}_{$meta['suffix']}.{$extension}";
+                
+                $file->move($destinationPath, $filename);
+                $filePath = 'uploads/kiosks/' . $kioskDir . '/' . $filename;
+                
+                if ($existingImage) {
+                    $existingImage->update(['file_path' => $filePath, 'alt_text' => $meta['alt_text']]);
+                } else {
+                    $kiosk->images()->create([
+                        'file_path' => $filePath,
+                        'alt_text' => $meta['alt_text'],
+                        'sort_order' => $meta['sort_order']
+                    ]);
+                }
+            }
+        }
+
+        $kiosk->load(['contracts' => function($q) {
+            $q->orderBy('created_at', 'desc')->with('customer');
+        }, 'images']);
 
         return response()->json(['success' => true, 'message' => 'Cập nhật thành công', 'kiosk' => $kiosk]);
     }
