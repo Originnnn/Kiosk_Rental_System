@@ -191,6 +191,109 @@
                         </div>
                     </div>
 
+                    <div class="grid grid-cols-2 gap-4 mb-4">
+                        <div>
+                            <label class="block text-xs font-semibold text-gray-700 mb-1">Tầng / Vị trí chi tiết</label>
+                            <select name="floor" class="w-full px-3 py-2 border {{ $errors->has('floor') ? 'border-red-500' : 'border-gray-300' }} rounded focus:outline-none focus:border-primary text-sm bg-white">
+                                <option value="">-- Chọn vị trí / tầng --</option>
+                                <option value="Tầng 1 (Ground)" {{ old('floor') == 'Tầng 1 (Ground)' ? 'selected' : '' }}>Tầng 1 (Ground)</option>
+                                <option value="Tầng 2" {{ old('floor') == 'Tầng 2' ? 'selected' : '' }}>Tầng 2</option>
+                                <option value="Sảnh chính" {{ old('floor') == 'Sảnh chính' ? 'selected' : '' }}>Sảnh chính</option>
+                                <option value="Khu vực ngoài trời" {{ old('floor') == 'Khu vực ngoài trời' ? 'selected' : '' }}>Khu vực ngoài trời</option>
+                            </select>
+                            @error('floor') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-gray-700 mb-1">Loại hình kinh doanh</label>
+                            <select name="kiosk_type" class="w-full px-3 py-2 border {{ $errors->has('kiosk_type') ? 'border-red-500' : 'border-gray-300' }} rounded focus:outline-none focus:border-primary text-sm bg-white">
+                                <option value="">-- Chọn loại hình --</option>
+                                <option value="Bán lẻ / F&B" {{ old('kiosk_type') == 'Bán lẻ / F&B' ? 'selected' : '' }}>Bán lẻ / F&B</option>
+                                <option value="Dịch vụ" {{ old('kiosk_type') == 'Dịch vụ' ? 'selected' : '' }}>Dịch vụ</option>
+                                <option value="Thời trang" {{ old('kiosk_type') == 'Thời trang' ? 'selected' : '' }}>Thời trang</option>
+                            </select>
+                            @error('kiosk_type') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
+                        </div>
+                    </div>
+
+                    <div class="mb-4">
+                        <label class="block text-xs font-semibold text-gray-700 mb-1">Kỳ hạn thuê tối thiểu</label>
+                        <select name="min_term" class="w-full px-3 py-2 border {{ $errors->has('min_term') ? 'border-red-500' : 'border-gray-300' }} rounded focus:outline-none focus:border-primary text-sm bg-white">
+                            <option value="">-- Chọn kỳ hạn --</option>
+                            <option value="Min 6 months" {{ old('min_term') == 'Min 6 months' ? 'selected' : '' }}>Min 6 months</option>
+                            <option value="Min 12 months" {{ old('min_term') == 'Min 12 months' ? 'selected' : '' }}>Min 12 months</option>
+                            <option value="Min 24 months" {{ old('min_term') == 'Min 24 months' ? 'selected' : '' }}>Min 24 months</option>
+                        </select>
+                        @error('min_term') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
+                    </div>
+
+                    <div class="mb-4">
+                        <label class="block text-xs font-semibold text-gray-700 mb-2">Tiện ích đi kèm (Features)</label>
+                        <div class="grid grid-cols-2 gap-2 text-sm text-gray-700">
+                            <label class="flex items-center space-x-2">
+                                <input type="checkbox" name="features[]" value="Điện 3-pha" class="rounded border-gray-300 text-[#006699] focus:ring-[#006699]" {{ is_array(old('features')) && in_array('Điện 3-pha', old('features')) ? 'checked' : '' }}>
+                                <span>Điện 3-pha</span>
+                            </label>
+                            <label class="flex items-center space-x-2">
+                                <input type="checkbox" name="features[]" value="Nước sạch" class="rounded border-gray-300 text-[#006699] focus:ring-[#006699]" {{ is_array(old('features')) && in_array('Nước sạch', old('features')) ? 'checked' : '' }}>
+                                <span>Nước sạch</span>
+                            </label>
+                            <label class="flex items-center space-x-2">
+                                <input type="checkbox" name="features[]" value="Điều hòa TT" class="rounded border-gray-300 text-[#006699] focus:ring-[#006699]" {{ is_array(old('features')) && in_array('Điều hòa TT', old('features')) ? 'checked' : '' }}>
+                                <span>Điều hòa TT</span>
+                            </label>
+                            <label class="flex items-center space-x-2">
+                                <input type="checkbox" name="features[]" value="Camera Hành lang" class="rounded border-gray-300 text-[#006699] focus:ring-[#006699]" {{ is_array(old('features')) && in_array('Camera Hành lang', old('features')) ? 'checked' : '' }}>
+                                <span>Camera Hành lang</span>
+                            </label>
+                            <label class="flex items-center space-x-2">
+                                <input type="checkbox" name="features[]" value="PCCC" class="rounded border-gray-300 text-[#006699] focus:ring-[#006699]" {{ is_array(old('features')) && in_array('PCCC', old('features')) ? 'checked' : '' }}>
+                                <span>PCCC</span>
+                            </label>
+                            <label class="flex items-center space-x-2">
+                                <input type="checkbox" name="features[]" value="Internet Cáp quang" class="rounded border-gray-300 text-[#006699] focus:ring-[#006699]" {{ is_array(old('features')) && in_array('Internet Cáp quang', old('features')) ? 'checked' : '' }}>
+                                <span>Internet Cáp quang</span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="mb-4">
+                        <label class="block text-xs font-semibold text-gray-700 mb-2">Thông số kỹ thuật</label>
+                        <div class="grid grid-cols-2 gap-4">
+                            <div>
+                                <select name="power_supply" class="w-full px-3 py-2 border {{ $errors->has('power_supply') ? 'border-red-500' : 'border-gray-300' }} rounded text-sm bg-white">
+                                    <option value="">-- Nguồn điện --</option>
+                                    <option value="Không có" {{ old('power_supply') == 'Không có' ? 'selected' : '' }}>Không có</option>
+                                    <option value="1 Pha (Sinh hoạt)" {{ old('power_supply') == '1 Pha (Sinh hoạt)' ? 'selected' : '' }}>1 Pha (Sinh hoạt)</option>
+                                    <option value="3 Pha (Công nghiệp)" {{ old('power_supply') == '3 Pha (Công nghiệp)' ? 'selected' : '' }}>3 Pha (Công nghiệp)</option>
+                                </select>
+                            </div>
+                            <div>
+                                <select name="water_supply" class="w-full px-3 py-2 border {{ $errors->has('water_supply') ? 'border-red-500' : 'border-gray-300' }} rounded text-sm bg-white">
+                                    <option value="">-- Cấp nước --</option>
+                                    <option value="Không có" {{ old('water_supply') == 'Không có' ? 'selected' : '' }}>Không có</option>
+                                    <option value="Có đường nước chờ" {{ old('water_supply') == 'Có đường nước chờ' ? 'selected' : '' }}>Có đường nước chờ</option>
+                                    <option value="Đầy đủ cấp thoát" {{ old('water_supply') == 'Đầy đủ cấp thoát' ? 'selected' : '' }}>Đầy đủ cấp thoát</option>
+                                </select>
+                            </div>
+                            <div>
+                                <select name="internet_connection" class="w-full px-3 py-2 border {{ $errors->has('internet_connection') ? 'border-red-500' : 'border-gray-300' }} rounded text-sm bg-white">
+                                    <option value="">-- Internet --</option>
+                                    <option value="Không có" {{ old('internet_connection') == 'Không có' ? 'selected' : '' }}>Không có</option>
+                                    <option value="Wifi chung" {{ old('internet_connection') == 'Wifi chung' ? 'selected' : '' }}>Wifi chung</option>
+                                    <option value="Cáp quang riêng" {{ old('internet_connection') == 'Cáp quang riêng' ? 'selected' : '' }}>Cáp quang riêng</option>
+                                </select>
+                            </div>
+                            <div>
+                                <select name="air_conditioning" class="w-full px-3 py-2 border {{ $errors->has('air_conditioning') ? 'border-red-500' : 'border-gray-300' }} rounded text-sm bg-white">
+                                    <option value="">-- Điều hòa --</option>
+                                    <option value="Không có" {{ old('air_conditioning') == 'Không có' ? 'selected' : '' }}>Không có</option>
+                                    <option value="Điều hòa trung tâm" {{ old('air_conditioning') == 'Điều hòa trung tâm' ? 'selected' : '' }}>Điều hòa trung tâm</option>
+                                    <option value="Cho phép lắp đặt" {{ old('air_conditioning') == 'Cho phép lắp đặt' ? 'selected' : '' }}>Cho phép lắp đặt</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
                     <div class="mb-6">
                         <label class="block text-xs font-semibold text-gray-700 mb-1">Mô tả thiết bị đi kèm</label>
                         <textarea name="description" rows="3" class="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:border-primary text-sm resize-none" placeholder="Liệt kê các thiết bị như: Bàn ghế, ổ cắm điện, hệ thống chiếu sáng...">{{ old('description') }}</textarea>
@@ -287,7 +390,7 @@
                                 </div>
                             </div>
                             
-                            <div class="w-1/2 grid grid-cols-1 gap-3">
+                            <div class="w-1/2 grid grid-cols-2 gap-3">
                                 <div class="bg-gray-50 border border-gray-200 rounded p-3">
                                     <p class="text-[10px] font-bold text-gray-500 uppercase mb-1">DIỆN TÍCH</p>
                                     <p class="text-sm font-bold text-gray-900" x-text="activeKiosk.area + ' m²'"></p>
@@ -297,6 +400,18 @@
                                     <p class="text-sm font-bold text-[#006699]" x-text="new Intl.NumberFormat('vi-VN').format(activeKiosk.price) + ' đ/tháng'"></p>
                                 </div>
                                 <div class="bg-gray-50 border border-gray-200 rounded p-3">
+                                    <p class="text-[10px] font-bold text-gray-500 uppercase mb-1">VỊ TRÍ / TẦNG</p>
+                                    <p class="text-sm font-bold text-gray-900" x-text="activeKiosk.floor || 'Đang cập nhật'"></p>
+                                </div>
+                                <div class="bg-gray-50 border border-gray-200 rounded p-3">
+                                    <p class="text-[10px] font-bold text-gray-500 uppercase mb-1">LOẠI HÌNH</p>
+                                    <p class="text-sm font-bold text-gray-900" x-text="activeKiosk.kiosk_type || 'Đang cập nhật'"></p>
+                                </div>
+                                <div class="bg-gray-50 border border-gray-200 rounded p-3 col-span-2">
+                                    <p class="text-[10px] font-bold text-gray-500 uppercase mb-1">KỲ HẠN TỐI THIỂU</p>
+                                    <p class="text-sm font-bold text-gray-900" x-text="activeKiosk.min_term || 'Đang cập nhật'"></p>
+                                </div>
+                                <div class="bg-gray-50 border border-gray-200 rounded p-3 col-span-2">
                                     <p class="text-[10px] font-bold text-gray-500 uppercase mb-1">MÔ TẢ</p>
                                     <p class="text-xs text-gray-700 truncate" x-text="activeKiosk.description || 'Không có mô tả'"></p>
                                 </div>
@@ -310,7 +425,7 @@
                                     <i class="fa-solid fa-wrench text-gray-400 mr-2"></i> Thông số kỹ thuật
                                 </h3>
                             </div>
-                            <div class="p-4 grid grid-cols-2 gap-y-3 gap-x-6 text-sm">
+                            <div class="p-4 grid grid-cols-2 gap-y-3 gap-x-6 text-sm border-b border-gray-100">
                                 <div class="flex justify-between border-b border-gray-100 pb-1 border-dashed">
                                     <span class="text-gray-500">Nguồn điện:</span>
                                     <span class="font-semibold text-gray-900" x-text="activeKiosk ? (activeKiosk.power_supply || 'Không có') : 'Không có'"></span>
@@ -326,6 +441,19 @@
                                 <div class="flex justify-between border-b border-gray-100 pb-1 border-dashed">
                                     <span class="text-gray-500">Điều hòa:</span>
                                     <span class="font-semibold text-gray-900" x-text="activeKiosk ? (activeKiosk.air_conditioning || 'Không có') : 'Không có'"></span>
+                                </div>
+                            </div>
+                            <div class="p-4 bg-gray-50">
+                                <p class="text-xs font-bold text-gray-500 uppercase mb-2">Tiện ích đi kèm</p>
+                                <div class="flex flex-wrap gap-2">
+                                    <template x-if="activeKiosk && activeKiosk.features && activeKiosk.features.length > 0">
+                                        <template x-for="feature in activeKiosk.features">
+                                            <span class="px-2 py-1 bg-white border border-gray-200 text-gray-700 text-xs font-medium rounded shadow-sm flex items-center gap-1.5" x-text="feature"></span>
+                                        </template>
+                                    </template>
+                                    <template x-if="!activeKiosk || !activeKiosk.features || activeKiosk.features.length === 0">
+                                        <span class="text-xs text-gray-400 italic">Chưa có thông tin tiện ích</span>
+                                    </template>
                                 </div>
                             </div>
                         </div>
@@ -424,6 +552,71 @@
                                         <span class="absolute right-3 top-2 text-sm text-gray-500 font-medium">VNĐ</span>
                                     </div>
                                     <template x-if="editErrors.price"><p class="text-red-500 text-xs mt-1" x-text="editErrors.price[0]"></p></template>
+                                </div>
+                            </div>
+                            
+                            <div class="grid grid-cols-2 gap-4 mb-4">
+                                <div>
+                                    <label class="block text-xs font-semibold text-gray-700 mb-1">Tầng / Vị trí chi tiết</label>
+                                    <select x-model="editData.floor" class="w-full px-3 py-2 border rounded focus:outline-none focus:border-primary text-sm bg-white" :class="editErrors.floor ? 'border-red-500' : 'border-gray-300'">
+                                        <option value="">-- Chọn vị trí / tầng --</option>
+                                        <option value="Tầng 1 (Ground)">Tầng 1 (Ground)</option>
+                                        <option value="Tầng 2">Tầng 2</option>
+                                        <option value="Sảnh chính">Sảnh chính</option>
+                                        <option value="Khu vực ngoài trời">Khu vực ngoài trời</option>
+                                    </select>
+                                    <template x-if="editErrors.floor"><p class="text-red-500 text-xs mt-1" x-text="editErrors.floor[0]"></p></template>
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-semibold text-gray-700 mb-1">Loại hình kinh doanh</label>
+                                    <select x-model="editData.kiosk_type" class="w-full px-3 py-2 border rounded focus:outline-none focus:border-primary text-sm bg-white" :class="editErrors.kiosk_type ? 'border-red-500' : 'border-gray-300'">
+                                        <option value="">-- Chọn loại hình --</option>
+                                        <option value="Bán lẻ / F&B">Bán lẻ / F&B</option>
+                                        <option value="Dịch vụ">Dịch vụ</option>
+                                        <option value="Thời trang">Thời trang</option>
+                                    </select>
+                                    <template x-if="editErrors.kiosk_type"><p class="text-red-500 text-xs mt-1" x-text="editErrors.kiosk_type[0]"></p></template>
+                                </div>
+                            </div>
+
+                            <div class="mb-4">
+                                <label class="block text-xs font-semibold text-gray-700 mb-1">Kỳ hạn thuê tối thiểu</label>
+                                <select x-model="editData.min_term" class="w-full px-3 py-2 border rounded focus:outline-none focus:border-primary text-sm bg-white" :class="editErrors.min_term ? 'border-red-500' : 'border-gray-300'">
+                                    <option value="">-- Chọn kỳ hạn --</option>
+                                    <option value="Min 6 months">Min 6 months</option>
+                                    <option value="Min 12 months">Min 12 months</option>
+                                    <option value="Min 24 months">Min 24 months</option>
+                                </select>
+                                <template x-if="editErrors.min_term"><p class="text-red-500 text-xs mt-1" x-text="editErrors.min_term[0]"></p></template>
+                            </div>
+                            
+                            <div class="mb-4">
+                                <label class="block text-xs font-semibold text-gray-700 mb-2">Tiện ích đi kèm (Features)</label>
+                                <div class="grid grid-cols-2 gap-2 text-sm text-gray-700">
+                                    <label class="flex items-center space-x-2">
+                                        <input type="checkbox" value="Điện 3-pha" x-model="editData.features" class="rounded border-gray-300 text-[#006699] focus:ring-[#006699]">
+                                        <span>Điện 3-pha</span>
+                                    </label>
+                                    <label class="flex items-center space-x-2">
+                                        <input type="checkbox" value="Nước sạch" x-model="editData.features" class="rounded border-gray-300 text-[#006699] focus:ring-[#006699]">
+                                        <span>Nước sạch</span>
+                                    </label>
+                                    <label class="flex items-center space-x-2">
+                                        <input type="checkbox" value="Điều hòa TT" x-model="editData.features" class="rounded border-gray-300 text-[#006699] focus:ring-[#006699]">
+                                        <span>Điều hòa TT</span>
+                                    </label>
+                                    <label class="flex items-center space-x-2">
+                                        <input type="checkbox" value="Camera Hành lang" x-model="editData.features" class="rounded border-gray-300 text-[#006699] focus:ring-[#006699]">
+                                        <span>Camera Hành lang</span>
+                                    </label>
+                                    <label class="flex items-center space-x-2">
+                                        <input type="checkbox" value="PCCC" x-model="editData.features" class="rounded border-gray-300 text-[#006699] focus:ring-[#006699]">
+                                        <span>PCCC</span>
+                                    </label>
+                                    <label class="flex items-center space-x-2">
+                                        <input type="checkbox" value="Internet Cáp quang" x-model="editData.features" class="rounded border-gray-300 text-[#006699] focus:ring-[#006699]">
+                                        <span>Internet Cáp quang</span>
+                                    </label>
                                 </div>
                             </div>
                             
@@ -664,7 +857,7 @@
             isEditing: false,
             saving: false,
             generalError: null,
-            editData: { code: '', name: '', area: '', price: '', description: '', power_supply: '', water_supply: '', internet_connection: '', air_conditioning: '' },
+            editData: { code: '', name: '', area: '', price: '', description: '', power_supply: '', water_supply: '', internet_connection: '', air_conditioning: '', floor: '', kiosk_type: '', min_term: '', features: [] },
             editFiles: { image_front: null, image_angle: null, image_closeup: null, image_back: null },
             filePreviews: { image_front: null, image_angle: null, image_closeup: null, image_back: null },
             editErrors: {},
@@ -705,16 +898,32 @@
                     if (this.$refs[key]) this.$refs[key].value = '';
                 });
 
+                // Copy data safely and ensure features is an array
+                let activeFeatures = [];
+                if (this.activeKiosk.features) {
+                    try {
+                        activeFeatures = Array.isArray(this.activeKiosk.features) 
+                            ? [...this.activeKiosk.features] 
+                            : JSON.parse(this.activeKiosk.features);
+                    } catch (e) {
+                        activeFeatures = [];
+                    }
+                }
+
                 this.editData = {
-                    code: this.activeKiosk.code,
-                    name: this.activeKiosk.name,
-                    area: this.activeKiosk.area,
-                    price: this.activeKiosk.price,
+                    code: this.activeKiosk.code || '',
+                    name: this.activeKiosk.name || '',
+                    area: this.activeKiosk.area || '',
+                    price: this.activeKiosk.price || '',
                     description: this.activeKiosk.description || '',
                     power_supply: this.activeKiosk.power_supply || '',
                     water_supply: this.activeKiosk.water_supply || '',
                     internet_connection: this.activeKiosk.internet_connection || '',
-                    air_conditioning: this.activeKiosk.air_conditioning || ''
+                    air_conditioning: this.activeKiosk.air_conditioning || '',
+                    floor: this.activeKiosk.floor || '',
+                    kiosk_type: this.activeKiosk.kiosk_type || '',
+                    min_term: this.activeKiosk.min_term || '',
+                    features: activeFeatures
                 };
             },
 
@@ -747,8 +956,22 @@
                 let formData = new FormData();
                 formData.append('_method', 'PUT');
                 
+                const ignoreFields = ['contracts', 'images', 'created_at', 'updated_at', 'position'];
                 for (let key in this.editData) {
-                    formData.append(key, this.editData[key] !== null ? this.editData[key] : '');
+                    if (ignoreFields.includes(key)) continue;
+
+                    let val = this.editData[key];
+                    if (Array.isArray(val)) {
+                        if (val.length === 0) {
+                            formData.append(key, '');
+                        } else {
+                            val.forEach(item => {
+                                formData.append(key + '[]', item);
+                            });
+                        }
+                    } else {
+                        formData.append(key, val !== null ? val : '');
+                    }
                 }
                 
                 if (this.$refs.image_front && this.$refs.image_front.files.length > 0) formData.append('image_front', this.$refs.image_front.files[0]);
@@ -767,7 +990,12 @@
                 .then(async response => {
                     if (!response.ok) {
                         if (response.status === 422) {
-                            const data = await response.json();
+                            let data;
+                            try {
+                                data = await response.json();
+                            } catch (e) {
+                                throw new Error('422 Response is not JSON: ' + e.message);
+                            }
                             this.editErrors = data.errors;
                             throw new Error('Validation failed');
                         }
@@ -785,14 +1013,13 @@
                     this.activeKiosk = data.kiosk;
                     this.isEditing = false;
                     this.saving = false;
-                    // Reload trang để danh sách Kiosk tự cập nhật thông tin mới nhất
                     window.location.reload(); 
                 })
                 .catch(error => {
                     console.error('Error updating kiosk:', error);
                     this.saving = false;
                     if (error.message !== 'Validation failed' && !this.generalError) {
-                        this.generalError = "Đã xảy ra lỗi khi lưu dữ liệu!";
+                        this.generalError = "Đã xảy ra lỗi khi lưu dữ liệu! Chi tiết: " + error.message;
                     }
                 });
             },

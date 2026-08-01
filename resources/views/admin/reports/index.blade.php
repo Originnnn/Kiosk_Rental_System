@@ -6,10 +6,13 @@
 <div class="bg-slate-50 min-h-screen p-6 font-sans">
     
     <!-- Header -->
-    <div class="flex justify-between items-center mb-6">
-        <div>
-            <h1 class="text-2xl font-bold text-gray-900 mb-1">Xuất báo cáo & Thống kê</h1>
-            <p class="text-sm text-gray-500">Cấu hình tham số để kết xuất báo cáo dữ liệu.</p>
+    <div class="flex flex-col sm:flex-row sm:items-start sm:justify-between mb-6 min-h-[40px]">
+        <div class="flex-1">
+            <h1 class="text-2xl font-bold text-slate-800 leading-tight">Xuất báo cáo & Thống kê</h1>
+            <p class="text-sm text-slate-500 mt-1">Cấu hình tham số để kết xuất báo cáo dữ liệu.</p>
+        </div>
+        <div class="mt-4 sm:mt-0 flex-shrink-0 flex items-start gap-2">
+            <!-- Nút action (nếu có) -->
         </div>
     </div>
 

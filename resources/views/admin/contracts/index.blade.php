@@ -3,31 +3,29 @@
 @section('title', 'Quản lý hợp đồng - Bến Xe Huế')
 
 @section('content')
-<div class="bg-white min-h-screen flex flex-col m-0 p-0 font-sans">
+<div class="bg-gray-50 min-h-screen p-6 font-sans">
     
     <!-- Top Header -->
-    <div class="px-6 py-4 border-b border-gray-200">
-        <div class="flex justify-between items-center">
-            <div>
-                <h1 class="text-2xl font-bold text-gray-900 mb-1">Quản lý hợp đồng</h1>
-                <p class="text-sm text-gray-500">Danh sách tất cả hợp đồng cho thuê quầy/kiosk.</p>
-            </div>
-            
-            <div class="flex space-x-3">
-                <button type="button" class="bg-white border border-gray-300 text-gray-700 px-4 py-2 rounded flex items-center font-medium text-sm hover:bg-gray-50 transition-colors shadow-sm">
-                    <i class="fa-solid fa-filter mr-2"></i> Bộ lọc
-                </button>
-                @can('create', App\Models\Contract::class)
-                <a href="{{ route('admin.contracts.create') }}" class="bg-[#006699] hover:bg-[#005580] text-white px-4 py-2 rounded font-medium flex items-center text-sm transition-colors shadow-sm">
-                    <i class="fa-solid fa-plus mr-2"></i> Tạo hợp đồng
-                </a>
-                @endcan
-            </div>
+    <div class="flex flex-col sm:flex-row sm:items-start sm:justify-between mb-6 min-h-[40px]">
+        <div class="flex-1">
+            <h1 class="text-2xl font-bold text-slate-800 leading-tight">Quản lý hợp đồng</h1>
+            <p class="text-sm text-slate-500 mt-1">Danh sách tất cả hợp đồng cho thuê quầy/kiosk.</p>
+        </div>
+        
+        <div class="mt-4 sm:mt-0 flex-shrink-0 flex items-start gap-2">
+            <button type="button" class="bg-white border border-gray-300 text-gray-700 px-4 py-2 rounded flex items-center font-medium text-sm hover:bg-gray-50 transition-colors shadow-sm">
+                <i class="fa-solid fa-filter mr-2"></i> Bộ lọc
+            </button>
+            @can('create', App\Models\Contract::class)
+            <a href="{{ route('admin.contracts.create') }}" class="bg-[#006699] hover:bg-[#005580] text-white px-4 py-2 rounded font-medium flex items-center text-sm transition-colors shadow-sm">
+                <i class="fa-solid fa-plus mr-2"></i> Tạo hợp đồng
+            </a>
+            @endcan
         </div>
     </div>
 
     <!-- Title and Actions (Download, Print) -->
-    <div class="px-6 py-4 bg-gray-50 border-b border-gray-200 flex justify-between items-center">
+    <div class="bg-white p-4 rounded-t border border-gray-200 border-b-0 flex justify-between items-center">
         <h2 class="text-base font-bold text-gray-900">Danh sách hợp đồng ({{ $contracts->total() }})</h2>
         <div class="flex space-x-3 text-gray-500">
             <button class="hover:text-gray-900"><i class="fa-solid fa-download"></i></button>
@@ -36,7 +34,7 @@
     </div>
 
     <!-- Bảng dữ liệu -->
-    <div class="flex-1 overflow-x-auto">
+    <div class="bg-white border border-gray-200 rounded-b shadow-sm overflow-x-auto">
         <table class="w-full text-left border-collapse">
             <thead>
                 <tr class="border-b border-gray-200 bg-white">

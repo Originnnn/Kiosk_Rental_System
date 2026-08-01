@@ -6,19 +6,19 @@
 <div class="bg-gray-50 min-h-screen p-6 font-sans">
     
     <!-- Header -->
-    <div class="flex justify-between items-center mb-6">
-        <div>
-            <h1 class="text-2xl font-bold text-gray-900 mb-1">Danh sách khách thuê</h1>
-            <p class="text-sm text-gray-500">Quản lý thông tin cá nhân và hợp đồng của khách hàng.</p>
+    <div class="flex flex-col sm:flex-row sm:items-start sm:justify-between mb-6 min-h-[40px]">
+        <div class="flex-1">
+            <h1 class="text-2xl font-bold text-slate-800 leading-tight">Danh sách khách thuê</h1>
+            <p class="text-sm text-slate-500 mt-1">Quản lý thông tin cá nhân và hợp đồng của khách hàng.</p>
         </div>
         
-        @can('create', App\Models\Customer::class)
-        <div>
+        <div class="mt-4 sm:mt-0 flex-shrink-0 flex items-start gap-2">
+            @can('create', App\Models\Customer::class)
             <button onclick="openModal()" class="bg-[#006699] hover:bg-[#005580] text-white px-4 py-2 rounded font-medium flex items-center text-sm transition-colors shadow-sm">
                 <i class="fa-solid fa-plus mr-2"></i> Thêm khách thuê
             </button>
+            @endcan
         </div>
-        @endcan
     </div>
 
     <!-- Filters & Search -->

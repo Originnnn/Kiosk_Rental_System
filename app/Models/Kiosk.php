@@ -14,6 +14,10 @@ class Kiosk extends Model
 
     protected $guarded = [];
 
+    protected $casts = [
+        'features' => 'array',
+    ];
+
     public function position()
     {
         return $this->hasOne(KioskPosition::class);

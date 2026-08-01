@@ -113,21 +113,21 @@
                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path></svg>
                             Floor
                         </div>
-                        <div class="font-semibold text-gray-900 ml-5.5">Tầng 1 (Ground)</div>
+                        <div class="font-semibold text-gray-900 ml-5.5">{{ $kiosk->floor ?? 'Đang cập nhật' }}</div>
                     </div>
                     <div>
                         <div class="flex items-center gap-1.5 text-gray-500 mb-1 font-medium">
                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 002-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path></svg>
                             Type
                         </div>
-                        <div class="font-semibold text-gray-900 ml-5.5">Bán lẻ / F&B</div>
+                        <div class="font-semibold text-gray-900 ml-5.5">{{ $kiosk->kiosk_type ?? 'Đang cập nhật' }}</div>
                     </div>
                     <div>
                         <div class="flex items-center gap-1.5 text-gray-500 mb-1 font-medium">
                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
                             Term
                         </div>
-                        <div class="font-semibold text-gray-900 ml-5.5">Min 12 months</div>
+                        <div class="font-semibold text-gray-900 ml-5.5">{{ $kiosk->min_term ?? 'Đang cập nhật' }}</div>
                     </div>
                 </div>
 
@@ -136,18 +136,15 @@
                 <div class="mb-6">
                     <p class="text-xs text-gray-500 font-bold tracking-widest uppercase mb-3">Utilities & Features</p>
                     <div class="flex flex-wrap gap-2">
-                        <div class="px-3 py-1.5 bg-blue-50 text-blue-700 text-xs font-medium rounded flex items-center gap-1.5 border border-blue-100">
-                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg> Điện 3-pha
-                        </div>
-                        <div class="px-3 py-1.5 bg-blue-50 text-blue-700 text-xs font-medium rounded flex items-center gap-1.5 border border-blue-100">
-                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z"></path></svg> Nước sạch
-                        </div>
-                        <div class="px-3 py-1.5 bg-blue-50 text-blue-700 text-xs font-medium rounded flex items-center gap-1.5 border border-blue-100">
-                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 15a4 4 0 004 4h9a5 5 0 10-.1-9.999 5.002 5.002 0 10-9.78 2.096A4.001 4.001 0 003 15z"></path></svg> Điều hòa TT
-                        </div>
-                        <div class="px-3 py-1.5 bg-gray-50 text-gray-700 text-xs font-medium rounded flex items-center gap-1.5 border border-gray-200 mt-1">
-                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"></path></svg> Camera Hành lang
-                        </div>
+                        @if(!empty($kiosk->features))
+                            @foreach($kiosk->features as $feature)
+                                <div class="px-3 py-1.5 bg-blue-50 text-blue-700 text-xs font-medium rounded flex items-center gap-1.5 border border-blue-100">
+                                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg> {{ $feature }}
+                                </div>
+                            @endforeach
+                        @else
+                            <span class="text-sm text-gray-500">Chưa cập nhật tiện ích</span>
+                        @endif
                     </div>
                 </div>
                 

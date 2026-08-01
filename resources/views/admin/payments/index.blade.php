@@ -3,44 +3,41 @@
 @section('title', 'Quản lý thanh toán - Bến Xe Huế')
 
 @section('content')
-<div class="bg-white min-h-screen flex flex-col m-0 p-0 font-sans">
+<div class="bg-gray-50 min-h-screen p-6 font-sans">
     
     <!-- Top Header / Breadcrumb -->
-    <div class="px-6 py-4 border-b border-gray-200">
-        <div class="flex justify-between items-start">
-            <div>
-                <p class="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1">HỆ THỐNG <i class="fa-solid fa-angle-right mx-1 text-gray-400"></i> <span class="text-primary">QUẢN LÝ THANH TOÁN</span></p>
-                <h1 class="text-2xl font-bold text-gray-900 mb-1">Danh sách thanh toán</h1>
-                <p class="text-sm text-gray-500">Theo dõi và xử lý các giao dịch tài chính của các quầy Kiosk.</p>
+    <div class="flex flex-col sm:flex-row sm:items-start sm:justify-between mb-6 min-h-[40px]">
+        <div class="flex-1">
+            <h1 class="text-2xl font-bold text-slate-800 leading-tight">Danh sách thanh toán</h1>
+            <p class="text-sm text-slate-500 mt-1">Theo dõi và xử lý các giao dịch tài chính của các quầy Kiosk.</p>
+        </div>
+        
+        <!-- KPIs -->
+        <div class="mt-4 sm:mt-0 flex-shrink-0 flex items-start gap-2">
+            <div class="bg-white border border-gray-200 rounded-lg p-3 flex items-center shadow-sm w-64">
+                <div class="w-10 h-10 rounded bg-green-50 text-green-600 flex items-center justify-center mr-3">
+                    <i class="fa-solid fa-money-bill-wave"></i>
+                </div>
+                <div>
+                    <p class="text-xs text-gray-500 font-bold uppercase">DOANH THU THÁNG</p>
+                    <p class="text-lg font-bold text-gray-900">{{ number_format($currentMonthRevenue, 0, ',', '.') }}đ</p>
+                </div>
             </div>
             
-            <!-- KPIs -->
-            <div class="flex space-x-4">
-                <div class="bg-white border border-gray-200 rounded-lg p-3 flex items-center shadow-sm w-64">
-                    <div class="w-10 h-10 rounded bg-green-50 text-green-600 flex items-center justify-center mr-3">
-                        <i class="fa-solid fa-money-bill-wave"></i>
-                    </div>
-                    <div>
-                        <p class="text-xs text-gray-500 font-bold uppercase">DOANH THU THÁNG</p>
-                        <p class="text-lg font-bold text-gray-900">{{ number_format($currentMonthRevenue, 0, ',', '.') }}đ</p>
-                    </div>
+            <div class="bg-white border border-gray-200 rounded-lg p-3 flex items-center shadow-sm w-48">
+                <div class="w-10 h-10 rounded bg-red-50 text-red-500 flex items-center justify-center mr-3">
+                    <i class="fa-solid fa-triangle-exclamation"></i>
                 </div>
-                
-                <div class="bg-white border border-gray-200 rounded-lg p-3 flex items-center shadow-sm w-48">
-                    <div class="w-10 h-10 rounded bg-red-50 text-red-500 flex items-center justify-center mr-3">
-                        <i class="fa-solid fa-triangle-exclamation"></i>
-                    </div>
-                    <div>
-                        <p class="text-xs text-gray-500 font-bold uppercase">KHOẢN NỢ QUÁ HẠN</p>
-                        <p class="text-lg font-bold text-gray-900">{{ number_format($overdueAmount, 0, ',', '.') }}đ</p>
-                    </div>
+                <div>
+                    <p class="text-xs text-gray-500 font-bold uppercase">KHOẢN NỢ QUÁ HẠN</p>
+                    <p class="text-lg font-bold text-gray-900">{{ number_format($overdueAmount, 0, ',', '.') }}đ</p>
                 </div>
             </div>
         </div>
     </div>
 
     <!-- Filters -->
-    <div class="px-6 py-5 bg-gray-50 border-b border-gray-200">
+    <div class="bg-white p-4 rounded-t border border-gray-200 border-b-0">
         <form method="GET" action="{{ route('admin.payments.index') }}" class="flex items-end space-x-4">
             
             <!-- Tìm kiếm -->
@@ -91,7 +88,7 @@
     </div>
 
     <!-- Bảng dữ liệu -->
-    <div class="flex-1 overflow-x-auto">
+    <div class="bg-white border border-gray-200 rounded-b shadow-sm overflow-x-auto">
         <table class="w-full text-left border-collapse">
             <thead>
                 <tr class="bg-gray-50 border-b border-gray-200">
