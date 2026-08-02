@@ -19,7 +19,7 @@ Kiosk Rental System là một ứng dụng nền web toàn diện được xây 
 
 ## 🛠 Công nghệ sử dụng
 
-- **Backend:** PHP 8.x, Laravel 11.x
+- **Backend:** PHP >= 8.3, Laravel 13.x
 - **Frontend:** Blade Templates, Tailwind CSS, Alpine.js, Vanilla JS (Panzoom.js)
 - **Database:** MySQL
 - **Khác:** Laravel Commands (Background Jobs, ETL), Eloquent ORM.
