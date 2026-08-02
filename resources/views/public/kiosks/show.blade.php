@@ -162,38 +162,73 @@
     <div class="mt-12 border-t border-gray-200 pt-8">
         <h3 class="font-bold text-gray-900 mb-6 text-xl">Kiosks Tương tự</h3>
         @php
-            // Mocking similar kiosks for UI
-            $similar_kiosks = \App\Models\Kiosk::where('id', '!=', $kiosk->id)->limit(4)->get();
+            // Lọc Kiosk tương tự cùng khu vực (Zone)
+            $currentZone = $kiosk->position->zone ?? null;
+            $similar_kiosks = \App\Models\Kiosk::where('id', '!=', $kiosk->id)
+                ->when($currentZone, function ($query, $zone) {
+                    return $query->whereHas('position', function ($q) use ($zone) {
+                        $q->where('zone', $zone);
+                    });
+                })
+                ->limit(10)
+                ->get();
         @endphp
         
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-            @foreach($similar_kiosks as $sim)
-                @php
-                    $simAvailable = $sim->status === 'available';
-                    $simRented = $sim->status === 'rented';
-                    $simBadgeText = $simRented ? 'ĐANG MỞ' : ($simAvailable ? 'TRỐNG' : 'ĐANG BẢO TRÌ');
-                    $simBadgeClass = $simRented ? 'bg-green-500 text-white' : ($simAvailable ? 'bg-green-500 text-white' : 'bg-orange-500 text-white');
-                @endphp
-                <a href="/kiosks/{{ $sim->id }}" class="block bg-white border border-gray-200 rounded-lg overflow-hidden hover:shadow-md transition group">
-                    <div class="relative h-40 bg-gray-100 overflow-hidden">
-                        @if($sim->images->isNotEmpty())
-                            <img src="{{ asset($sim->images->first()->file_path) }}" class="w-full h-full object-cover group-hover:scale-105 transition duration-500" alt="{{ $sim->code }}">
-                        @else
-                            <img src="https://via.placeholder.com/400x300?text=Kiosk" class="w-full h-full object-cover" alt="Placeholder">
-                        @endif
-                        <div class="absolute top-2 right-2 px-2 py-0.5 rounded text-[10px] font-bold tracking-wider {{ $simBadgeClass }} shadow-sm">
-                            {{ $simBadgeText }}
+        <div x-data="{
+            isDown: false, 
+            isDragging: false, 
+            startX: 0, 
+            scrollLeft: 0,
+            scrollNext() { $refs.slider.scrollBy({ left: 350, behavior: 'smooth' }); },
+            scrollPrev() { $refs.slider.scrollBy({ left: -350, behavior: 'smooth' }); }
+        }" class="relative group/slider">
+            
+            <!-- Left Button -->
+            <button @click="scrollPrev()" type="button" class="absolute left-0 top-1/2 -translate-y-1/2 -ml-5 z-10 w-10 h-10 items-center justify-center rounded-full border border-gray-200 bg-white text-gray-600 shadow-md hover:text-blue-600 hover:bg-gray-50 transition opacity-0 group-hover/slider:opacity-100 focus:opacity-100 hidden md:flex">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg>
+            </button>
+            
+            <!-- Right Button -->
+            <button @click="scrollNext()" type="button" class="absolute right-0 top-1/2 -translate-y-1/2 -mr-5 z-10 w-10 h-10 items-center justify-center rounded-full border border-gray-200 bg-white text-gray-600 shadow-md hover:text-blue-600 hover:bg-gray-50 transition opacity-0 group-hover/slider:opacity-100 focus:opacity-100 hidden md:flex">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
+            </button>
+
+            <div x-ref="slider" 
+                 @mousedown="isDown = true; isDragging = false; startX = $event.pageX - $refs.slider.offsetLeft; scrollLeft = $refs.slider.scrollLeft"
+                 @mouseleave="isDown = false; isDragging = false"
+                 @mouseup="isDown = false"
+                 @mousemove="if(!isDown) return; const x = $event.pageX - $refs.slider.offsetLeft; const walk = (x - startX); if (Math.abs(walk) > 5) isDragging = true; $refs.slider.scrollLeft = scrollLeft - walk;"
+                 @click.capture="if(isDragging) { $event.preventDefault(); $event.stopPropagation(); }"
+                 :class="{ 'cursor-grabbing': isDown, 'cursor-grab': !isDown }"
+                 class="select-none flex flex-nowrap overflow-x-auto snap-x snap-mandatory gap-6 pb-4 scroll-smooth [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
+                @foreach($similar_kiosks as $sim)
+                    @php
+                        $simAvailable = $sim->status === 'available';
+                        $simRented = $sim->status === 'rented';
+                        $simBadgeText = $simRented ? 'ĐANG MỞ' : ($simAvailable ? 'TRỐNG' : 'ĐANG BẢO TRÌ');
+                        $simBadgeClass = $simRented ? 'bg-green-500 text-white' : ($simAvailable ? 'bg-green-500 text-white' : 'bg-orange-500 text-white');
+                    @endphp
+                    <a href="/kiosks/{{ $sim->id }}" draggable="false" class="min-w-[280px] md:min-w-[320px] shrink-0 snap-start block bg-white border border-gray-200 rounded-lg overflow-hidden hover:shadow-md transition group">
+                        <div class="relative h-40 bg-gray-100 overflow-hidden">
+                            @if($sim->images->isNotEmpty())
+                                <img src="{{ asset($sim->images->first()->file_path) }}" draggable="false" class="w-full h-full object-cover group-hover:scale-105 transition duration-500" alt="{{ $sim->code }}">
+                            @else
+                                <img src="https://via.placeholder.com/400x300?text=Kiosk" draggable="false" class="w-full h-full object-cover" alt="Placeholder">
+                            @endif
+                            <div class="absolute top-2 right-2 px-2 py-0.5 rounded text-[10px] font-bold tracking-wider {{ $simBadgeClass }} shadow-sm">
+                                {{ $simBadgeText }}
+                            </div>
                         </div>
-                    </div>
-                    <div class="p-4">
-                        <h4 class="font-bold text-gray-900 text-base mb-1">{{ $sim->code }}</h4>
-                        <p class="text-xs text-gray-500 mb-3">{{ $sim->area }} m&sup2; &bull; Zone {{ $sim->position->zone ?? 'N/A' }}</p>
-                        <div class="text-sm font-bold text-blue-600">
-                            {{ number_format($sim->price, 0, ',', '.') }} VND
+                        <div class="p-4">
+                            <h4 class="font-bold text-gray-900 text-base mb-1">{{ $sim->code }}</h4>
+                            <p class="text-xs text-gray-500 mb-3">{{ $sim->area }} m&sup2; &bull; Zone {{ $sim->position->zone ?? 'N/A' }}</p>
+                            <div class="text-sm font-bold text-blue-600">
+                                {{ number_format($sim->price, 0, ',', '.') }} VND
+                            </div>
                         </div>
-                    </div>
-                </a>
-            @endforeach
+                    </a>
+                @endforeach
+            </div>
         </div>
     </div>
 </div>

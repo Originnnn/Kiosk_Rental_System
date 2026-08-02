@@ -140,6 +140,7 @@ Route::domain('admin.' . env('APP_URL_BASE', 'kiosk.localhost'))->group(function
         Route::post('/kiosks', [KioskController::class, 'store'])->name('admin.kiosks.store');
         Route::get('/kiosks/{kiosk}', [KioskController::class, 'show'])->name('admin.kiosks.show')->where('kiosk', '[0-9]+');
         Route::put('/kiosks/{kiosk}', [KioskController::class, 'update'])->name('admin.kiosks.update');
+        Route::patch('/kiosks/{kiosk}/reactivate', [KioskController::class, 'reactivate'])->name('admin.kiosks.reactivate');
 
         // Routes riêng cho Employee (Alerts & Reports)
         Route::middleware(\App\Http\Middleware\CheckEmployeeRole::class)->group(function () {

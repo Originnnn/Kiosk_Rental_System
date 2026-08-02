@@ -354,7 +354,7 @@
                           :class="{
                               'bg-green-100 text-green-700': activeKiosk && activeKiosk.status == 'available',
                               'bg-blue-100 text-blue-700': activeKiosk && activeKiosk.status == 'rented',
-                              'bg-yellow-100 text-yellow-700': activeKiosk && activeKiosk.status == 'maintenance'
+                              'bg-orange-100 text-orange-600': activeKiosk && activeKiosk.status == 'maintenance'
                           }"
                           x-text="activeKiosk ? (activeKiosk.status == 'available' ? 'TRỐNG' : (activeKiosk.status == 'rented' ? 'ĐANG THUÊ' : 'BẢO TRÌ')) : ''">
                     </span>
@@ -589,6 +589,16 @@
                                 </select>
                                 <template x-if="editErrors.min_term"><p class="text-red-500 text-xs mt-1" x-text="editErrors.min_term[0]"></p></template>
                             </div>
+                            <div>
+                                <label class="block text-xs font-semibold text-gray-700 mb-1">Trạng thái (Khả dụng/Bảo trì)</label>
+                                <select x-model="editData.status" class="w-full px-3 py-2 border rounded focus:outline-none focus:border-primary text-sm bg-white" :class="editErrors.status ? 'border-red-500' : 'border-gray-300'">
+                                    <option value="available">Trống (Available)</option>
+                                    <option value="maintenance">Bảo trì / Tạm nghỉ</option>
+                                    <option value="rented" x-show="activeKiosk && activeKiosk.status === 'rented'" disabled>Đang thuê (Rented)</option>
+                                </select>
+                                <template x-if="editErrors.status"><p class="text-red-500 text-xs mt-1" x-text="editErrors.status[0]"></p></template>
+                            </div>
+                        </div>
                             
                             <div class="mb-4">
                                 <label class="block text-xs font-semibold text-gray-700 mb-2">Tiện ích đi kèm (Features)</label>
@@ -802,6 +812,13 @@
                         <i class="fa-solid fa-print mr-2"></i> In hồ sơ
                     </button>
                     @can('create', App\Models\Kiosk::class)
+                    <form method="POST" :action="activeKiosk ? '{{ url('/kiosks') }}/' + activeKiosk.id + '/reactivate' : ''" x-show="activeKiosk && activeKiosk.status === 'maintenance'" @submit="if(!confirm('Xác nhận đưa Kiosk này trở lại trạng thái Trống/Hoạt động?')) $event.preventDefault()">
+                        @csrf
+                        @method('PATCH')
+                        <button type="submit" class="px-4 py-2 bg-green-500 text-white rounded font-bold text-sm hover:bg-green-600 flex items-center shadow-sm">
+                            <i class="fa-solid fa-play mr-2"></i> Mở hoạt động lại
+                        </button>
+                    </form>
                     <button @click="startEdit()" class="px-4 py-2 bg-[#006699] text-white rounded font-bold text-sm hover:bg-[#005580]">
                         Cập nhật thông tin
                     </button>
@@ -831,6 +848,27 @@
             loading: false,
             activeKiosk: null,
 
+            activateKiosk() {
+                if(!confirm('Xác nhận đưa Kiosk này trở lại trạng thái Trống/Hoạt động?')) return;
+                
+                fetch(`/kiosks/${this.activeKiosk.id}/activate`, {
+                    method: 'POST',
+                    headers: {
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+                        'Accept': 'application/json'
+                    }
+                })
+                .then(res => res.json())
+                .then(data => {
+                    if(data.success) {
+                        alert(data.message);
+                        window.location.reload();
+                    } else {
+                        alert('Có lỗi xảy ra: ' + data.message);
+                    }
+                });
+            },
+
             openDrawer(id) {
                 this.drawerOpen = true;
                 this.loading = true;
@@ -857,7 +895,7 @@
             isEditing: false,
             saving: false,
             generalError: null,
-            editData: { code: '', name: '', area: '', price: '', description: '', power_supply: '', water_supply: '', internet_connection: '', air_conditioning: '', floor: '', kiosk_type: '', min_term: '', features: [] },
+            editData: { code: '', name: '', area: '', price: '', description: '', power_supply: '', water_supply: '', internet_connection: '', air_conditioning: '', floor: '', kiosk_type: '', min_term: '', status: '', features: [] },
             editFiles: { image_front: null, image_angle: null, image_closeup: null, image_back: null },
             filePreviews: { image_front: null, image_angle: null, image_closeup: null, image_back: null },
             editErrors: {},
@@ -923,6 +961,7 @@
                     floor: this.activeKiosk.floor || '',
                     kiosk_type: this.activeKiosk.kiosk_type || '',
                     min_term: this.activeKiosk.min_term || '',
+                    status: this.activeKiosk.status || '',
                     features: activeFeatures
                 };
             },

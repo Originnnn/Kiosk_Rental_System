@@ -100,6 +100,7 @@ class KioskController extends Controller
             'water_supply' => 'nullable|string',
             'internet_connection' => 'nullable|string',
             'air_conditioning' => 'nullable|string',
+            'status' => 'nullable|string|in:available,maintenance',
             'image_front' => 'nullable|image|mimes:jpeg,png,jpg,webp|max:5120',
             'image_angle' => 'nullable|image|mimes:jpeg,png,jpg,webp|max:5120',
             'image_closeup' => 'nullable|image|mimes:jpeg,png,jpg,webp|max:5120',
@@ -160,5 +161,19 @@ class KioskController extends Controller
         }, 'images']);
 
         return response()->json(['success' => true, 'message' => 'Cập nhật thành công', 'kiosk' => $kiosk]);
+    }
+
+    public function reactivate($id)
+    {
+        $kiosk = Kiosk::findOrFail($id);
+        $this->authorize('update', $kiosk);
+
+        if ($kiosk->status !== 'maintenance') {
+            return back()->withErrors(['error' => 'Kiosk không ở trạng thái Bảo trì.']);
+        }
+
+        $kiosk->update(['status' => 'available']);
+
+        return back()->with('success', 'Kiosk đã được mở hoạt động trở lại!');
     }
 }

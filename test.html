@@ -1,0 +1,901 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <title>Kiosk Directory - K-11</title>
+    <script type="module" src="http://[::1]:5173/@vite/client"></script><link rel="stylesheet" href="http://[::1]:5173/resources/css/app.css" /><script type="module" src="http://[::1]:5173/resources/js/app.js"></script></head>
+<body class="bg-gray-50 text-gray-800 font-sans h-screen flex flex-col overflow-hidden">
+    <!-- Header / Navigation -->
+    <header class="bg-white border-b border-gray-200 shrink-0">
+        <div class="px-6 h-16 flex justify-between items-center">
+            <div class="flex items-center gap-4">
+                <h1 class="text-xl font-bold text-blue-800 tracking-tight">Hue Station Management</h1>
+                <div class="w-px h-6 bg-gray-300"></div>
+                <div class="text-gray-600 font-medium text-sm">    <div class="flex items-center gap-2 text-sm">
+        <a href="/" class="text-gray-500 hover:text-blue-600 transition">Home</a>
+        <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
+        <span class="text-gray-900 font-semibold">K-11</span>
+    </div>
+</div>
+            </div>
+            
+            <div class="flex-1 max-w-xl mx-8">
+                <div class="relative">
+                    <span class="absolute inset-y-0 left-0 flex items-center pl-3 text-gray-400">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+                    </span>
+                    <input type="text" placeholder="Tìm kiếm nhanh..." class="w-full bg-gray-100 border border-transparent rounded py-2 pl-9 pr-4 focus:bg-white focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition outline-none text-sm text-gray-700">
+                </div>
+            </div>
+
+            <div class="flex items-center gap-4 text-gray-600">
+                <button class="hover:text-blue-600 transition"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"></path></svg></button>
+                <button class="hover:text-blue-600 transition"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg></button>
+                <button class="hover:text-blue-600 transition">
+                    <div class="w-7 h-7 rounded-full border border-gray-300 flex items-center justify-center bg-gray-50 text-gray-500 overflow-hidden">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path></svg>
+                    </div>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="flex-1 overflow-y-auto flex flex-col relative">
+        <div class="max-w-7xl mx-auto w-full p-6 pb-20">
+
+    <div class="flex flex-col lg:flex-row gap-6">
+        <!-- Left Column (Images, Map, Description) -->
+        <div class="w-full lg:w-[60%] space-y-6">
+            <!-- Image Gallery -->
+            <div class="bg-white rounded-lg border border-gray-200 overflow-hidden shadow-sm p-4">
+                <div class="relative w-full aspect-[16/9] mb-4 bg-gray-100 rounded overflow-hidden">
+                                            <img id="main-image" src="http://kiosk.localhost:8000/uploads/kiosks/k-11/k11_01_mattien.png" class="w-full h-full object-cover" alt="K-11">
+                        <div class="absolute bottom-3 right-3 bg-white/90 backdrop-blur-sm px-3 py-1 text-xs font-bold rounded shadow-sm text-gray-700">
+                            1 / 4
+                        </div>
+                                    </div>
+                
+                                <div class="flex gap-3 overflow-x-auto pb-1">
+                                            <img src="http://kiosk.localhost:8000/uploads/kiosks/k-11/k11_01_mattien.png" class="w-24 h-16 object-cover cursor-pointer rounded border-2 border-blue-500 opacity-100 transition" onclick="updateMainImage(this, '1', '4')">
+                                            <img src="http://kiosk.localhost:8000/uploads/kiosks/k-11/k11_02_gocnghieng.png" class="w-24 h-16 object-cover cursor-pointer rounded border-2 border-transparent opacity-60 hover:opacity-100 transition" onclick="updateMainImage(this, '2', '4')">
+                                            <img src="http://kiosk.localhost:8000/uploads/kiosks/k-11/k11_03_cancanh.png" class="w-24 h-16 object-cover cursor-pointer rounded border-2 border-transparent opacity-60 hover:opacity-100 transition" onclick="updateMainImage(this, '3', '4')">
+                                            <img src="http://kiosk.localhost:8000/uploads/kiosks/k-11/k11_04_matsau.png" class="w-24 h-16 object-cover cursor-pointer rounded border-2 border-transparent opacity-60 hover:opacity-100 transition" onclick="updateMainImage(this, '4', '4')">
+                                    </div>
+                            </div>
+
+            <!-- Location Map -->
+            <div>
+                <div class="flex justify-between items-end mb-3 border-b pb-2">
+                    <h3 class="font-bold text-gray-900 text-lg">Location Map</h3>
+                    <span class="text-sm font-semibold text-gray-600 bg-gray-100 px-2.5 py-1 rounded-full border border-gray-200">Zone Khu A</span>
+                </div>
+                <div class="bg-white border border-gray-200 rounded-lg shadow-sm h-80 relative flex items-center justify-center overflow-hidden">
+                    <div class="w-full h-full relative group flex-1 flex flex-col min-h-[300px]">
+    <!-- Map Canvas -->
+    <div id="map-wrapper" class="w-full h-full flex-1 overflow-hidden flex items-center justify-center bg-slate-50 relative cursor-grab active:cursor-grabbing">
+        <div id="map-container" class="relative bg-white shadow-sm flex-shrink-0" style="width: 1829px; height: 1272px;">
+            <!-- Base Map Image -->
+            <img src="http://kiosk.localhost:8000/maps/sitemap.jpg" class="w-full h-full block" alt="Sitemap">
+            
+            <!-- Dynamic Map Pins/Rectangles -->
+                                                                    <div onclick="if(typeof handleKioskClick === 'function') handleKioskClick(event, this)"
+                       class="kiosk-pin absolute flex items-center justify-center cursor-pointer z-20 transition-all duration-300 "
+                       data-id="1"
+                       data-kiosk="{&quot;id&quot;:1,&quot;code&quot;:&quot;K-9&quot;,&quot;name&quot;:&quot;K-9&quot;,&quot;status&quot;:&quot;rented&quot;,&quot;area&quot;:&quot;16.50&quot;,&quot;zone&quot;:&quot;Khu B&quot;}"
+                       style="left: 83.597594313833%; top: 3.8522012578616%; width: 5.6314926189174%; height: 2.9874213836478%;"
+                       title="K-9">
+                        
+                        <div class="kiosk-pin-inner w-full h-full border-[1.5px] border-white bg-green-500 bg-opacity-80 hover:bg-opacity-100 rounded-[2px] shadow-sm flex items-center justify-center transition-all duration-200">
+                            <span class="text-white text-[8px] font-bold drop-shadow-md">K-9</span>
+                        </div>
+                    </div>
+                                                                                    <div onclick="if(typeof handleKioskClick === 'function') handleKioskClick(event, this)"
+                       class="kiosk-pin absolute flex items-center justify-center cursor-pointer z-20 transition-all duration-300 "
+                       data-id="2"
+                       data-kiosk="{&quot;id&quot;:2,&quot;code&quot;:&quot;K-10&quot;,&quot;name&quot;:&quot;K-10&quot;,&quot;status&quot;:&quot;rented&quot;,&quot;area&quot;:&quot;19.70&quot;,&quot;zone&quot;:&quot;Khu A&quot;}"
+                       style="left: 20.229633679606%; top: 3.8522012578616%; width: 3.335155822854%; height: 5.9748427672956%;"
+                       title="K-10">
+                        
+                        <div class="kiosk-pin-inner w-full h-full border-[1.5px] border-white bg-green-500 bg-opacity-80 hover:bg-opacity-100 rounded-[2px] shadow-sm flex items-center justify-center transition-all duration-200">
+                            <span class="text-white text-[8px] font-bold drop-shadow-md">K-10</span>
+                        </div>
+                    </div>
+                                                                                    <div onclick="if(typeof handleKioskClick === 'function') handleKioskClick(event, this)"
+                       class="kiosk-pin absolute flex items-center justify-center cursor-pointer z-20 transition-all duration-300 is-active"
+                       data-id="3"
+                       data-kiosk="{&quot;id&quot;:3,&quot;code&quot;:&quot;K-11&quot;,&quot;name&quot;:&quot;K-11&quot;,&quot;status&quot;:&quot;rented&quot;,&quot;area&quot;:&quot;22.90&quot;,&quot;zone&quot;:&quot;Khu A&quot;}"
+                       style="left: 23.674138873701%; top: 3.8522012578616%; width: 3.335155822854%; height: 5.9748427672956%;"
+                       title="K-11">
+                        
+                        <div class="kiosk-pin-inner w-full h-full border-[1.5px] border-red-500 bg-red-500 shadow-[0_0_15px_rgba(239,68,68,0.8)] animate-pulse rounded-[2px] shadow-sm flex items-center justify-center transition-all duration-200">
+                            <span class="text-white text-[8px] font-bold drop-shadow-md">K-11</span>
+                        </div>
+                    </div>
+                                                                                    <div onclick="if(typeof handleKioskClick === 'function') handleKioskClick(event, this)"
+                       class="kiosk-pin absolute flex items-center justify-center cursor-pointer z-20 transition-all duration-300 "
+                       data-id="4"
+                       data-kiosk="{&quot;id&quot;:4,&quot;code&quot;:&quot;K-12&quot;,&quot;name&quot;:&quot;K-12&quot;,&quot;status&quot;:&quot;rented&quot;,&quot;area&quot;:&quot;23.50&quot;,&quot;zone&quot;:&quot;Khu A&quot;}"
+                       style="left: 27.118644067797%; top: 3.8522012578616%; width: 3.335155822854%; height: 5.9748427672956%;"
+                       title="K-12">
+                        
+                        <div class="kiosk-pin-inner w-full h-full border-[1.5px] border-white bg-green-500 bg-opacity-80 hover:bg-opacity-100 rounded-[2px] shadow-sm flex items-center justify-center transition-all duration-200">
+                            <span class="text-white text-[8px] font-bold drop-shadow-md">K-12</span>
+                        </div>
+                    </div>
+                                                                                    <div onclick="if(typeof handleKioskClick === 'function') handleKioskClick(event, this)"
+                       class="kiosk-pin absolute flex items-center justify-center cursor-pointer z-20 transition-all duration-300 "
+                       data-id="5"
+                       data-kiosk="{&quot;id&quot;:5,&quot;code&quot;:&quot;K-13&quot;,&quot;name&quot;:&quot;K-13&quot;,&quot;status&quot;:&quot;rented&quot;,&quot;area&quot;:&quot;17.30&quot;,&quot;zone&quot;:&quot;Khu A&quot;}"
+                       style="left: 30.563149261892%; top: 3.8522012578616%; width: 3.335155822854%; height: 5.9748427672956%;"
+                       title="K-13">
+                        
+                        <div class="kiosk-pin-inner w-full h-full border-[1.5px] border-white bg-green-500 bg-opacity-80 hover:bg-opacity-100 rounded-[2px] shadow-sm flex items-center justify-center transition-all duration-200">
+                            <span class="text-white text-[8px] font-bold drop-shadow-md">K-13</span>
+                        </div>
+                    </div>
+                                                                                    <div onclick="if(typeof handleKioskClick === 'function') handleKioskClick(event, this)"
+                       class="kiosk-pin absolute flex items-center justify-center cursor-pointer z-20 transition-all duration-300 "
+                       data-id="6"
+                       data-kiosk="{&quot;id&quot;:6,&quot;code&quot;:&quot;K-14&quot;,&quot;name&quot;:&quot;K-14&quot;,&quot;status&quot;:&quot;rented&quot;,&quot;area&quot;:&quot;24.30&quot;,&quot;zone&quot;:&quot;Khu A&quot;}"
+                       style="left: 34.007654455987%; top: 3.8522012578616%; width: 3.335155822854%; height: 5.9748427672956%;"
+                       title="K-14">
+                        
+                        <div class="kiosk-pin-inner w-full h-full border-[1.5px] border-white bg-green-500 bg-opacity-80 hover:bg-opacity-100 rounded-[2px] shadow-sm flex items-center justify-center transition-all duration-200">
+                            <span class="text-white text-[8px] font-bold drop-shadow-md">K-14</span>
+                        </div>
+                    </div>
+                                                                                    <div onclick="if(typeof handleKioskClick === 'function') handleKioskClick(event, this)"
+                       class="kiosk-pin absolute flex items-center justify-center cursor-pointer z-20 transition-all duration-300 "
+                       data-id="7"
+                       data-kiosk="{&quot;id&quot;:7,&quot;code&quot;:&quot;K-15&quot;,&quot;name&quot;:&quot;K-15&quot;,&quot;status&quot;:&quot;rented&quot;,&quot;area&quot;:&quot;15.20&quot;,&quot;zone&quot;:&quot;Khu A&quot;}"
+                       style="left: 37.452159650082%; top: 3.8522012578616%; width: 3.335155822854%; height: 5.9748427672956%;"
+                       title="K-15">
+                        
+                        <div class="kiosk-pin-inner w-full h-full border-[1.5px] border-white bg-green-500 bg-opacity-80 hover:bg-opacity-100 rounded-[2px] shadow-sm flex items-center justify-center transition-all duration-200">
+                            <span class="text-white text-[8px] font-bold drop-shadow-md">K-15</span>
+                        </div>
+                    </div>
+                                                                                    <div onclick="if(typeof handleKioskClick === 'function') handleKioskClick(event, this)"
+                       class="kiosk-pin absolute flex items-center justify-center cursor-pointer z-20 transition-all duration-300 "
+                       data-id="8"
+                       data-kiosk="{&quot;id&quot;:8,&quot;code&quot;:&quot;K-16&quot;,&quot;name&quot;:&quot;K-16&quot;,&quot;status&quot;:&quot;rented&quot;,&quot;area&quot;:&quot;21.90&quot;,&quot;zone&quot;:&quot;Khu A&quot;}"
+                       style="left: 40.896664844177%; top: 3.8522012578616%; width: 3.335155822854%; height: 5.9748427672956%;"
+                       title="K-16">
+                        
+                        <div class="kiosk-pin-inner w-full h-full border-[1.5px] border-white bg-green-500 bg-opacity-80 hover:bg-opacity-100 rounded-[2px] shadow-sm flex items-center justify-center transition-all duration-200">
+                            <span class="text-white text-[8px] font-bold drop-shadow-md">K-16</span>
+                        </div>
+                    </div>
+                                                                                    <div onclick="if(typeof handleKioskClick === 'function') handleKioskClick(event, this)"
+                       class="kiosk-pin absolute flex items-center justify-center cursor-pointer z-20 transition-all duration-300 "
+                       data-id="9"
+                       data-kiosk="{&quot;id&quot;:9,&quot;code&quot;:&quot;K-17&quot;,&quot;name&quot;:&quot;K-17&quot;,&quot;status&quot;:&quot;rented&quot;,&quot;area&quot;:&quot;18.00&quot;,&quot;zone&quot;:&quot;Khu A&quot;}"
+                       style="left: 44.341170038272%; top: 3.8522012578616%; width: 3.335155822854%; height: 5.9748427672956%;"
+                       title="K-17">
+                        
+                        <div class="kiosk-pin-inner w-full h-full border-[1.5px] border-white bg-green-500 bg-opacity-80 hover:bg-opacity-100 rounded-[2px] shadow-sm flex items-center justify-center transition-all duration-200">
+                            <span class="text-white text-[8px] font-bold drop-shadow-md">K-17</span>
+                        </div>
+                    </div>
+                                                                                    <div onclick="if(typeof handleKioskClick === 'function') handleKioskClick(event, this)"
+                       class="kiosk-pin absolute flex items-center justify-center cursor-pointer z-20 transition-all duration-300 "
+                       data-id="10"
+                       data-kiosk="{&quot;id&quot;:10,&quot;code&quot;:&quot;K-18&quot;,&quot;name&quot;:&quot;K-18&quot;,&quot;status&quot;:&quot;rented&quot;,&quot;area&quot;:&quot;19.40&quot;,&quot;zone&quot;:&quot;Khu A&quot;}"
+                       style="left: 47.785675232367%; top: 3.8522012578616%; width: 3.335155822854%; height: 5.9748427672956%;"
+                       title="K-18">
+                        
+                        <div class="kiosk-pin-inner w-full h-full border-[1.5px] border-white bg-green-500 bg-opacity-80 hover:bg-opacity-100 rounded-[2px] shadow-sm flex items-center justify-center transition-all duration-200">
+                            <span class="text-white text-[8px] font-bold drop-shadow-md">K-18</span>
+                        </div>
+                    </div>
+                                                                                    <div onclick="if(typeof handleKioskClick === 'function') handleKioskClick(event, this)"
+                       class="kiosk-pin absolute flex items-center justify-center cursor-pointer z-20 transition-all duration-300 "
+                       data-id="11"
+                       data-kiosk="{&quot;id&quot;:11,&quot;code&quot;:&quot;K-19&quot;,&quot;name&quot;:&quot;K-19&quot;,&quot;status&quot;:&quot;rented&quot;,&quot;area&quot;:&quot;25.00&quot;,&quot;zone&quot;:&quot;Khu A&quot;}"
+                       style="left: 51.230180426463%; top: 3.8522012578616%; width: 3.335155822854%; height: 5.9748427672956%;"
+                       title="K-19">
+                        
+                        <div class="kiosk-pin-inner w-full h-full border-[1.5px] border-white bg-green-500 bg-opacity-80 hover:bg-opacity-100 rounded-[2px] shadow-sm flex items-center justify-center transition-all duration-200">
+                            <span class="text-white text-[8px] font-bold drop-shadow-md">K-19</span>
+                        </div>
+                    </div>
+                                                                                    <div onclick="if(typeof handleKioskClick === 'function') handleKioskClick(event, this)"
+                       class="kiosk-pin absolute flex items-center justify-center cursor-pointer z-20 transition-all duration-300 "
+                       data-id="12"
+                       data-kiosk="{&quot;id&quot;:12,&quot;code&quot;:&quot;K-20&quot;,&quot;name&quot;:&quot;K-20&quot;,&quot;status&quot;:&quot;rented&quot;,&quot;area&quot;:&quot;22.90&quot;,&quot;zone&quot;:&quot;Khu A&quot;}"
+                       style="left: 54.674685620558%; top: 3.8522012578616%; width: 3.335155822854%; height: 5.9748427672956%;"
+                       title="K-20">
+                        
+                        <div class="kiosk-pin-inner w-full h-full border-[1.5px] border-white bg-green-500 bg-opacity-80 hover:bg-opacity-100 rounded-[2px] shadow-sm flex items-center justify-center transition-all duration-200">
+                            <span class="text-white text-[8px] font-bold drop-shadow-md">K-20</span>
+                        </div>
+                    </div>
+                                                                                    <div onclick="if(typeof handleKioskClick === 'function') handleKioskClick(event, this)"
+                       class="kiosk-pin absolute flex items-center justify-center cursor-pointer z-20 transition-all duration-300 "
+                       data-id="13"
+                       data-kiosk="{&quot;id&quot;:13,&quot;code&quot;:&quot;K-21&quot;,&quot;name&quot;:&quot;K-21&quot;,&quot;status&quot;:&quot;rented&quot;,&quot;area&quot;:&quot;19.80&quot;,&quot;zone&quot;:&quot;Khu A&quot;}"
+                       style="left: 58.119190814653%; top: 3.8522012578616%; width: 3.335155822854%; height: 5.9748427672956%;"
+                       title="K-21">
+                        
+                        <div class="kiosk-pin-inner w-full h-full border-[1.5px] border-white bg-green-500 bg-opacity-80 hover:bg-opacity-100 rounded-[2px] shadow-sm flex items-center justify-center transition-all duration-200">
+                            <span class="text-white text-[8px] font-bold drop-shadow-md">K-21</span>
+                        </div>
+                    </div>
+                                                                                    <div onclick="if(typeof handleKioskClick === 'function') handleKioskClick(event, this)"
+                       class="kiosk-pin absolute flex items-center justify-center cursor-pointer z-20 transition-all duration-300 "
+                       data-id="14"
+                       data-kiosk="{&quot;id&quot;:14,&quot;code&quot;:&quot;K-22&quot;,&quot;name&quot;:&quot;K-22&quot;,&quot;status&quot;:&quot;rented&quot;,&quot;area&quot;:&quot;24.20&quot;,&quot;zone&quot;:&quot;Khu A&quot;}"
+                       style="left: 61.563696008748%; top: 3.8522012578616%; width: 3.335155822854%; height: 5.9748427672956%;"
+                       title="K-22">
+                        
+                        <div class="kiosk-pin-inner w-full h-full border-[1.5px] border-white bg-green-500 bg-opacity-80 hover:bg-opacity-100 rounded-[2px] shadow-sm flex items-center justify-center transition-all duration-200">
+                            <span class="text-white text-[8px] font-bold drop-shadow-md">K-22</span>
+                        </div>
+                    </div>
+                                                                                    <div onclick="if(typeof handleKioskClick === 'function') handleKioskClick(event, this)"
+                       class="kiosk-pin absolute flex items-center justify-center cursor-pointer z-20 transition-all duration-300 "
+                       data-id="15"
+                       data-kiosk="{&quot;id&quot;:15,&quot;code&quot;:&quot;K-23&quot;,&quot;name&quot;:&quot;K-23&quot;,&quot;status&quot;:&quot;rented&quot;,&quot;area&quot;:&quot;24.40&quot;,&quot;zone&quot;:&quot;Khu A&quot;}"
+                       style="left: 65.008201202843%; top: 3.8522012578616%; width: 3.335155822854%; height: 5.9748427672956%;"
+                       title="K-23">
+                        
+                        <div class="kiosk-pin-inner w-full h-full border-[1.5px] border-white bg-green-500 bg-opacity-80 hover:bg-opacity-100 rounded-[2px] shadow-sm flex items-center justify-center transition-all duration-200">
+                            <span class="text-white text-[8px] font-bold drop-shadow-md">K-23</span>
+                        </div>
+                    </div>
+                                                                                    <div onclick="if(typeof handleKioskClick === 'function') handleKioskClick(event, this)"
+                       class="kiosk-pin absolute flex items-center justify-center cursor-pointer z-20 transition-all duration-300 "
+                       data-id="16"
+                       data-kiosk="{&quot;id&quot;:16,&quot;code&quot;:&quot;K-24&quot;,&quot;name&quot;:&quot;K-24&quot;,&quot;status&quot;:&quot;rented&quot;,&quot;area&quot;:&quot;20.80&quot;,&quot;zone&quot;:&quot;Khu A&quot;}"
+                       style="left: 68.452706396938%; top: 3.8522012578616%; width: 3.335155822854%; height: 5.9748427672956%;"
+                       title="K-24">
+                        
+                        <div class="kiosk-pin-inner w-full h-full border-[1.5px] border-white bg-green-500 bg-opacity-80 hover:bg-opacity-100 rounded-[2px] shadow-sm flex items-center justify-center transition-all duration-200">
+                            <span class="text-white text-[8px] font-bold drop-shadow-md">K-24</span>
+                        </div>
+                    </div>
+                                                                                    <div onclick="if(typeof handleKioskClick === 'function') handleKioskClick(event, this)"
+                       class="kiosk-pin absolute flex items-center justify-center cursor-pointer z-20 transition-all duration-300 "
+                       data-id="17"
+                       data-kiosk="{&quot;id&quot;:17,&quot;code&quot;:&quot;K-25&quot;,&quot;name&quot;:&quot;K-25&quot;,&quot;status&quot;:&quot;rented&quot;,&quot;area&quot;:&quot;19.00&quot;,&quot;zone&quot;:&quot;Khu A&quot;}"
+                       style="left: 71.897211591033%; top: 3.8522012578616%; width: 3.335155822854%; height: 5.9748427672956%;"
+                       title="K-25">
+                        
+                        <div class="kiosk-pin-inner w-full h-full border-[1.5px] border-white bg-green-500 bg-opacity-80 hover:bg-opacity-100 rounded-[2px] shadow-sm flex items-center justify-center transition-all duration-200">
+                            <span class="text-white text-[8px] font-bold drop-shadow-md">K-25</span>
+                        </div>
+                    </div>
+                                                                                    <div onclick="if(typeof handleKioskClick === 'function') handleKioskClick(event, this)"
+                       class="kiosk-pin absolute flex items-center justify-center cursor-pointer z-20 transition-all duration-300 "
+                       data-id="18"
+                       data-kiosk="{&quot;id&quot;:18,&quot;code&quot;:&quot;K-26&quot;,&quot;name&quot;:&quot;K-26&quot;,&quot;status&quot;:&quot;rented&quot;,&quot;area&quot;:&quot;22.10&quot;,&quot;zone&quot;:&quot;Khu B&quot;}"
+                       style="left: 89.393110989612%; top: 3.8522012578616%; width: 6.8890103881903%; height: 2.9874213836478%;"
+                       title="K-26">
+                        
+                        <div class="kiosk-pin-inner w-full h-full border-[1.5px] border-white bg-green-500 bg-opacity-80 hover:bg-opacity-100 rounded-[2px] shadow-sm flex items-center justify-center transition-all duration-200">
+                            <span class="text-white text-[8px] font-bold drop-shadow-md">K-26</span>
+                        </div>
+                    </div>
+                                                                                    <div onclick="if(typeof handleKioskClick === 'function') handleKioskClick(event, this)"
+                       class="kiosk-pin absolute flex items-center justify-center cursor-pointer z-20 transition-all duration-300 "
+                       data-id="19"
+                       data-kiosk="{&quot;id&quot;:19,&quot;code&quot;:&quot;K-27&quot;,&quot;name&quot;:&quot;K-27&quot;,&quot;status&quot;:&quot;available&quot;,&quot;area&quot;:&quot;24.10&quot;,&quot;zone&quot;:&quot;Khu B&quot;}"
+                       style="left: 89.393110989612%; top: 6.9968553459119%; width: 6.8890103881903%; height: 2.9874213836478%;"
+                       title="K-27">
+                        
+                        <div class="kiosk-pin-inner w-full h-full border-[1.5px] border-white bg-blue-600 bg-opacity-80 hover:bg-opacity-100 rounded-[2px] shadow-sm flex items-center justify-center transition-all duration-200">
+                            <span class="text-white text-[8px] font-bold drop-shadow-md">K-27</span>
+                        </div>
+                    </div>
+                                                                                    <div onclick="if(typeof handleKioskClick === 'function') handleKioskClick(event, this)"
+                       class="kiosk-pin absolute flex items-center justify-center cursor-pointer z-20 transition-all duration-300 "
+                       data-id="20"
+                       data-kiosk="{&quot;id&quot;:20,&quot;code&quot;:&quot;K-28&quot;,&quot;name&quot;:&quot;K-28&quot;,&quot;status&quot;:&quot;reserved&quot;,&quot;area&quot;:&quot;19.00&quot;,&quot;zone&quot;:&quot;Khu B&quot;}"
+                       style="left: 89.393110989612%; top: 10.141509433962%; width: 6.8890103881903%; height: 2.9874213836478%;"
+                       title="K-28">
+                        
+                        <div class="kiosk-pin-inner w-full h-full border-[1.5px] border-white bg-orange-500 bg-opacity-80 hover:bg-opacity-100 rounded-[2px] shadow-sm flex items-center justify-center transition-all duration-200">
+                            <span class="text-white text-[8px] font-bold drop-shadow-md">K-28</span>
+                        </div>
+                    </div>
+                                                                                    <div onclick="if(typeof handleKioskClick === 'function') handleKioskClick(event, this)"
+                       class="kiosk-pin absolute flex items-center justify-center cursor-pointer z-20 transition-all duration-300 "
+                       data-id="21"
+                       data-kiosk="{&quot;id&quot;:21,&quot;code&quot;:&quot;K-29&quot;,&quot;name&quot;:&quot;K-29&quot;,&quot;status&quot;:&quot;rented&quot;,&quot;area&quot;:&quot;22.10&quot;,&quot;zone&quot;:&quot;Khu B&quot;}"
+                       style="left: 89.393110989612%; top: 13.286163522013%; width: 6.8890103881903%; height: 2.9874213836478%;"
+                       title="K-29">
+                        
+                        <div class="kiosk-pin-inner w-full h-full border-[1.5px] border-white bg-green-500 bg-opacity-80 hover:bg-opacity-100 rounded-[2px] shadow-sm flex items-center justify-center transition-all duration-200">
+                            <span class="text-white text-[8px] font-bold drop-shadow-md">K-29</span>
+                        </div>
+                    </div>
+                                                                                    <div onclick="if(typeof handleKioskClick === 'function') handleKioskClick(event, this)"
+                       class="kiosk-pin absolute flex items-center justify-center cursor-pointer z-20 transition-all duration-300 "
+                       data-id="22"
+                       data-kiosk="{&quot;id&quot;:22,&quot;code&quot;:&quot;K-30&quot;,&quot;name&quot;:&quot;K-30&quot;,&quot;status&quot;:&quot;rented&quot;,&quot;area&quot;:&quot;22.20&quot;,&quot;zone&quot;:&quot;Khu B&quot;}"
+                       style="left: 89.393110989612%; top: 16.430817610063%; width: 6.8890103881903%; height: 2.9874213836478%;"
+                       title="K-30">
+                        
+                        <div class="kiosk-pin-inner w-full h-full border-[1.5px] border-white bg-green-500 bg-opacity-80 hover:bg-opacity-100 rounded-[2px] shadow-sm flex items-center justify-center transition-all duration-200">
+                            <span class="text-white text-[8px] font-bold drop-shadow-md">K-30</span>
+                        </div>
+                    </div>
+                                                                                    <div onclick="if(typeof handleKioskClick === 'function') handleKioskClick(event, this)"
+                       class="kiosk-pin absolute flex items-center justify-center cursor-pointer z-20 transition-all duration-300 "
+                       data-id="23"
+                       data-kiosk="{&quot;id&quot;:23,&quot;code&quot;:&quot;K-31&quot;,&quot;name&quot;:&quot;K-31&quot;,&quot;status&quot;:&quot;rented&quot;,&quot;area&quot;:&quot;23.10&quot;,&quot;zone&quot;:&quot;Khu B&quot;}"
+                       style="left: 89.393110989612%; top: 19.575471698113%; width: 6.8890103881903%; height: 2.9874213836478%;"
+                       title="K-31">
+                        
+                        <div class="kiosk-pin-inner w-full h-full border-[1.5px] border-white bg-green-500 bg-opacity-80 hover:bg-opacity-100 rounded-[2px] shadow-sm flex items-center justify-center transition-all duration-200">
+                            <span class="text-white text-[8px] font-bold drop-shadow-md">K-31</span>
+                        </div>
+                    </div>
+                                                                                    <div onclick="if(typeof handleKioskClick === 'function') handleKioskClick(event, this)"
+                       class="kiosk-pin absolute flex items-center justify-center cursor-pointer z-20 transition-all duration-300 "
+                       data-id="24"
+                       data-kiosk="{&quot;id&quot;:24,&quot;code&quot;:&quot;K-32&quot;,&quot;name&quot;:&quot;K-32&quot;,&quot;status&quot;:&quot;rented&quot;,&quot;area&quot;:&quot;15.20&quot;,&quot;zone&quot;:&quot;Khu B&quot;}"
+                       style="left: 89.393110989612%; top: 22.720125786164%; width: 6.8890103881903%; height: 2.9874213836478%;"
+                       title="K-32">
+                        
+                        <div class="kiosk-pin-inner w-full h-full border-[1.5px] border-white bg-green-500 bg-opacity-80 hover:bg-opacity-100 rounded-[2px] shadow-sm flex items-center justify-center transition-all duration-200">
+                            <span class="text-white text-[8px] font-bold drop-shadow-md">K-32</span>
+                        </div>
+                    </div>
+                                                                                    <div onclick="if(typeof handleKioskClick === 'function') handleKioskClick(event, this)"
+                       class="kiosk-pin absolute flex items-center justify-center cursor-pointer z-20 transition-all duration-300 "
+                       data-id="25"
+                       data-kiosk="{&quot;id&quot;:25,&quot;code&quot;:&quot;K-33&quot;,&quot;name&quot;:&quot;K-33&quot;,&quot;status&quot;:&quot;available&quot;,&quot;area&quot;:&quot;15.30&quot;,&quot;zone&quot;:&quot;Khu B&quot;}"
+                       style="left: 89.393110989612%; top: 25.864779874214%; width: 6.8890103881903%; height: 2.9874213836478%;"
+                       title="K-33">
+                        
+                        <div class="kiosk-pin-inner w-full h-full border-[1.5px] border-white bg-blue-600 bg-opacity-80 hover:bg-opacity-100 rounded-[2px] shadow-sm flex items-center justify-center transition-all duration-200">
+                            <span class="text-white text-[8px] font-bold drop-shadow-md">K-33</span>
+                        </div>
+                    </div>
+                                                                                    <div onclick="if(typeof handleKioskClick === 'function') handleKioskClick(event, this)"
+                       class="kiosk-pin absolute flex items-center justify-center cursor-pointer z-20 transition-all duration-300 "
+                       data-id="26"
+                       data-kiosk="{&quot;id&quot;:26,&quot;code&quot;:&quot;K-34&quot;,&quot;name&quot;:&quot;K-34&quot;,&quot;status&quot;:&quot;rented&quot;,&quot;area&quot;:&quot;23.30&quot;,&quot;zone&quot;:&quot;Khu B&quot;}"
+                       style="left: 89.393110989612%; top: 29.009433962264%; width: 6.8890103881903%; height: 2.9874213836478%;"
+                       title="K-34">
+                        
+                        <div class="kiosk-pin-inner w-full h-full border-[1.5px] border-white bg-green-500 bg-opacity-80 hover:bg-opacity-100 rounded-[2px] shadow-sm flex items-center justify-center transition-all duration-200">
+                            <span class="text-white text-[8px] font-bold drop-shadow-md">K-34</span>
+                        </div>
+                    </div>
+                                    </div>
+    </div>
+    
+    <!-- Controls (optional, overlay) -->
+        <div class="absolute top-2 right-2 flex gap-1 z-30 opacity-0 group-hover:opacity-100 transition-opacity">
+        <button id="zoom-in" class="w-7 h-7 bg-white/90 backdrop-blur shadow rounded flex items-center justify-center border border-gray-200 text-gray-700 hover:bg-gray-100"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg></button>
+        <button id="zoom-out" class="w-7 h-7 bg-white/90 backdrop-blur shadow rounded flex items-center justify-center border border-gray-200 text-gray-700 hover:bg-gray-100"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 12H4"></path></svg></button>
+        <button id="zoom-reset" class="w-7 h-7 bg-white/90 backdrop-blur shadow rounded flex items-center justify-center border border-gray-200 text-gray-700 hover:bg-gray-100"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4"></path></svg></button>
+    </div>
+    </div>
+
+<script src="https://cdn.jsdelivr.net/npm/@panzoom/panzoom@4.5.1/dist/panzoom.min.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    const elem = document.getElementById('map-container');
+    const wrapper = document.getElementById('map-wrapper');
+    if (!elem || !wrapper) return;
+
+    // Calculate initial scale to fit wrapper height or width
+    const wrapperRect = wrapper.getBoundingClientRect();
+    const mapWidth = 1829;
+    const mapHeight = 1272;
+    
+    // Default zoom to fit the container
+    let initialScale = Math.min(wrapperRect.width / mapWidth, wrapperRect.height / mapHeight);
+    // Add some padding
+    initialScale = initialScale * 0.95;
+    window.initialScale = initialScale;
+    
+    const panzoom = Panzoom(elem, {
+        maxScale: 5,
+        minScale: initialScale,
+        startScale: initialScale,
+        startX: 0,
+        startY: 0,
+        step: 0.3
+    });
+    
+    window.panzoomInstance = panzoom;
+    
+    // Zoom controls
+    const zoomIn = document.getElementById('zoom-in');
+    const zoomOut = document.getElementById('zoom-out');
+    const zoomReset = document.getElementById('zoom-reset');
+    
+    if (zoomIn) zoomIn.addEventListener('click', panzoom.zoomIn);
+    if (zoomOut) zoomOut.addEventListener('click', panzoom.zoomOut);
+    if (zoomReset) {
+        zoomReset.addEventListener('click', () => {
+            panzoom.reset();
+            panzoom.zoom(initialScale);
+            panzoom.pan(0, 0);
+        });
+    }
+
+    elem.parentElement.addEventListener('wheel', panzoom.zoomWithWheel);
+
+    // If activeId is provided, zoom to it
+    const activePin = document.querySelector('.kiosk-pin.is-active');
+    if (activePin) {
+        setTimeout(() => {
+            const left = parseFloat(activePin.style.left);
+            const top = parseFloat(activePin.style.top);
+            const width = parseFloat(activePin.style.width);
+            const height = parseFloat(activePin.style.height);
+            
+            // Convert percent to pixels
+            const pxX = (left / 100) * mapWidth;
+            const pxY = (top / 100) * mapHeight;
+            const pxW = (width / 100) * mapWidth;
+            const pxH = (height / 100) * mapHeight;
+            
+            const centerX = pxX + (pxW / 2);
+            const centerY = pxY + (pxH / 2);
+            
+            const dx = (mapWidth / 2) - centerX;
+            const dy = (mapHeight / 2) - centerY;
+            
+            const targetScale = Math.max(initialScale * 2, 1.5);
+            
+            panzoom.zoom(targetScale, { animate: true });
+            setTimeout(() => {
+                panzoom.pan(dx, dy, { animate: true });
+            }, 50);
+        }, 300);
+    }
+});
+</script>
+<style>
+.kiosk-pin {
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.kiosk-pin.is-active {
+    transform: scale(1.15);
+    z-index: 40 !important;
+    opacity: 1 !important;
+}
+.kiosk-pin.is-filtered:not(.is-active) {
+    transform: scale(1.15);
+    z-index: 30;
+}
+</style>
+                </div>
+            </div>
+
+            <!-- Description -->
+            <div>
+                <h3 class="font-bold text-gray-900 mb-3 border-b pb-2 text-lg">Description & Advantages</h3>
+                <div class="bg-white border border-gray-200 rounded-lg shadow-sm p-6 text-sm text-gray-700 leading-relaxed space-y-4">
+                                            Ki ốt khu vực mặt tiền số 11
+                                    </div>
+            </div>
+        </div>
+
+        <!-- Right Column (Details) -->
+        <div class="w-full lg:w-[40%]">
+            <div class="bg-white border border-gray-200 rounded-lg shadow-sm p-6 sticky top-6">
+                                
+                <div class="flex justify-between items-start mb-2">
+                    <h2 class="text-2xl font-bold text-gray-900">K-11</h2>
+                    <span class="px-3 py-1 rounded text-xs font-bold tracking-widest bg-green-100 text-green-700">ĐANG MỞ</span>
+                </div>
+                <p class="text-sm text-gray-500 mb-4">Zone Khu A - Sảnh Chính</p>
+                
+                <hr class="border-gray-100 mb-4">
+                
+                <div class="mb-4">
+                    <p class="text-xs text-gray-500 font-bold tracking-widest uppercase mb-1">Starting Lease</p>
+                    <div class="text-3xl font-bold text-blue-600">
+                        8.000.000 <span class="text-sm font-medium text-gray-500">VND / tháng</span>
+                    </div>
+                </div>
+                
+                <hr class="border-gray-100 mb-4">
+                
+                <div class="grid grid-cols-2 gap-y-4 gap-x-2 text-sm mb-6">
+                    <div>
+                        <div class="flex items-center gap-1.5 text-gray-500 mb-1 font-medium">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4"></path></svg>
+                            Area
+                        </div>
+                        <div class="font-semibold text-gray-900 ml-5.5">22.90 m&sup2;</div>
+                    </div>
+                    <div>
+                        <div class="flex items-center gap-1.5 text-gray-500 mb-1 font-medium">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path></svg>
+                            Floor
+                        </div>
+                        <div class="font-semibold text-gray-900 ml-5.5">Đang cập nhật</div>
+                    </div>
+                    <div>
+                        <div class="flex items-center gap-1.5 text-gray-500 mb-1 font-medium">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 002-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path></svg>
+                            Type
+                        </div>
+                        <div class="font-semibold text-gray-900 ml-5.5">Đang cập nhật</div>
+                    </div>
+                    <div>
+                        <div class="flex items-center gap-1.5 text-gray-500 mb-1 font-medium">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                            Term
+                        </div>
+                        <div class="font-semibold text-gray-900 ml-5.5">Đang cập nhật</div>
+                    </div>
+                </div>
+
+                <hr class="border-gray-100 mb-4">
+                
+                <div class="mb-6">
+                    <p class="text-xs text-gray-500 font-bold tracking-widest uppercase mb-3">Utilities & Features</p>
+                    <div class="flex flex-wrap gap-2">
+                                                    <span class="text-sm text-gray-500">Chưa cập nhật tiện ích</span>
+                                            </div>
+                </div>
+                
+                <div class="space-y-3">
+                    <button type="button" onclick="openRentModal()" class="w-full flex justify-center items-center gap-2 bg-[#0078d4] text-white py-3 px-4 rounded font-medium hover:bg-blue-700 transition shadow-sm">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"></path></svg>
+                        Liên hệ thuê
+                    </button>
+                    <button type="button" class="w-full flex justify-center items-center gap-2 bg-white text-gray-700 border border-gray-300 py-3 px-4 rounded font-medium hover:bg-gray-50 transition">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
+                        Tải brochure (PDF)
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Similar Kiosks -->
+    <div class="mt-12 border-t border-gray-200 pt-8">
+        <h3 class="font-bold text-gray-900 mb-6 text-xl">Kiosks Tương tự</h3>
+                
+        <style> .hide-scroll::-webkit-scrollbar { display: none; } </style>
+        <div class="flex overflow-x-auto snap-x snap-mandatory gap-6 pb-4 hide-scroll">
+                                            <a href="/kiosks/1" class="w-72 flex-none snap-start block bg-white border border-gray-200 rounded-lg overflow-hidden hover:shadow-md transition group">
+                    <div class="relative h-40 bg-gray-100 overflow-hidden">
+                                                    <img src="http://kiosk.localhost:8000/uploads/kiosks/k-9/k9_01_mattien.png" class="w-full h-full object-cover group-hover:scale-105 transition duration-500" alt="K-9">
+                                                <div class="absolute top-2 right-2 px-2 py-0.5 rounded text-[10px] font-bold tracking-wider bg-green-500 text-white shadow-sm">
+                            ĐANG MỞ
+                        </div>
+                    </div>
+                    <div class="p-4">
+                        <h4 class="font-bold text-gray-900 text-base mb-1">K-9</h4>
+                        <p class="text-xs text-gray-500 mb-3">16.50 m&sup2; &bull; Zone Khu B</p>
+                        <div class="text-sm font-bold text-blue-600">
+                            4.900.000 VND
+                        </div>
+                    </div>
+                </a>
+                                            <a href="/kiosks/2" class="w-72 flex-none snap-start block bg-white border border-gray-200 rounded-lg overflow-hidden hover:shadow-md transition group">
+                    <div class="relative h-40 bg-gray-100 overflow-hidden">
+                                                    <img src="http://kiosk.localhost:8000/uploads/kiosks/k-10/k10_01_mattien.png" class="w-full h-full object-cover group-hover:scale-105 transition duration-500" alt="K-10">
+                                                <div class="absolute top-2 right-2 px-2 py-0.5 rounded text-[10px] font-bold tracking-wider bg-green-500 text-white shadow-sm">
+                            ĐANG MỞ
+                        </div>
+                    </div>
+                    <div class="p-4">
+                        <h4 class="font-bold text-gray-900 text-base mb-1">K-10</h4>
+                        <p class="text-xs text-gray-500 mb-3">19.70 m&sup2; &bull; Zone Khu A</p>
+                        <div class="text-sm font-bold text-blue-600">
+                            6.600.000 VND
+                        </div>
+                    </div>
+                </a>
+                                            <a href="/kiosks/4" class="w-72 flex-none snap-start block bg-white border border-gray-200 rounded-lg overflow-hidden hover:shadow-md transition group">
+                    <div class="relative h-40 bg-gray-100 overflow-hidden">
+                                                    <img src="http://kiosk.localhost:8000/uploads/kiosks/k-12/k12_01_mattien.png" class="w-full h-full object-cover group-hover:scale-105 transition duration-500" alt="K-12">
+                                                <div class="absolute top-2 right-2 px-2 py-0.5 rounded text-[10px] font-bold tracking-wider bg-green-500 text-white shadow-sm">
+                            ĐANG MỞ
+                        </div>
+                    </div>
+                    <div class="p-4">
+                        <h4 class="font-bold text-gray-900 text-base mb-1">K-12</h4>
+                        <p class="text-xs text-gray-500 mb-3">23.50 m&sup2; &bull; Zone Khu A</p>
+                        <div class="text-sm font-bold text-blue-600">
+                            4.500.000 VND
+                        </div>
+                    </div>
+                </a>
+                                            <a href="/kiosks/5" class="w-72 flex-none snap-start block bg-white border border-gray-200 rounded-lg overflow-hidden hover:shadow-md transition group">
+                    <div class="relative h-40 bg-gray-100 overflow-hidden">
+                                                    <img src="http://kiosk.localhost:8000/uploads/kiosks/k-13/k13_01_mattien.png" class="w-full h-full object-cover group-hover:scale-105 transition duration-500" alt="K-13">
+                                                <div class="absolute top-2 right-2 px-2 py-0.5 rounded text-[10px] font-bold tracking-wider bg-green-500 text-white shadow-sm">
+                            ĐANG MỞ
+                        </div>
+                    </div>
+                    <div class="p-4">
+                        <h4 class="font-bold text-gray-900 text-base mb-1">K-13</h4>
+                        <p class="text-xs text-gray-500 mb-3">17.30 m&sup2; &bull; Zone Khu A</p>
+                        <div class="text-sm font-bold text-blue-600">
+                            7.300.000 VND
+                        </div>
+                    </div>
+                </a>
+                                            <a href="/kiosks/6" class="w-72 flex-none snap-start block bg-white border border-gray-200 rounded-lg overflow-hidden hover:shadow-md transition group">
+                    <div class="relative h-40 bg-gray-100 overflow-hidden">
+                                                    <img src="http://kiosk.localhost:8000/uploads/kiosks/k-14/k14_01_mattien.png" class="w-full h-full object-cover group-hover:scale-105 transition duration-500" alt="K-14">
+                                                <div class="absolute top-2 right-2 px-2 py-0.5 rounded text-[10px] font-bold tracking-wider bg-green-500 text-white shadow-sm">
+                            ĐANG MỞ
+                        </div>
+                    </div>
+                    <div class="p-4">
+                        <h4 class="font-bold text-gray-900 text-base mb-1">K-14</h4>
+                        <p class="text-xs text-gray-500 mb-3">24.30 m&sup2; &bull; Zone Khu A</p>
+                        <div class="text-sm font-bold text-blue-600">
+                            4.200.000 VND
+                        </div>
+                    </div>
+                </a>
+                                            <a href="/kiosks/7" class="w-72 flex-none snap-start block bg-white border border-gray-200 rounded-lg overflow-hidden hover:shadow-md transition group">
+                    <div class="relative h-40 bg-gray-100 overflow-hidden">
+                                                    <img src="http://kiosk.localhost:8000/uploads/kiosks/k-15/k15_01_mattien.png" class="w-full h-full object-cover group-hover:scale-105 transition duration-500" alt="K-15">
+                                                <div class="absolute top-2 right-2 px-2 py-0.5 rounded text-[10px] font-bold tracking-wider bg-green-500 text-white shadow-sm">
+                            ĐANG MỞ
+                        </div>
+                    </div>
+                    <div class="p-4">
+                        <h4 class="font-bold text-gray-900 text-base mb-1">K-15</h4>
+                        <p class="text-xs text-gray-500 mb-3">15.20 m&sup2; &bull; Zone Khu A</p>
+                        <div class="text-sm font-bold text-blue-600">
+                            6.300.000 VND
+                        </div>
+                    </div>
+                </a>
+                                            <a href="/kiosks/8" class="w-72 flex-none snap-start block bg-white border border-gray-200 rounded-lg overflow-hidden hover:shadow-md transition group">
+                    <div class="relative h-40 bg-gray-100 overflow-hidden">
+                                                    <img src="http://kiosk.localhost:8000/uploads/kiosks/k-16/k16_01_mattien.png" class="w-full h-full object-cover group-hover:scale-105 transition duration-500" alt="K-16">
+                                                <div class="absolute top-2 right-2 px-2 py-0.5 rounded text-[10px] font-bold tracking-wider bg-green-500 text-white shadow-sm">
+                            ĐANG MỞ
+                        </div>
+                    </div>
+                    <div class="p-4">
+                        <h4 class="font-bold text-gray-900 text-base mb-1">K-16</h4>
+                        <p class="text-xs text-gray-500 mb-3">21.90 m&sup2; &bull; Zone Khu A</p>
+                        <div class="text-sm font-bold text-blue-600">
+                            6.700.000 VND
+                        </div>
+                    </div>
+                </a>
+                                            <a href="/kiosks/9" class="w-72 flex-none snap-start block bg-white border border-gray-200 rounded-lg overflow-hidden hover:shadow-md transition group">
+                    <div class="relative h-40 bg-gray-100 overflow-hidden">
+                                                    <img src="http://kiosk.localhost:8000/uploads/kiosks/k-17/k17_01_mattien.png" class="w-full h-full object-cover group-hover:scale-105 transition duration-500" alt="K-17">
+                                                <div class="absolute top-2 right-2 px-2 py-0.5 rounded text-[10px] font-bold tracking-wider bg-green-500 text-white shadow-sm">
+                            ĐANG MỞ
+                        </div>
+                    </div>
+                    <div class="p-4">
+                        <h4 class="font-bold text-gray-900 text-base mb-1">K-17</h4>
+                        <p class="text-xs text-gray-500 mb-3">18.00 m&sup2; &bull; Zone Khu A</p>
+                        <div class="text-sm font-bold text-blue-600">
+                            5.900.000 VND
+                        </div>
+                    </div>
+                </a>
+                                            <a href="/kiosks/10" class="w-72 flex-none snap-start block bg-white border border-gray-200 rounded-lg overflow-hidden hover:shadow-md transition group">
+                    <div class="relative h-40 bg-gray-100 overflow-hidden">
+                                                    <img src="http://kiosk.localhost:8000/uploads/kiosks/k-18/k18_01_mattien.png" class="w-full h-full object-cover group-hover:scale-105 transition duration-500" alt="K-18">
+                                                <div class="absolute top-2 right-2 px-2 py-0.5 rounded text-[10px] font-bold tracking-wider bg-green-500 text-white shadow-sm">
+                            ĐANG MỞ
+                        </div>
+                    </div>
+                    <div class="p-4">
+                        <h4 class="font-bold text-gray-900 text-base mb-1">K-18</h4>
+                        <p class="text-xs text-gray-500 mb-3">19.40 m&sup2; &bull; Zone Khu A</p>
+                        <div class="text-sm font-bold text-blue-600">
+                            7.800.000 VND
+                        </div>
+                    </div>
+                </a>
+                                            <a href="/kiosks/11" class="w-72 flex-none snap-start block bg-white border border-gray-200 rounded-lg overflow-hidden hover:shadow-md transition group">
+                    <div class="relative h-40 bg-gray-100 overflow-hidden">
+                                                    <img src="http://kiosk.localhost:8000/uploads/kiosks/k-19/k19_01_mattien.png" class="w-full h-full object-cover group-hover:scale-105 transition duration-500" alt="K-19">
+                                                <div class="absolute top-2 right-2 px-2 py-0.5 rounded text-[10px] font-bold tracking-wider bg-green-500 text-white shadow-sm">
+                            ĐANG MỞ
+                        </div>
+                    </div>
+                    <div class="p-4">
+                        <h4 class="font-bold text-gray-900 text-base mb-1">K-19</h4>
+                        <p class="text-xs text-gray-500 mb-3">25.00 m&sup2; &bull; Zone Khu A</p>
+                        <div class="text-sm font-bold text-blue-600">
+                            6.000.000 VND
+                        </div>
+                    </div>
+                </a>
+                    </div>
+    </div>
+</div>
+
+<!-- Rent Modal -->
+<div id="rentModal" class="fixed inset-0 bg-gray-900/60 z-50 flex items-center justify-center p-4 opacity-0 pointer-events-none transition-opacity duration-200">
+    <div class="bg-white rounded-lg shadow-2xl w-full max-w-lg transform scale-95 transition-transform duration-200" id="rentModalContent">
+        <div class="flex justify-between items-start p-5 border-b border-gray-200">
+            <div>
+                <h3 class="text-xl font-bold text-gray-900">Liên hệ thuê Kiosk</h3>
+                <p class="text-xs text-gray-500 mt-1">Vui lòng để lại thông tin, nhân viên bến xe sẽ liên hệ lại với bạn trong vòng 24h.</p>
+            </div>
+            <button type="button" onclick="closeRentModal()" class="text-gray-400 hover:text-gray-600 transition">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+            </button>
+        </div>
+        
+        <div class="p-5">
+            <div class="bg-gray-50 border border-gray-200 rounded p-3 mb-5 flex items-center gap-3">
+                                    <img src="http://kiosk.localhost:8000/uploads/kiosks/k-11/k11_01_mattien.png" class="w-16 h-12 object-cover rounded border border-gray-200 bg-white">
+                                <div>
+                    <h4 class="font-bold text-sm text-gray-900">K-11</h4>
+                    <p class="text-xs text-gray-500">Diện tích: 22.90m&sup2; &bull; Giá: 8.000.000 đ/tháng</p>
+                </div>
+            </div>
+
+            <form id="booking-form" onsubmit="submitBooking(event)">
+                <input type="hidden" name="_token" value="wBD9wEyuiPlfQkoUDGOOuPp3tqvXK1yFvsQqrci1" autocomplete="off">                <input type="hidden" name="kiosk_id" value="3">
+                
+                <div class="space-y-4">
+                    <div>
+                        <label class="block text-xs font-bold text-gray-700 mb-1">Họ tên / Doanh nghiệp <span class="text-red-500">*</span></label>
+                        <input type="text" id="booking-name" name="customer_name" required placeholder="Nhập họ và tên" class="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 text-sm">
+                    </div>
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-xs font-bold text-gray-700 mb-1">SĐT liên hệ <span class="text-red-500">*</span></label>
+                            <input type="tel" id="booking-phone" name="phone" required placeholder="Nhập số điện thoại" class="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 text-sm">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold text-gray-700 mb-1">Email (Tùy chọn)</label>
+                            <input type="email" id="booking-email" name="email" placeholder="example@email.com" class="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 text-sm">
+                        </div>
+                    </div>
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-xs font-bold text-gray-700 mb-1">Lĩnh vực kinh doanh</label>
+                            <input type="text" id="booking-business" name="business_type" placeholder="VD: Bán đồ ăn..." class="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 text-sm">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold text-gray-700 mb-1">T.Gian dự kiến <span class="text-red-500">*</span></label>
+                            <select id="booking-duration" name="duration_months" required class="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 text-sm bg-white">
+                                <option value="6">6 tháng</option>
+                                <option value="12">1 năm</option>
+                                <option value="24">2 năm</option>
+                                <option value="36">3 năm</option>
+                                <option value="999">Khác</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-gray-700 mb-1">Ghi chú hoặc Yêu cầu (Tùy chọn)</label>
+                        <textarea id="booking-notes" name="notes" rows="2" placeholder="Thông tin bổ sung..." class="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 text-sm"></textarea>
+                    </div>
+                </div>
+                
+                <div id="booking-error" class="hidden mt-4 p-3 bg-red-50 text-red-600 text-sm rounded border border-red-200"></div>
+                
+                <div class="pt-4 flex gap-3 justify-end mt-2">
+                    <button type="button" onclick="closeRentModal()" class="px-6 py-2 border border-gray-300 rounded bg-white text-gray-700 font-medium text-sm hover:bg-gray-50 transition">Hủy bỏ</button>
+                    <button type="submit" id="booking-submit-btn" class="px-6 py-2 bg-[#0078d4] rounded text-white font-medium text-sm hover:bg-blue-700 transition flex items-center justify-center min-w-[120px]">Gửi yêu cầu</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Toast Notification -->
+<div id="toast-container" class="fixed bottom-5 right-5 z-50 hidden transition-all duration-300 transform translate-y-10 opacity-0">
+    <div class="bg-green-600 text-white px-6 py-3 rounded-lg shadow-lg flex items-center gap-3">
+        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+        <span id="toast-message" class="font-medium"></span>
+    </div>
+</div>
+
+<script>
+function updateMainImage(thumbEl, current, total) {
+    const mainImg = document.getElementById('main-image');
+    mainImg.src = thumbEl.src;
+    
+    // update borders
+    const thumbs = thumbEl.parentElement.querySelectorAll('img');
+    thumbs.forEach(t => {
+        t.classList.remove('border-blue-500', 'opacity-100');
+        t.classList.add('border-transparent', 'opacity-60');
+    });
+    thumbEl.classList.remove('border-transparent', 'opacity-60');
+    thumbEl.classList.add('border-blue-500', 'opacity-100');
+}
+
+function openRentModal() {
+    const modal = document.getElementById('rentModal');
+    const content = document.getElementById('rentModalContent');
+    
+    document.getElementById('booking-error').classList.add('hidden');
+    document.getElementById('booking-form').reset();
+    document.getElementById('booking-duration').value = "6";
+    
+    modal.classList.remove('opacity-0', 'pointer-events-none');
+    content.classList.remove('scale-95');
+    content.classList.add('scale-100');
+}
+
+function closeRentModal() {
+    const modal = document.getElementById('rentModal');
+    const content = document.getElementById('rentModalContent');
+    modal.classList.add('opacity-0', 'pointer-events-none');
+    content.classList.remove('scale-100');
+    content.classList.add('scale-95');
+}
+
+function showToast(message) {
+    const toast = document.getElementById('toast-container');
+    document.getElementById('toast-message').innerText = message;
+    
+    toast.classList.remove('hidden');
+    setTimeout(() => {
+        toast.classList.remove('translate-y-10', 'opacity-0');
+    }, 10);
+    
+    setTimeout(() => {
+        toast.classList.add('translate-y-10', 'opacity-0');
+        setTimeout(() => toast.classList.add('hidden'), 300);
+    }, 4000);
+}
+
+async function submitBooking(event) {
+    event.preventDefault();
+    
+    const form = event.target;
+    const btn = document.getElementById('booking-submit-btn');
+    const errorBox = document.getElementById('booking-error');
+    
+    const formData = {
+        kiosk_id: form.kiosk_id.value,
+        customer_name: form.customer_name.value,
+        phone: form.phone.value,
+        email: form.email.value,
+        business_type: form.business_type.value,
+        duration_months: form.duration_months.value,
+        notes: form.notes.value
+    };
+    
+    btn.disabled = true;
+    btn.innerHTML = '<svg class="animate-spin -ml-1 mr-2 h-4 w-4 text-white" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg> Đang xử lý...';
+    
+    try {
+        const response = await fetch('/api/rental-requests', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Accept': 'application/json',
+                'X-CSRF-TOKEN': 'wBD9wEyuiPlfQkoUDGOOuPp3tqvXK1yFvsQqrci1'
+            },
+            body: JSON.stringify(formData)
+        });
+        
+        const data = await response.json();
+        
+        if (!response.ok) {
+            throw new Error(data.message || 'Lỗi dữ liệu, vui lòng kiểm tra lại');
+        }
+        
+        closeRentModal();
+        showToast(data.message);
+        
+    } catch (error) {
+        errorBox.innerText = error.message;
+        errorBox.classList.remove('hidden');
+    } finally {
+        btn.disabled = false;
+        btn.innerText = 'Gửi yêu cầu';
+    }
+}
+</script>
+    </main>
+
+    </body>
+</html>
