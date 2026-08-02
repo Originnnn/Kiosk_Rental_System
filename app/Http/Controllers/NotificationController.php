@@ -12,6 +12,6 @@ class NotificationController extends Controller
         
         $notification->markAsRead();
 
-        return redirect($notification->data['url'] ?? route('admin.dashboard'));
+        return redirect(url($notification->data['url'] ?? route('admin.dashboard', [], false)));
     }
 }

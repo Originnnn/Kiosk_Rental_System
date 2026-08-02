@@ -1,58 +1,82 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# Kiosk Rental System (Hệ thống Quản lý và Cho thuê Kiosk)
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+Kiosk Rental System là một ứng dụng nền web toàn diện được xây dựng bằng **Laravel**, chuyên dùng để quản lý hệ thống kiosk tại các bến xe, khu thương mại hoặc khu vực công cộng. Hệ thống cung cấp cổng thông tin tương tác cho khách hàng và bảng điều khiển quản trị mạnh mẽ cho ban quản lý.
 
-## About Laravel
+## 🌟 Các tính năng nổi bật
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+### 1. Dành cho Khách hàng (Public Portal)
+- **Sơ đồ Kiosk tương tác (Interactive Sitemap):** Bản đồ trực quan hỗ trợ Pan/Zoom, giúp khách hàng dễ dàng định vị các kiosk trong các khu vực (Zone A, Zone B, v.v.).
+- **Danh mục & Tìm kiếm:** Hiển thị danh sách kiosk theo trạng thái (Trống, Đang thuê, Bảo trì), tích hợp tính năng lọc thông minh theo khu vực và thanh tìm kiếm.
+- **Giao diện Chi tiết Kiosk hiện đại:** Hỗ trợ xem hình ảnh 360/nhiều góc độ bằng Slider vuốt/kéo (Drag-to-Scroll), xem tiện ích đi kèm và thông tin diện tích.
+- **Đăng ký thuê trực tuyến:** Khách hàng có thể dễ dàng điền form đăng ký thuê kiosk ngay trên hệ thống.
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+### 2. Dành cho Quản trị viên (Admin Dashboard)
+- **Quản lý Kiosk:** Thêm, sửa, xóa, và cập nhật trạng thái kiosk. Hỗ trợ thao tác nhanh (Quick Action) như "Bảo trì" hoặc "Mở hoạt động lại". Quản lý kho hình ảnh vật lý của từng kiosk.
+- **Quản lý Hợp đồng (Contracts) & Khách hàng:** Quản lý vòng đời hợp đồng từ khi tiếp nhận yêu cầu (`RentalRequest`) đến khi ký kết và theo dõi.
+- **Quản lý Tài chính (Payments):** Quản lý tiến độ thanh toán (`ContractPaymentSchedule`), lịch sử giao dịch và hóa đơn.
+- **Hệ thống Cảnh báo tự động (Alerts & Notifications):** Cron job chạy ngầm tự động quét và gửi thông báo khi có khoản thanh toán quá hạn, giúp Admin phản ứng kịp thời. Khi click vào thông báo, hệ thống điều hướng trực tiếp đến trang chi tiết hợp đồng.
+- **Phân quyền (Roles):** Hỗ trợ đa dạng các nhóm người dùng: Admin, Manager, và Employee với các mức độ truy cập khác nhau.
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+## 🛠 Công nghệ sử dụng
 
-## Learning Laravel
+- **Backend:** PHP 8.x, Laravel 11.x
+- **Frontend:** Blade Templates, Tailwind CSS, Alpine.js, Vanilla JS (Panzoom.js)
+- **Database:** MySQL
+- **Khác:** Laravel Commands (Background Jobs, ETL), Eloquent ORM.
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+## 📂 Cấu trúc dự án chính
 
-In addition, [Laracasts](https://laracasts.com) contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+- `app/Models/`: Chứa các models như `Kiosk`, `Contract`, `Customer`, `ContractPaymentSchedule`, `RentalRequest`,...
+- `app/Http/Controllers/`: Xử lý logic chia thành 2 nhóm chính: `PortalController` (dành cho người dùng ngoài) và nhóm Admin Controller (quản lý).
+- `app/Console/Commands/`: Chứa các lệnh Artisan tự định nghĩa như `SyncKioskImages` (chuẩn hóa ảnh) và `CheckOverduePayments` (quét nợ).
+- `resources/views/`: 
+  - `/public`: Giao diện dành cho khách hàng.
+  - `/admin`: Bảng điều khiển quản trị.
 
-You can also watch bite-sized lessons with real-world projects on [Laravel Learn](https://laravel.com/learn), where you will be guided through building a Laravel application from scratch while learning PHP fundamentals.
+## 🚀 Hướng dẫn Cài đặt & Chạy dự án
 
-## Agentic Development
+1. **Clone repository và cài đặt thư viện PHP:**
+   ```bash
+   git clone <repo_url>
+   cd kiosk_rental
+   composer install
+   ```
 
-Laravel's predictable structure and conventions make it ideal for AI coding agents like Claude Code, Cursor, and GitHub Copilot. Install [Laravel Boost](https://laravel.com/docs/ai) to supercharge your AI workflow:
+2. **Cài đặt thư viện Frontend:**
+   ```bash
+   npm install
+   npm run build # hoặc npm run dev khi phát triển
+   ```
 
-```bash
-composer require laravel/boost --dev
+3. **Cấu hình môi trường (.env):**
+   - Copy file `.env.example` thành `.env`.
+   - Cập nhật thông tin kết nối Cơ sở dữ liệu (`DB_DATABASE`, `DB_USERNAME`, `DB_PASSWORD`).
+   - Đảm bảo thiết lập đúng `APP_URL` và `APP_URL_BASE` để hệ thống định tuyến chính xác các Subdomain (VD: `admin.kiosk.localhost`).
 
-php artisan boost:install
-```
+4. **Khởi tạo Database & Dữ liệu mẫu:**
+   ```bash
+   php artisan key:generate
+   php artisan migrate:fresh --seed
+   ```
+   *(Lưu ý: Lệnh migrate:fresh sẽ xóa toàn bộ dữ liệu cũ, chỉ dùng trong môi trường phát triển).*
 
-Boost provides your agent 15+ tools and skills that help agents build Laravel applications while following best practices.
+5. **Chạy ứng dụng:**
+   ```bash
+   php artisan serve
+   ```
+   - Trang Khách hàng: `http://localhost:8000` (hoặc domain ảo bạn cấu hình)
+   - Trang Admin: `http://admin.localhost:8000`
 
-## Contributing
+## ⚙️ Các lệnh Cron/Commands thường dùng
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+- **Đồng bộ và chuẩn hóa hình ảnh Kiosk:**
+  ```bash
+  php artisan app:sync-kiosk-images
+  ```
+- **Quét và thông báo nợ quá hạn:**
+  ```bash
+  php artisan app:check-overdue-payments
+  ```
 
-## Code of Conduct
-
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
-
-## Security Vulnerabilities
-
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
-
-## License
-
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+---
+*Dự án Kiosk Rental System được thiết kế với mục tiêu tự động hóa, minh bạch hóa quy trình cho thuê mặt bằng và nâng cao trải nghiệm của cả người dùng cuối lẫn đội ngũ vận hành.*

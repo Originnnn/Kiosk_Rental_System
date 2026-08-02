@@ -58,7 +58,7 @@
                     $badgeText = $isRented ? 'ĐANG MỞ' : ($isAvailable ? 'TRỐNG' : 'TẠM NGHỈ');
                     $badgeClass = $isRented ? 'bg-green-100 text-green-700' : ($isAvailable ? 'bg-gray-100 text-gray-500' : 'bg-orange-100 text-orange-700');
                     
-                    $isSelected = $loop->first && !request()->filled('q') && !request()->filled('zone');
+                    $isSelected = false;
                     
                     $kioskData = [
                         'id' => $kiosk->id,
@@ -110,7 +110,7 @@
         
         <!-- Bottom Panel for selected Kiosk -->
         @php $firstKiosk = $kiosks->first(); @endphp
-        <div id="details-panel" class="{{ $firstKiosk ? 'block' : 'hidden' }} border-t border-gray-200 bg-white p-2.5 shadow-[0_-4px_10px_-2px_rgba(0,0,0,0.05)] z-20 shrink-0 transition-opacity">
+        <div id="details-panel" class="hidden border-t border-gray-200 bg-white p-2.5 shadow-[0_-4px_10px_-2px_rgba(0,0,0,0.05)] z-20 shrink-0 transition-opacity">
             <div class="flex justify-between items-center mb-1.5">
                 <div class="flex items-center gap-2">
                     <span id="detail-code" class="text-blue-700 font-bold text-base">{{ $firstKiosk->code ?? '' }}</span>

@@ -49,7 +49,7 @@ class PaymentAlertNotification extends Notification
         return [
             'title' => $title,
             'message' => $message,
-            'url' => route('admin.payments.index', ['status' => $this->alertType === 'overdue' ? 'overdue' : 'pending']),
+            'url' => route('admin.contracts.show', $this->payment->contract_id, false),
             'type' => $this->alertType === 'overdue' ? 'danger' : 'warning',
         ];
     }
