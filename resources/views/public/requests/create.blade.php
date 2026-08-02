@@ -42,6 +42,23 @@
                 @if($kiosk)
                     <input type="hidden" name="kiosk_id" value="{{ $kiosk->id }}">
                 @endif
+                
+                @if(session('success'))
+                    <div class="p-4 mb-4 text-sm text-green-700 bg-green-100 rounded-lg" role="alert">
+                        <span class="font-medium">Thành công!</span> {{ session('success') }}
+                    </div>
+                @endif
+
+                @if($errors->any())
+                    <div class="p-4 mb-4 text-sm text-red-700 bg-red-100 rounded-lg" role="alert">
+                        <span class="font-medium">Lỗi!</span> Vui lòng kiểm tra lại thông tin bên dưới:
+                        <ul class="list-disc mt-1 ml-4 text-xs">
+                            @foreach ($errors->all() as $error)
+                                <li>{{ $error }}</li>
+                            @endforeach
+                        </ul>
+                    </div>
+                @endif
 
                 <div class="bg-white p-4 border border-gray-200 rounded-lg shadow-sm">
                     <h3 class="text-lg font-bold text-gray-800 mb-4 border-b pb-2">Thông tin liên hệ</h3>

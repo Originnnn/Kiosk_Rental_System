@@ -58,7 +58,8 @@
                 <select name="status" class="w-full px-3 py-2 border border-gray-300 rounded focus:ring-1 focus:ring-primary focus:border-primary text-sm text-gray-700">
                     <option value="">Tất cả trạng thái</option>
                     <option value="paid" {{ request('status') == 'paid' ? 'selected' : '' }}>Đã thanh toán</option>
-                    <option value="unpaid" {{ request('status') == 'unpaid' ? 'selected' : '' }}>Chờ thanh toán / Quá hạn</option>
+                    <option value="pending" {{ request('status') == 'pending' ? 'selected' : '' }}>Chờ thanh toán</option>
+                    <option value="overdue" {{ request('status') == 'overdue' ? 'selected' : '' }}>Quá hạn</option>
                 </select>
             </div>
 
@@ -109,7 +110,7 @@
                         $customerName = $payment->contract->customer->name ?? 'Unknown';
                         $kioskName = $payment->contract->kiosk->code ?? 'Unknown';
                         
-                        $isOverdue = in_array($payment->status, ['unpaid', 'pending']) && \Carbon\Carbon::parse($payment->due_date)->endOfDay()->isPast();
+                        $isOverdue = $payment->status === 'overdue' || (in_array($payment->status, ['unpaid', 'pending']) && \Carbon\Carbon::parse($payment->due_date)->endOfDay()->isPast());
                         
                         if ($payment->status == 'paid') {
                             $statusText = 'Đã hoàn tất';

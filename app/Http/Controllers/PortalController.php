@@ -65,6 +65,9 @@ class PortalController extends Controller
             'status' => 'pending',
         ]);
 
-        return redirect()->back()->with('success', 'Gửi yêu cầu thành công, nhân viên bến xe sẽ sớm liên hệ lại với bạn.');
+        $admins = \App\Models\User::whereIn('role', ['admin', 'manager', 'employee'])->get();
+        \Illuminate\Support\Facades\Notification::send($admins, new \App\Notifications\NewRentRequestNotification($booking));
+
+        return redirect()->back()->with('success', 'Yêu cầu thuê của bạn đã được gửi thành công. Chúng tôi sẽ liên hệ lại sớm nhất!');
     }
 }

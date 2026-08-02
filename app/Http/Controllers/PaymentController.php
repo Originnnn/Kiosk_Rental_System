@@ -27,7 +27,20 @@ class PaymentController extends Controller
 
         // Filter by status
         if ($request->filled('status')) {
-            $query->where('status', $request->status);
+            if ($request->status === 'overdue') {
+                $query->where(function($q) {
+                    $q->where('status', 'overdue')
+                      ->orWhere(function($sub) {
+                          $sub->whereIn('status', ['pending', 'unpaid'])
+                              ->where('due_date', '<', now()->startOfDay());
+                      });
+                });
+            } elseif ($request->status === 'pending') {
+                $query->whereIn('status', ['pending', 'unpaid'])
+                      ->where('due_date', '>=', now()->startOfDay());
+            } else {
+                $query->where('status', $request->status);
+            }
         }
 
         // Filter by date range (due_date) - Format: dd/mm/yyyy - dd/mm/yyyy
@@ -50,14 +63,15 @@ class PaymentController extends Controller
                                 ->whereYear('paid_at', now()->year)
                                 ->sum(DB::raw('COALESCE(actual_amount, amount)'));
                                 
-        $overdueAmount = ContractPaymentSchedule::where('status', 'unpaid')
+        $overdueAmount = ContractPaymentSchedule::whereIn('status', ['pending', 'overdue'])
                             ->where('due_date', '<', now()->startOfDay())
                             ->sum('amount');
 
         // Sort: Chưa thanh toán (bao gồm quá hạn) lên đầu, Đã thanh toán xuống cuối. Trong cùng nhóm thì ưu tiên ngày gần nhất.
         $payments = $query->orderByRaw("CASE WHEN status = 'paid' THEN 2 ELSE 1 END")
-                          ->orderBy('due_date', 'asc')
-                          ->paginate(10);
+                          ->orderBy('due_date', 'desc')
+                          ->paginate(10)
+                          ->withQueryString();
 
         return view('admin.payments.index', compact('payments', 'currentMonthRevenue', 'overdueAmount'));
     }

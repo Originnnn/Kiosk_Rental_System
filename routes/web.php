@@ -31,7 +31,8 @@ Route::domain(env('APP_URL_BASE', 'kiosk.localhost'))->group(function () {
     // Xem chi tiết Kiosk
     Route::get('/kiosks/{id}', function ($id) {
         $kiosk = \App\Models\Kiosk::with(['position', 'images'])->findOrFail($id);
-        return view('public.kiosks.show', compact('kiosk'));
+        $allKiosks = \App\Models\Kiosk::with('position')->get();
+        return view('public.kiosks.show', compact('kiosk', 'allKiosks'));
     })->name('portal.kiosks.show');
 
     // Trang hiển thị form (nếu gọi get request)
@@ -99,6 +100,9 @@ Route::domain('admin.' . env('APP_URL_BASE', 'kiosk.localhost'))->group(function
         Route::put('/profile', [ProfileController::class, 'update'])->name('admin.profile.update');
         Route::get('/profile/password', [ProfileController::class, 'password'])->name('admin.profile.password');
         Route::put('/profile/password', [ProfileController::class, 'updatePassword'])->name('admin.profile.password.update');
+
+        // Notifications
+        Route::get('/notifications/{id}/read', [\App\Http\Controllers\NotificationController::class, 'read'])->name('admin.notifications.read');
 
         // Middleware cho Admin & Manager (Dashboard)
         Route::middleware('can:view-dashboard')->group(function () {

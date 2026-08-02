@@ -159,9 +159,65 @@
             
             <!-- User menu -->
             <div class="flex items-center space-x-5">
-                <button class="text-gray-500 hover:text-gray-700">
-                    <i class="fa-regular fa-bell text-lg"></i>
-                </button>
+                <!-- Notifications -->
+                <div class="relative" x-data="{ open: false }" @click.away="open = false">
+                    <button @click="open = !open" class="text-gray-500 hover:text-gray-700 relative mt-1">
+                        <i class="fa-regular fa-bell text-lg"></i>
+                        @if(auth()->check() && auth()->user()->unreadNotifications->count() > 0)
+                            <span class="absolute -top-1 -right-1 bg-red-500 text-white text-[10px] font-bold rounded-full h-4 w-4 flex items-center justify-center">
+                                {{ auth()->user()->unreadNotifications->count() }}
+                            </span>
+                        @endif
+                    </button>
+
+                    <!-- Dropdown -->
+                    <div x-show="open" x-transition.opacity class="absolute right-0 mt-2 w-80 bg-white rounded-md shadow-lg py-1 z-50 border border-gray-100" style="display: none;">
+                        <div class="px-4 py-2 border-b border-gray-100 flex justify-between items-center">
+                            <span class="font-bold text-gray-700">Thông báo</span>
+                            <span class="text-xs text-gray-500">{{ auth()->check() ? auth()->user()->unreadNotifications->count() : 0 }} chưa đọc</span>
+                        </div>
+                        
+                        <div class="max-h-96 overflow-y-auto">
+                            @if(auth()->check() && auth()->user()->notifications->count() > 0)
+                                @foreach(auth()->user()->notifications->take(7) as $notification)
+                                    <a href="{{ route('admin.notifications.read', $notification->id) }}" class="block px-4 py-3 hover:bg-gray-50 border-b border-gray-50 {{ $notification->read_at ? 'opacity-60' : 'bg-blue-50/30' }}">
+                                        <div class="flex items-start">
+                                            <div class="flex-shrink-0 mt-0.5">
+                                                @if(isset($notification->data['type']))
+                                                    @if($notification->data['type'] === 'success')
+                                                        <i class="fa-solid fa-circle-check text-green-500"></i>
+                                                    @elseif($notification->data['type'] === 'danger')
+                                                        <i class="fa-solid fa-circle-exclamation text-red-500"></i>
+                                                    @elseif($notification->data['type'] === 'warning')
+                                                        <i class="fa-solid fa-triangle-exclamation text-orange-500"></i>
+                                                    @else
+                                                        <i class="fa-solid fa-bell text-blue-500"></i>
+                                                    @endif
+                                                @else
+                                                    <i class="fa-solid fa-bell text-blue-500"></i>
+                                                @endif
+                                            </div>
+                                            <div class="ml-3 w-0 flex-1">
+                                                <p class="text-sm font-semibold text-gray-800">{{ $notification->data['title'] ?? 'Thông báo' }}</p>
+                                                <p class="text-xs text-gray-600 mt-0.5">{{ $notification->data['message'] ?? '' }}</p>
+                                                <p class="text-[10px] text-gray-400 mt-1">{{ $notification->created_at->diffForHumans() }}</p>
+                                            </div>
+                                            @if(!$notification->read_at)
+                                                <div class="flex-shrink-0 ml-2 mt-2">
+                                                    <div class="w-2 h-2 bg-blue-600 rounded-full"></div>
+                                                </div>
+                                            @endif
+                                        </div>
+                                    </a>
+                                @endforeach
+                            @else
+                                <div class="px-4 py-6 text-center text-gray-500 text-sm">
+                                    Không có thông báo nào.
+                                </div>
+                            @endif
+                        </div>
+                    </div>
+                </div>
                 <button class="text-gray-500 hover:text-gray-700">
                     <i class="fa-regular fa-circle-question text-lg"></i>
                 </button>

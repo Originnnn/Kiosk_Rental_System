@@ -22,51 +22,7 @@
         </div>
         
         <!-- Map Canvas -->
-        <div id="map-wrapper" class="flex-1 overflow-hidden flex items-center justify-center bg-slate-50 relative cursor-grab active:cursor-grabbing w-full h-full">
-            <div id="map-container" class="relative bg-white shadow-sm flex-shrink-0" style="width: 1829px; height: 1272px;">
-                <!-- Base Map Image -->
-                <img src="{{ asset('maps/sitemap.jpg') }}" class="w-full h-full block" alt="Sitemap">
-                
-                <!-- Dynamic Map Pins/Rectangles -->
-                @foreach($kiosks as $kiosk)
-                    @if($kiosk->position && $kiosk->position->x !== null && $kiosk->position->y !== null)
-                        @php
-                            $isAvailable = $kiosk->status === 'available';
-                            $isRented = $kiosk->status === 'rented';
-                            $colorClass = $isRented ? 'bg-green-500' : ($isAvailable ? 'bg-blue-600' : 'bg-orange-500');
-                            
-                            $origWidth = 1829;
-                            $origHeight = 1272;
-                            
-                            $leftPct = ($kiosk->position->x / $origWidth) * 100;
-                            $topPct = ($kiosk->position->y / $origHeight) * 100;
-                            $widthPct = ($kiosk->position->width / $origWidth) * 100;
-                            $heightPct = ($kiosk->position->height / $origHeight) * 100;
-
-                            $kioskData = [
-                                'id' => $kiosk->id,
-                                'code' => $kiosk->code,
-                                'name' => $kiosk->name ?: 'Tạp hoá & Đồ uống',
-                                'status' => $kiosk->status,
-                                'area' => $kiosk->area,
-                                'zone' => $kiosk->position->zone ?? 'N/A'
-                            ];
-                        @endphp
-                        <div onclick="handleKioskClick(event, this)"
-                           class="kiosk-pin absolute flex items-center justify-center cursor-pointer group z-20 transition-all duration-300"
-                           data-id="{{ $kiosk->id }}"
-                           data-kiosk="{{ json_encode($kioskData) }}"
-                           style="left: {{ $leftPct }}%; top: {{ $topPct }}%; width: {{ $widthPct }}%; height: {{ $heightPct }}%;"
-                           title="{{ $kiosk->code }}">
-                            
-                            <div class="kiosk-pin-inner w-full h-full border-[1.5px] border-white {{ $colorClass }} bg-opacity-80 hover:bg-opacity-100 rounded-[2px] shadow-sm flex items-center justify-center transition-all duration-200">
-                                <span class="text-white text-[8px] font-bold drop-shadow-md">{{ $kiosk->code }}</span>
-                            </div>
-                        </div>
-                    @endif
-                @endforeach
-            </div>
-        </div>
+        <x-sitemap :kiosks="$kiosks" />
     </div>
 
     <!-- Right Sidebar -->
@@ -429,48 +385,6 @@ function handleKioskClick(event, element) {
         }
     }
 }
-
-// Biến global để lưu trữ panzoom instance
-window.panzoomInstance = null;
-window.initialScale = 1;
-
-// Khởi tạo Panzoom sau khi DOM load
-document.addEventListener('DOMContentLoaded', function() {
-    const mapContainer = document.getElementById('map-container');
-    const mapWrapper = document.getElementById('map-wrapper');
-    
-    if(mapContainer && mapWrapper && typeof Panzoom !== 'undefined') {
-        // Ảnh gốc là 1829x1272. Tính toán tỷ lệ scale ban đầu sao cho ảnh vừa khít với wrapper (95% để có chút lề)
-        const wrapperRect = mapWrapper.getBoundingClientRect();
-        window.initialScale = Math.min(
-            (wrapperRect.width - 40) / 1829,
-            (wrapperRect.height - 40) / 1272
-        );
-
-        window.panzoomInstance = Panzoom(mapContainer, {
-            maxScale: 5,
-            minScale: window.initialScale,
-            startScale: window.initialScale,
-            startX: 0,
-            startY: 0,
-            step: 0.3
-        });
-        
-        // Hỗ trợ Zoom bằng con lăn chuột (Wheel)
-        mapWrapper.addEventListener('wheel', window.panzoomInstance.zoomWithWheel);
-
-        // Gắn sự kiện cho các nút điều khiển
-        document.getElementById('zoom-in').addEventListener('click', window.panzoomInstance.zoomIn);
-        document.getElementById('zoom-out').addEventListener('click', window.panzoomInstance.zoomOut);
-        
-        // Reset về vị trí ban đầu (căn giữa + scale mặc định)
-        document.getElementById('zoom-reset').addEventListener('click', function(e) {
-            e.preventDefault();
-            window.panzoomInstance.pan(0, 0, { animate: true });
-            window.panzoomInstance.zoom(window.initialScale, { animate: true });
-        });
-    }
-});
 
 // Booking Modal Logic
 function openBookingModal(kioskId, code, area) {

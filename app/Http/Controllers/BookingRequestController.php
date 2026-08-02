@@ -5,6 +5,10 @@ namespace App\Http\Controllers;
 use App\Models\BookingRequest;
 use Illuminate\Http\Request;
 
+use App\Models\User;
+use App\Notifications\NewRentRequestNotification;
+use Illuminate\Support\Facades\Notification;
+
 class BookingRequestController extends Controller
 {
     public function store(Request $request)
@@ -19,9 +23,13 @@ class BookingRequestController extends Controller
 
         $booking = BookingRequest::create($validated);
 
+        // Notify Admins, Managers and Employees
+        $admins = User::whereIn('role', ['admin', 'manager', 'employee'])->get();
+        Notification::send($admins, new NewRentRequestNotification($booking));
+
         return response()->json([
             'success' => true,
-            'message' => 'Gửi yêu cầu thành công, nhân viên sẽ sớm liên hệ',
+            'message' => 'Yêu cầu thuê của bạn đã được gửi thành công. Chúng tôi sẽ liên hệ lại sớm nhất!',
             'data' => $booking
         ], 201);
     }

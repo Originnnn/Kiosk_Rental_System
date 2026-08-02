@@ -33,8 +33,13 @@ class AlertController extends Controller
         // Lấy hóa đơn chậm thanh toán
         if ($filter === 'all' || $filter === 'unpaid') {
             $unpaidPayments = ContractPaymentSchedule::with('contract.kiosk', 'contract.customer')
-                ->where('status', 'unpaid')
-                ->where('due_date', '<', now())
+                ->where(function($q) {
+                    $q->where('status', 'overdue')
+                      ->orWhere(function($sub) {
+                          $sub->whereIn('status', ['pending', 'unpaid'])
+                              ->where('due_date', '<', now()->startOfDay());
+                      });
+                })
                 ->orderBy('due_date', 'asc')
                 ->get();
             
